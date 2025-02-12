@@ -65,6 +65,7 @@ object KeyBindingHandlerImpl : KeyBindingHandler {
         KeyBindingType.SNEAK -> options.keyShift
         KeyBindingType.SPRINT -> options.keySprint
         KeyBindingType.JUMP -> options.keyJump
+        KeyBindingType.PLAYER_LIST -> options.keyPlayerList
     }
 
     fun isDown(key: KeyBinding) = state[key]?.let { it.clicked || it.locked } == true

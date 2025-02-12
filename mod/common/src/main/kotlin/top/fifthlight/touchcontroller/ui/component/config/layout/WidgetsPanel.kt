@@ -95,7 +95,11 @@ private val DEFAULT_CONFIGS = persistentListOf(
     WidgetItem(
         name = Texts.SCREEN_OPTIONS_WIDGET_FORWARD_BUTTON_NAME,
         config = ForwardButton()
-    )
+    ),
+    WidgetItem(
+        name = Texts.SCREEN_OPTIONS_WIDGET_PLAYER_LIST_BUTTON_NAME,
+        config = PlayerListButton()
+    ),
 )
 
 @Composable

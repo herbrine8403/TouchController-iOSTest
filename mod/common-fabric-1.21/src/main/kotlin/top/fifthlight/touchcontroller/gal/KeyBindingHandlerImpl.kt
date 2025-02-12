@@ -2,6 +2,7 @@ package top.fifthlight.touchcontroller.gal
 
 import net.minecraft.client.MinecraftClient
 import net.minecraft.client.option.KeyBinding
+import top.fifthlight.touchcontroller.gal.KeyBindingType.*
 import top.fifthlight.touchcontroller.helper.ClickableKeyBinding
 
 private fun KeyBinding.click() {
@@ -58,13 +59,14 @@ object KeyBindingHandlerImpl : KeyBindingHandler {
     private val state = mutableMapOf<KeyBinding, KeyBindingStateImpl>()
 
     private fun KeyBindingType.toMinecraft() = when (this) {
-        KeyBindingType.ATTACK -> options.attackKey
-        KeyBindingType.USE -> options.useKey
-        KeyBindingType.INVENTORY -> options.inventoryKey
-        KeyBindingType.SWAP_HANDS -> options.swapHandsKey
-        KeyBindingType.SNEAK -> options.sneakKey
-        KeyBindingType.SPRINT -> options.sprintKey
-        KeyBindingType.JUMP -> options.jumpKey
+        ATTACK -> options.attackKey
+        USE -> options.useKey
+        INVENTORY -> options.inventoryKey
+        SWAP_HANDS -> options.swapHandsKey
+        SNEAK -> options.sneakKey
+        SPRINT -> options.sprintKey
+        JUMP -> options.jumpKey
+        PLAYER_LIST -> options.playerListKey
     }
 
     fun isDown(key: KeyBinding) = state[key]?.let { it.clicked || it.locked } == true

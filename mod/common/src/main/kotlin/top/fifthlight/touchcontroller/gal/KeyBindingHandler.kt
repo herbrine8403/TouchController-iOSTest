@@ -8,6 +8,7 @@ enum class KeyBindingType {
     SNEAK,
     SPRINT,
     JUMP,
+    PLAYER_LIST,
 }
 
 interface KeyBindingState {

@@ -248,6 +248,11 @@
   "touchcontroller.screen.options.widget.forward_button.property.style": "Style",
   "touchcontroller.screen.options.widget.forward_button.property.style.classic": "Classic",
   "touchcontroller.screen.options.widget.forward_button.property.style.new": "New",
+  "touchcontroller.screen.options.widget.player_list_button.name": "Player list button",
+  "touchcontroller.screen.options.widget.player_list_button.property.size": "Button size: %s%%",
+  "touchcontroller.screen.options.widget.player_list_button.property.style": "Style",
+  "touchcontroller.screen.options.widget.player_list_button.property.style.classic": "Classic",
+  "touchcontroller.screen.options.widget.player_list_button.property.style.new": "New",
 
   "touchcontroller.screen.options.category.items.title": "Items",
 
