@@ -29,6 +29,7 @@ data class ConfigScreenState(
     val selectedPreset: Int = 0,
     val defaultOpacity: Float = .6f,
     val copiedWidget: ControllerWidget? = null,
+    val lockMoving: Boolean = false,
     val aboutInfo: AboutInfo? = null,
 ) {
     val allPresets = defaultPresets.presets + presets.presets

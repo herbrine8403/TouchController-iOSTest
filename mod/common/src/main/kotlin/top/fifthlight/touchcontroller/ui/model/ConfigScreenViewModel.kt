@@ -131,6 +131,14 @@ class ConfigScreenViewModel(
         }
     }
 
+    fun setLockMoving(lockMoving: Boolean) {
+        _uiState.getAndUpdate {
+            it.copy(
+                lockMoving = lockMoving,
+            )
+        }
+    }
+
     fun pasteWidget() {
         _uiState.getAndUpdate {
             val widget = it.copiedWidget ?: return@getAndUpdate it

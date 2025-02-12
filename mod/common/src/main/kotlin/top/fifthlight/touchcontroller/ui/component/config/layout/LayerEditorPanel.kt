@@ -50,6 +50,7 @@ fun LayoutEditorPanel(
     onSelectedWidgetChanged: (Int, ControllerWidget?) -> Unit = { _, _ -> },
     layer: LayoutLayer,
     layerIndex: Int,
+    lockMoving: Boolean = false,
     onLayerChanged: (LayoutLayer) -> Unit = {},
     onWidgetCopied: (ControllerWidget) -> Unit = { _ -> },
 ) {
@@ -92,10 +93,9 @@ fun LayoutEditorPanel(
                         widgetInitialOffset = layer.widgets.getOrNull(selectedWidgetIndex)?.offset ?: IntOffset.ZERO
                         dragTotalOffset = Offset.ZERO
                     }
-                    ControllerWidget(
-                        modifier = Modifier
-                            .then(ControllerWidgetModifierNode(widget))
-                            .innerLine(Colors.WHITE)
+                    val lockWidgetMoving = lockMoving || widget.lockMoving
+                    val dragModifier = if (!lockWidgetMoving) {
+                        Modifier.innerLine(Colors.WHITE)
                             .draggable { offset ->
                                 dragTotalOffset += offset
                                 val intOffset = dragTotalOffset.toIntOffset()
@@ -143,7 +143,16 @@ fun LayoutEditorPanel(
                                         widgets = layer.widgets.set(index, newWidget)
                                     )
                                 )
-                            },
+                            }
+                    } else {
+                        Modifier
+                            .innerLine(Colors.RED)
+                            .consumePress()
+                    }
+                    ControllerWidget(
+                        modifier = Modifier
+                            .then(ControllerWidgetModifierNode(widget))
+                            .then(dragModifier),
                         config = widget
                     )
                 } else {

@@ -31,7 +31,8 @@ data class ForwardButton(
     val texture: ForwardButtonTexture = ForwardButtonTexture.CLASSIC,
     override val align: Align = Align.LEFT_BOTTOM,
     override val offset: IntOffset = IntOffset.ZERO,
-    override val opacity: Float = 1f
+    override val opacity: Float = 1f,
+    override val lockMoving: Boolean = false,
 ) : ControllerWidget() {
     companion object {
         private val textFactory: TextFactory by inject()
@@ -74,10 +75,15 @@ data class ForwardButton(
         context.ForwardButton(this@ForwardButton)
     }
 
-    override fun cloneBase(align: Align, offset: IntOffset, opacity: Float) = copy(
+    override fun cloneBase(
+        align: Align,
+        offset: IntOffset,
+        opacity: Float,
+        lockMoving: Boolean
+    ) = copy(
         align = align,
         offset = offset,
-        opacity = opacity
+        opacity = opacity,
+        lockMoving = lockMoving,
     )
-
 }

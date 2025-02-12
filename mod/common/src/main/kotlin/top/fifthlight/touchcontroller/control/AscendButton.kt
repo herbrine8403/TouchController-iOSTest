@@ -35,7 +35,8 @@ data class AscendButton(
     val texture: AscendButtonTexture = AscendButtonTexture.CLASSIC,
     override val align: Align = Align.RIGHT_BOTTOM,
     override val offset: IntOffset = IntOffset.ZERO,
-    override val opacity: Float = 1f
+    override val opacity: Float = 1f,
+    override val lockMoving: Boolean = false,
 ) : ControllerWidget() {
     companion object : KoinComponent {
         private val textFactory: TextFactory by inject()
@@ -78,9 +79,15 @@ data class AscendButton(
         context.AscendButton(config = this)
     }
 
-    override fun cloneBase(align: Align, offset: IntOffset, opacity: Float) = copy(
+    override fun cloneBase(
+        align: Align,
+        offset: IntOffset,
+        opacity: Float,
+        lockMoving: Boolean
+    ) = copy(
         align = align,
         offset = offset,
-        opacity = opacity
+        opacity = opacity,
+        lockMoving = lockMoving,
     )
 }

@@ -38,7 +38,8 @@ data class PerspectiveSwitchButton(
     val style: PerspectiveSwitchButtonStyle = PerspectiveSwitchButtonStyle.CLASSIC,
     override val align: Align = Align.CENTER_TOP,
     override val offset: IntOffset = IntOffset.ZERO,
-    override val opacity: Float = 1f
+    override val opacity: Float = 1f,
+    override val lockMoving: Boolean = false,
 ) : ControllerWidget() {
     companion object : KoinComponent {
         private val textFactory: TextFactory by inject()
@@ -82,9 +83,15 @@ data class PerspectiveSwitchButton(
         context.PerspectiveSwitchButton(config = this)
     }
 
-    override fun cloneBase(align: Align, offset: IntOffset, opacity: Float) = copy(
+    override fun cloneBase(
+        align: Align,
+        offset: IntOffset,
+        opacity: Float,
+        lockMoving: Boolean
+    ) = copy(
         align = align,
         offset = offset,
-        opacity = opacity
+        opacity = opacity,
+        lockMoving = lockMoving,
     )
 }

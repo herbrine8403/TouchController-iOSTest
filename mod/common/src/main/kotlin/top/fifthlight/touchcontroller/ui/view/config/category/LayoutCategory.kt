@@ -18,6 +18,7 @@ import top.fifthlight.combine.widget.base.layout.Column
 import top.fifthlight.combine.widget.base.layout.Row
 import top.fifthlight.combine.widget.base.layout.Spacer
 import top.fifthlight.combine.widget.ui.Button
+import top.fifthlight.combine.widget.ui.Switch
 import top.fifthlight.touchcontroller.assets.Texts
 import top.fifthlight.touchcontroller.ui.component.config.layout.*
 import top.fifthlight.touchcontroller.ui.state.LayoutPanelState
@@ -78,6 +79,13 @@ data object LayoutCategory : ConfigCategory(
 
                 Spacer(modifier = Modifier.weight(1f))
 
+                Text(Text.translatable(Texts.SCREEN_OPTIONS_WIDGET_LOCK_MOVING_TITLE))
+                Switch(
+                    checked = uiState.lockMoving,
+                    onChanged = {
+                        viewModel.setLockMoving(it)
+                    }
+                )
                 if (uiState.layoutPanelState != LayoutPanelState.PRESETS) {
                     Button(onClick = {
                         viewModel.togglePresetsPanel()
@@ -106,6 +114,7 @@ data object LayoutCategory : ConfigCategory(
                             .fillMaxWidth(),
                         layer = currentLayer,
                         layerIndex = uiState.selectedLayer,
+                        lockMoving = uiState.lockMoving,
                         onLayerChanged = {
                             viewModel.updateLayer(selectedLayer, it)
                         },

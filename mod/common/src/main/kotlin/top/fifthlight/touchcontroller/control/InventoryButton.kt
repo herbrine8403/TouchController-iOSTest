@@ -22,7 +22,8 @@ data class InventoryButton(
     val size: Float = 1f,
     override val align: Align = Align.CENTER_BOTTOM,
     override val offset: IntOffset = IntOffset(101, 0),
-    override val opacity: Float = 1f
+    override val opacity: Float = 1f,
+    override val lockMoving: Boolean = false,
 ) : ControllerWidget() {
     companion object : KoinComponent {
         private val textFactory: TextFactory by inject()
@@ -52,10 +53,15 @@ data class InventoryButton(
         context.InventoryButton()
     }
 
-    override fun cloneBase(align: Align, offset: IntOffset, opacity: Float) = copy(
+    override fun cloneBase(
+        align: Align,
+        offset: IntOffset,
+        opacity: Float,
+        lockMoving: Boolean
+    ) = copy(
         align = align,
         offset = offset,
-        opacity = opacity
+        opacity = opacity,
+        lockMoving = lockMoving,
     )
-
 }

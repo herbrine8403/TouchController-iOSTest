@@ -21,6 +21,7 @@ sealed class ControllerWidget {
     abstract val align: Align
     abstract val offset: IntOffset
     abstract val opacity: Float
+    abstract val lockMoving: Boolean
 
     interface Property<Config : ControllerWidget, Value> {
         @Composable
@@ -35,6 +36,13 @@ sealed class ControllerWidget {
         private val textFactory: TextFactory by inject()
 
         val baseProperties = persistentListOf<Property<ControllerWidget, *>>(
+            BooleanProperty(
+                getValue = { it.lockMoving },
+                setValue = { config, value ->
+                    config.cloneBase(lockMoving = value)
+                },
+                message = textFactory.of(Texts.SCREEN_OPTIONS_WIDGET_GENERAL_PROPERTY_LOCK_MOVING),
+            ),
             EnumProperty(
                 getValue = { it.align },
                 setValue = { config, value ->
@@ -80,5 +88,6 @@ sealed class ControllerWidget {
         align: Align = this.align,
         offset: IntOffset = this.offset,
         opacity: Float = this.opacity,
+        lockMoving: Boolean = this.lockMoving,
     ): ControllerWidget
 }
