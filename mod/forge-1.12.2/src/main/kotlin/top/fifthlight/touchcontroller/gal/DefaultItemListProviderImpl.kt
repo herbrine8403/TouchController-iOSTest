@@ -27,6 +27,7 @@ object DefaultItemListProviderImpl : DefaultItemListProvider {
             ItemImpl(Items.SPLASH_POTION),
             ItemImpl(Items.LINGERING_POTION),
             ItemImpl(Items.EXPERIENCE_BOTTLE),
+            ItemImpl(Items.MILK_BUCKET),
         ),
         subclasses = persistentSetOf(
             ItemFactoryImpl.armorSubclass,
@@ -42,6 +43,7 @@ object DefaultItemListProviderImpl : DefaultItemListProvider {
             ItemImpl(Items.SPLASH_POTION),
             ItemImpl(Items.LINGERING_POTION),
             ItemImpl(Items.EXPERIENCE_BOTTLE),
+            ItemImpl(Items.ENDER_EYE),
         ),
     )
 

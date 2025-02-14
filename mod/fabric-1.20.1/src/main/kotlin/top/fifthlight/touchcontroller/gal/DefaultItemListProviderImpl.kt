@@ -27,6 +27,7 @@ object DefaultItemListProviderImpl : DefaultItemListProvider {
             ItemImpl(Items.LINGERING_POTION),
             ItemImpl(Items.EXPERIENCE_BOTTLE),
             ItemImpl(Items.TRIDENT),
+            ItemImpl(Items.MILK_BUCKET),
         ),
         subclasses = persistentSetOf(
             ItemFactoryImpl.rangedWeaponSubclass,
@@ -41,10 +42,12 @@ object DefaultItemListProviderImpl : DefaultItemListProvider {
     override val showCrosshairItems = ItemList(
         whitelist = persistentListOf(
             ItemImpl(Items.EGG),
+            ItemImpl(Items.SNOWBALL),
             ItemImpl(Items.SPLASH_POTION),
             ItemImpl(Items.LINGERING_POTION),
             ItemImpl(Items.EXPERIENCE_BOTTLE),
             ItemImpl(Items.TRIDENT),
+            ItemImpl(Items.ENDER_PEARL),
         ),
         subclasses = persistentSetOf(
             ItemFactoryImpl.rangedWeaponSubclass,

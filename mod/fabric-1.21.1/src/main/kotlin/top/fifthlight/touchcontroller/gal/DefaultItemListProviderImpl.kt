@@ -22,6 +22,7 @@ object DefaultItemListProviderImpl : DefaultItemListProvider {
             ItemImpl(Items.ENDER_EYE),
             ItemImpl(Items.ENDER_PEARL),
             ItemImpl(Items.POTION),
+            ItemImpl(Items.MILK_BUCKET),
         ),
         blacklist = persistentListOf(
             ItemImpl(Items.ARROW),
@@ -42,6 +43,9 @@ object DefaultItemListProviderImpl : DefaultItemListProvider {
     )
 
     override val showCrosshairItems = ItemList(
+        whitelist = persistentListOf(
+            ItemImpl(Items.ENDER_PEARL),
+        ),
         blacklist = persistentListOf(
             ItemImpl(Items.FIREWORK_ROCKET),
             ItemImpl(Items.ARROW),
