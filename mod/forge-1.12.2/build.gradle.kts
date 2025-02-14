@@ -7,7 +7,3 @@ plugins {
     id("TouchController.modrinth-conventions")
     id("TouchController.about-libraries-conventions")
 }
-
-sourceSets.main {
-    kotlin.srcDir("../common-forge/src/main/kotlin")
-}
