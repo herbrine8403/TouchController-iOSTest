@@ -8,11 +8,17 @@ import top.fifthlight.combine.modifier.pointer.DragInteraction
 import top.fifthlight.combine.ui.style.NinePatchTextureSet
 import top.fifthlight.combine.ui.style.TextureSet
 
-internal enum class WidgetState {
-    NORMAL,
-    FOCUS,
-    HOVER,
-    ACTIVE,
+internal enum class WidgetState(val priority: Int) : Comparable<WidgetState> {
+    NORMAL(0),
+    FOCUS(1),
+    HOVER(2),
+    ACTIVE(3);
+
+    operator fun plus(other: WidgetState): WidgetState = if (other.priority > priority) {
+        other
+    } else {
+        this
+    }
 }
 
 internal fun TextureSet.getByState(state: WidgetState, disabled: Boolean = false) = if (disabled) {
@@ -37,37 +43,24 @@ internal fun NinePatchTextureSet.getByState(state: WidgetState, disabled: Boolea
     }
 }
 
-private enum class InteractionType(val priority: Int) {
-    Empty(0),
-    Focus(1),
-    Hover(2),
-    Active(3);
-
-    operator fun plus(other: InteractionType): InteractionType = if (other.priority > priority) {
-        other
-    } else {
-        this
-    }
-}
-
-private val ClickInteraction.type
+private val ClickInteraction.state
     get() = when (this) {
-        ClickInteraction.Empty -> InteractionType.Empty
-        ClickInteraction.Hover -> InteractionType.Hover
-        ClickInteraction.Active -> InteractionType.Active
+        ClickInteraction.Empty -> WidgetState.NORMAL
+        ClickInteraction.Hover -> WidgetState.HOVER
+        ClickInteraction.Active -> WidgetState.ACTIVE
     }
 
-private val DragInteraction.type
+private val DragInteraction.state
     get() = when (this) {
-        DragInteraction.Empty -> InteractionType.Empty
-        DragInteraction.Hover -> InteractionType.Hover
-        DragInteraction.Active -> InteractionType.Active
+        DragInteraction.Empty -> WidgetState.NORMAL
+        DragInteraction.Hover -> WidgetState.HOVER
+        DragInteraction.Active -> WidgetState.ACTIVE
     }
 
-private val FocusInteraction.type
+private val FocusInteraction.state
     get() = when (this) {
-        FocusInteraction.Blur -> InteractionType.Empty
-        FocusInteraction.Focus -> InteractionType.Focus
+        FocusInteraction.Blur -> WidgetState.NORMAL
+        FocusInteraction.Focus -> WidgetState.FOCUS
     }
 
 @Composable
@@ -87,15 +80,10 @@ internal fun widgetState(interactionSource: InteractionSource): State<WidgetStat
             if (it is FocusInteraction) {
                 lastFocusInteraction = it
             }
-            val clickType = lastClickInteraction.type
-            val dragType = lastDragInteraction.type
-            val focusType = lastFocusInteraction.type
-            state.value = when (clickType + dragType + focusType) {
-                InteractionType.Empty -> WidgetState.NORMAL
-                InteractionType.Focus -> WidgetState.FOCUS
-                InteractionType.Hover -> WidgetState.HOVER
-                InteractionType.Active -> WidgetState.ACTIVE
-            }
+            val clickState = lastClickInteraction.state
+            val dragState = lastDragInteraction.state
+            val focusState = lastFocusInteraction.state
+            state.value = clickState + dragState + focusState
         }
     }
     return state

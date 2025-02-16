@@ -8,28 +8,46 @@ import top.fifthlight.combine.input.input.LocalClipboard
 import top.fifthlight.combine.input.input.TextInputState
 import top.fifthlight.combine.input.key.Key
 import top.fifthlight.combine.modifier.Modifier
+import top.fifthlight.combine.modifier.drawing.border
 import top.fifthlight.combine.modifier.focus.FocusInteraction
 import top.fifthlight.combine.modifier.focus.focusable
 import top.fifthlight.combine.modifier.input.textInput
 import top.fifthlight.combine.modifier.key.onKeyEvent
 import top.fifthlight.combine.modifier.placement.minHeight
+import top.fifthlight.combine.modifier.pointer.clickable
+import top.fifthlight.combine.node.LocalTextMeasurer
 import top.fifthlight.combine.paint.Colors
+import top.fifthlight.combine.ui.style.NinePatchTextureSet
 import top.fifthlight.combine.widget.base.Canvas
 import top.fifthlight.data.IntOffset
 import top.fifthlight.data.IntSize
+import top.fifthlight.touchcontroller.assets.Textures
+
+val defaultEditTextTexture = NinePatchTextureSet(
+    normal = Textures.GUI_WIDGET_TEXTFIELD_TEXTFIELD,
+    focus = Textures.GUI_WIDGET_TEXTFIELD_TEXTFIELD_HOVER,
+    hover = Textures.GUI_WIDGET_TEXTFIELD_TEXTFIELD_HOVER,
+    active = Textures.GUI_WIDGET_TEXTFIELD_TEXTFIELD_ACTIVE,
+    disabled = Textures.GUI_WIDGET_TEXTFIELD_TEXTFIELD_DISABLED,
+)
+
+val LocalEditTextTextureSet = staticCompositionLocalOf<NinePatchTextureSet> { defaultEditTextTexture }
 
 @Composable
 fun EditText(
     modifier: Modifier = Modifier,
+    textureSet: NinePatchTextureSet = LocalEditTextTextureSet.current,
     value: String,
     onValueChanged: (String) -> Unit,
     placeholder: Text? = null,
 ) {
     val clipboard = LocalClipboard.current
+    val textMeasurer = LocalTextMeasurer.current
+    var textInputState by remember { mutableStateOf(TextInputState(value)) }
+
     val interactionSource = remember { MutableInteractionSource() }
     var focused by remember { mutableStateOf(false) }
     var cursorShow by remember { mutableStateOf(false) }
-    var textInputState by remember { mutableStateOf(TextInputState(value)) }
     LaunchedEffect(interactionSource) {
         interactionSource.interactions.collect {
             when (it) {
@@ -60,9 +78,14 @@ fun EditText(
         onValueChanged(textInputState.text)
     }
 
+    val state by widgetState(interactionSource)
+    val texture = textureSet.getByState(state)
+
     Canvas(
         modifier = Modifier
-            .minHeight(20)
+            .minHeight(9)
+            .border(texture)
+            .clickable(interactionSource) {}
             .focusable(interactionSource)
             .textInput { updateInputState { commitText(it) } }
             .onKeyEvent { event ->
@@ -116,16 +139,20 @@ fun EditText(
                 }
             }
             .then(modifier),
+        measurePolicy = { _, constraints ->
+            val textSize = textMeasurer.measure(value, constraints.maxHeight)
+            layout(
+                width = textSize.width.coerceIn(constraints.minWidth, constraints.maxWidth),
+                height = textSize.height.coerceIn(constraints.minHeight, constraints.maxHeight),
+            ) {}
+        }
     ) { node ->
         with(canvas) {
-            fillRect(offset = IntOffset.ZERO, size = node.size, color = Colors.WHITE)
-            fillRect(offset = IntOffset(1, 1), size = node.size - 2, color = Colors.BLACK)
-            val textOffset = IntOffset(6, node.height / 2 - 4)
-            val textWidth = node.width - 8
+            val textWidth = node.width
             if (value.isEmpty() && !focused) {
                 if (placeholder != null) {
                     drawText(
-                        offset = textOffset,
+                        offset = IntOffset.ZERO,
                         width = textWidth,
                         text = placeholder,
                         color = Colors.LIGHT_GRAY
@@ -136,7 +163,7 @@ fun EditText(
                 var textCursor = 0
                 val beforeSelectionText = textInputState.text.substring(0, textInputState.selection.start)
                 drawText(
-                    offset = textOffset,
+                    offset = IntOffset.ZERO,
                     text = beforeSelectionText,
                     color = Colors.WHITE
                 )
@@ -144,7 +171,7 @@ fun EditText(
 
                 val selectionText = textInputState.selectionText
                 val selectionWidth = canvas.textMeasurer.measure(selectionText).width
-                val selectionOffset = textOffset + IntOffset(textCursor, 0)
+                val selectionOffset = IntOffset(textCursor, 0)
                 fillRect(
                     offset = selectionOffset,
                     size = IntSize(selectionWidth, 9),
@@ -158,7 +185,7 @@ fun EditText(
 
                 if (cursorShow && textInputState.selectionLeft) {
                     fillRect(
-                        offset = textOffset + IntOffset(textCursor, 0),
+                        offset = IntOffset(textCursor, 0),
                         size = IntSize(1, 9),
                         color = Colors.WHITE,
                     )
@@ -168,7 +195,7 @@ fun EditText(
 
                 if (cursorShow && !textInputState.selectionLeft) {
                     fillRect(
-                        offset = textOffset + IntOffset(textCursor, 0),
+                        offset = IntOffset(textCursor, 0),
                         size = IntSize(1, 9),
                         color = Colors.WHITE,
                     )
@@ -176,7 +203,7 @@ fun EditText(
 
                 val afterSelectionText = textInputState.text.substring(textInputState.selection.end)
                 drawText(
-                    offset = textOffset + IntOffset(textCursor, 0),
+                    offset = IntOffset(textCursor, 0),
                     text = afterSelectionText,
                     color = Colors.WHITE
                 )
