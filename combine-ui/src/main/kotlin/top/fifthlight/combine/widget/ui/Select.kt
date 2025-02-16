@@ -2,21 +2,20 @@ package top.fifthlight.combine.widget.ui
 
 import androidx.compose.runtime.*
 import top.fifthlight.combine.data.LocalTextFactory
+import top.fifthlight.combine.data.NinePatchTexture
 import top.fifthlight.combine.data.Text
+import top.fifthlight.combine.input.MutableInteractionSource
 import top.fifthlight.combine.layout.Layout
 import top.fifthlight.combine.modifier.Constraints
 import top.fifthlight.combine.modifier.Modifier
 import top.fifthlight.combine.modifier.drawing.border
-import top.fifthlight.combine.modifier.drawing.rotate
+import top.fifthlight.combine.modifier.focus.focusable
 import top.fifthlight.combine.modifier.placement.*
 import top.fifthlight.combine.modifier.pointer.clickable
 import top.fifthlight.combine.modifier.pointer.consumePress
 import top.fifthlight.combine.node.LocalTextMeasurer
 import top.fifthlight.combine.paint.Colors
-import top.fifthlight.combine.ui.style.ColorTheme
-import top.fifthlight.combine.ui.style.LocalColorTheme
-import top.fifthlight.combine.ui.style.LocalTextStyle
-import top.fifthlight.combine.ui.style.TextStyle
+import top.fifthlight.combine.ui.style.*
 import top.fifthlight.combine.widget.base.Popup
 import top.fifthlight.combine.widget.base.layout.Box
 import top.fifthlight.combine.widget.base.layout.Row
@@ -26,17 +25,58 @@ import top.fifthlight.data.IntSize
 import top.fifthlight.touchcontroller.assets.Textures
 import kotlin.math.max
 
+data class SelectTextureSet(
+    val menuBox: NinePatchTextureSet,
+    val floatPanel: NinePatchTexture,
+    val itemUnselected: NinePatchTextureSet,
+    val itemSelected: NinePatchTextureSet,
+)
+
+val defaultSelectTextureSet = SelectTextureSet(
+    menuBox = NinePatchTextureSet(
+        normal = Textures.GUI_WIDGET_SELECT_SELECT,
+        focus = Textures.GUI_WIDGET_SELECT_SELECT_HOVER,
+        hover = Textures.GUI_WIDGET_SELECT_SELECT_HOVER,
+        active = Textures.GUI_WIDGET_SELECT_SELECT_ACTIVE,
+        disabled = Textures.GUI_WIDGET_SELECT_SELECT_DISABLED,
+    ),
+    floatPanel = Textures.GUI_WIDGET_SELECT_FLOAT_WINDOW,
+    itemUnselected = NinePatchTextureSet(
+        normal = Textures.GUI_WIDGET_LIST_LIST,
+        focus = Textures.GUI_WIDGET_LIST_LIST_HOVER,
+        hover = Textures.GUI_WIDGET_LIST_LIST_HOVER,
+        active = Textures.GUI_WIDGET_LIST_LIST_ACTIVE,
+        disabled = Textures.GUI_WIDGET_LIST_LIST_DISABLED,
+    ),
+    itemSelected = NinePatchTextureSet(
+        normal = Textures.GUI_WIDGET_LIST_LIST_PRESSLOCK,
+        focus = Textures.GUI_WIDGET_LIST_LIST_PRESSLOCK_HOVER,
+        hover = Textures.GUI_WIDGET_LIST_LIST_PRESSLOCK_HOVER,
+        active = Textures.GUI_WIDGET_LIST_LIST_ACTIVE,
+        disabled = Textures.GUI_WIDGET_LIST_LIST_DISABLED,
+    )
+)
+
+val LocalSelectTextureSet = staticCompositionLocalOf<SelectTextureSet> { defaultSelectTextureSet }
+
 @Composable
-fun DropdownMenuIcon(expanded: Boolean) {
-    Text(
-        text = "▶",
-        modifier = Modifier.rotate(if (expanded) -90f else 90f)
+fun SelectIcon(
+    modifier: Modifier = Modifier,
+    expanded: Boolean
+) {
+    Icon(
+        modifier = modifier,
+        texture = if (expanded) {
+            Textures.GUI_ICON_UP
+        } else {
+            Textures.GUI_ICON_DOWN
+        }
     )
 }
 
 @JvmName("DropdownMenuListString")
 @Composable
-fun <T> DropdownMenuBoxScope.DropdownMenuList(
+fun <T> SelectScope.SelectItemList(
     modifier: Modifier = Modifier,
     items: List<T>,
     stringProvider: (T) -> String,
@@ -44,7 +84,7 @@ fun <T> DropdownMenuBoxScope.DropdownMenuList(
     onItemSelected: (Int) -> Unit = {},
 ) {
     val textFactory = LocalTextFactory.current
-    DropdownMenuList(
+    SelectItemList(
         modifier = modifier,
         items = items,
         textProvider = { textFactory.literal(stringProvider(it)) },
@@ -54,23 +94,21 @@ fun <T> DropdownMenuBoxScope.DropdownMenuList(
 }
 
 @Composable
-fun <T> DropdownMenuBoxScope.DropdownMenuList(
+fun <T> SelectScope.SelectItemList(
     modifier: Modifier = Modifier,
+    textureSet: SelectTextureSet = LocalSelectTextureSet.current,
     items: List<T>,
     textProvider: (T) -> Text,
     selectedIndex: Int = -1,
     onItemSelected: (Int) -> Unit = {},
 ) {
-    val windowTexture = Textures.GUI_WIDGET_SELECT_FLOAT_WINDOW
-    val itemTexture = Textures.GUI_WIDGET_SELECT_LIST_GRAY
-    val itemTextureSelected = Textures.GUI_WIDGET_SELECT_LIST_LIGHT
-    val itemTextureWidth = itemTexture.padding.width
-    val itemTextureHeight = itemTexture.padding.height
+    val itemTextureWidth = textureSet.itemUnselected.normal.padding.width
+    val itemTextureHeight = textureSet.itemUnselected.normal.padding.height
     val textMeasurer = LocalTextMeasurer.current
     Layout(
         modifier = modifier,
         measurePolicy = { measurables, constraints ->
-            var itemWidth = anchor.size.width - windowTexture.padding.width
+            var itemWidth = anchor.size.width - textureSet.floatPanel.padding.width
             var itemHeight = 0
             var itemHeights = IntArray(measurables.size)
             for ((index, item) in items.withIndex()) {
@@ -106,16 +144,18 @@ fun <T> DropdownMenuBoxScope.DropdownMenuList(
     ) {
         for ((index, item) in items.withIndex()) {
             val text = textProvider(item)
+            val interactionSource = remember { MutableInteractionSource() }
+            val state by widgetState(interactionSource)
+            val texture = if (index == selectedIndex) {
+                textureSet.itemSelected
+            } else {
+                textureSet.itemUnselected
+            }.getByState(state)
             Text(
                 modifier = Modifier
-                    .border(
-                        if (index == selectedIndex) {
-                            itemTextureSelected
-                        } else {
-                            itemTexture
-                        }
-                    )
-                    .clickable {
+                    .border(texture)
+                    .focusable(interactionSource)
+                    .clickable(interactionSource) {
                         onItemSelected(index)
                     },
                 color = if (index == selectedIndex) {
@@ -129,24 +169,29 @@ fun <T> DropdownMenuBoxScope.DropdownMenuList(
     }
 }
 
-interface DropdownMenuBoxScope {
+interface SelectScope {
     val anchor: IntRect
 }
 
-private fun DropdownMenuBoxScope(anchor: IntRect) = object : DropdownMenuBoxScope {
+private fun SelectScope(anchor: IntRect) = object : SelectScope {
     override val anchor: IntRect = anchor
 }
 
 @Composable
-fun DropdownMenuBox(
+fun Select(
     modifier: Modifier = Modifier,
+    textureSet: SelectTextureSet = LocalSelectTextureSet.current,
     colorTheme: ColorTheme? = null,
     textStyle: TextStyle? = null,
     expanded: Boolean = false,
     onExpandedChanged: (Boolean) -> Unit,
-    dropDownContent: @Composable DropdownMenuBoxScope.() -> Unit,
+    dropDownContent: @Composable SelectScope.() -> Unit,
     content: @Composable RowScope.() -> Unit,
 ) {
+    val interactionSource = remember { MutableInteractionSource() }
+    val state by widgetState(interactionSource)
+    val menuTexture = textureSet.menuBox.getByState(state)
+
     var anchor by remember { mutableStateOf<IntRect?>(null) }
     val colorTheme = colorTheme ?: ColorTheme.light
     val textStyle = textStyle ?: LocalTextStyle.current.copy(
@@ -164,11 +209,12 @@ fun DropdownMenuBox(
 
     Row(
         modifier = Modifier
-            .border(Textures.GUI_WIDGET_SELECT_SELECT)
+            .border(menuTexture)
             .anchor {
                 anchor = it
             }
-            .clickable {
+            .focusable(interactionSource)
+            .clickable(interactionSource) {
                 onExpandedChanged(!expanded)
             }
             .then(modifier),
@@ -180,7 +226,7 @@ fun DropdownMenuBox(
 
     val currentAnchor = anchor
     if (expanded && currentAnchor != null) {
-        val scope = DropdownMenuBoxScope(currentAnchor)
+        val scope = SelectScope(currentAnchor)
         Popup(
             onDismissRequest = {
                 onExpandedChanged(false)

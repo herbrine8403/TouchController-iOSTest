@@ -6,9 +6,9 @@ import kotlinx.collections.immutable.persistentListOf
 import top.fifthlight.combine.data.Text
 import top.fifthlight.combine.modifier.Modifier
 import top.fifthlight.combine.modifier.scroll.verticalScroll
-import top.fifthlight.combine.widget.ui.DropdownMenuBox
-import top.fifthlight.combine.widget.ui.DropdownMenuIcon
-import top.fifthlight.combine.widget.ui.DropdownMenuList
+import top.fifthlight.combine.widget.ui.Select
+import top.fifthlight.combine.widget.ui.SelectIcon
+import top.fifthlight.combine.widget.ui.SelectItemList
 import top.fifthlight.combine.widget.ui.Text
 import top.fifthlight.touchcontroller.assets.Texts
 import top.fifthlight.touchcontroller.config.LayoutLayer
@@ -22,12 +22,12 @@ fun LayerDropdown(
     onLayerSelected: (Int, LayoutLayer) -> Unit = { _, _ -> },
 ) {
     var expanded by remember { mutableStateOf(false) }
-    DropdownMenuBox(
+    Select(
         modifier = modifier,
         expanded = expanded,
         onExpandedChanged = { expanded = it },
         dropDownContent = {
-            DropdownMenuList(
+            SelectItemList(
                 modifier = Modifier.verticalScroll(),
                 items = allLayers,
                 stringProvider = LayoutLayer::name,
@@ -44,6 +44,6 @@ fun LayerDropdown(
         } else {
             Text(text = currentLayer.name)
         }
-        DropdownMenuIcon(expanded)
+        SelectIcon(expanded = expanded)
     }
 }

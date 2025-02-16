@@ -61,14 +61,14 @@ class EnumProperty<Config : ControllerWidget, T>(
             Text(name)
 
             var expanded by remember { mutableStateOf(false) }
-            DropdownMenuBox(
+            Select(
                 modifier = Modifier.fillMaxWidth(),
                 expanded = expanded,
                 onExpandedChanged = { expanded = it },
                 dropDownContent = {
                     val value = getValue(widgetConfig)
                     val selectedIndex = items.indexOfFirst { it.first == value }
-                    DropdownMenuList(
+                    SelectItemList(
                         modifier = Modifier.verticalScroll(),
                         items = items,
                         textProvider = Pair<T, Text>::second,
@@ -83,7 +83,7 @@ class EnumProperty<Config : ControllerWidget, T>(
             ) {
                 Text(getItemText(getValue(widgetConfig)))
                 Spacer(modifier = Modifier.weight(1f))
-                DropdownMenuIcon(expanded)
+                SelectIcon(expanded = expanded)
             }
         }
     }

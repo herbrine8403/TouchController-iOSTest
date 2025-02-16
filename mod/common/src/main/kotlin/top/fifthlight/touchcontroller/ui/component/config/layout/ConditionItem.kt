@@ -10,9 +10,9 @@ import top.fifthlight.combine.modifier.placement.width
 import top.fifthlight.combine.modifier.scroll.verticalScroll
 import top.fifthlight.combine.widget.base.layout.Row
 import top.fifthlight.combine.widget.base.layout.Spacer
-import top.fifthlight.combine.widget.ui.DropdownMenuBox
-import top.fifthlight.combine.widget.ui.DropdownMenuIcon
-import top.fifthlight.combine.widget.ui.DropdownMenuList
+import top.fifthlight.combine.widget.ui.Select
+import top.fifthlight.combine.widget.ui.SelectIcon
+import top.fifthlight.combine.widget.ui.SelectItemList
 import top.fifthlight.combine.widget.ui.Text
 import top.fifthlight.touchcontroller.assets.Texts
 import top.fifthlight.touchcontroller.config.LayerConditionKey
@@ -64,19 +64,20 @@ fun ConditionItem(
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
     ) {
+        modifier
         Text(Text.translatable(keyToText(key)))
 
         val valueText = valueToText(value)
         var expanded by remember { mutableStateOf(false) }
 
         val textFactory = LocalTextFactory.current
-        DropdownMenuBox(
+        Select(
             modifier = Modifier.width(96),
             expanded = expanded,
             onExpandedChanged = { expanded = it },
             dropDownContent = {
                 val selectedIndex = conditionValues.indexOf(value)
-                DropdownMenuList(
+                SelectItemList(
                     modifier = Modifier.verticalScroll(),
                     items = conditionValues,
                     textProvider = { textFactory.of(valueToText(it)) },
@@ -91,7 +92,7 @@ fun ConditionItem(
         ) {
             Text(Text.translatable(valueText))
             Spacer(modifier = Modifier.weight(1f))
-            DropdownMenuIcon(expanded)
+            SelectIcon(expanded = expanded)
         }
     }
 }
