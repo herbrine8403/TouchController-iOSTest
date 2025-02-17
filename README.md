@@ -1,5 +1,90 @@
 # TouchController
 
+A mod bringing controlling style of bedrock version to Java version. Currently in early development, report for bugs or
+other problems are welcome if you found!
+
+## Download and install
+
+You can download the latest release of TouchController mod
+on [Modrinth](https://modrinth.com/mod/touchcontroller#download), [Github Releases](https://github.com/fifth-light/TouchController/releases), [Gitee Releases](https://gitee.com/fifth_light/TouchController/releases)
+and [MC 百科](https://www.mcmod.cn/download/17432.html).
+
+On different mod loaders, TouchController needs dependency mod as below:
+
+- Fabric: [Fabric API](https://github.com/FabricMC/fabric)
+- Forge: None
+
+## Supported game version and platforms
+
+Below are game versions and mod loaders TouchController supports:
+
+- 1.12.2 (Forge)
+- 1.16.5 (Forge, Fabric)
+- 1.20.1 (Forge, Fabric)
+- 1.21.1 (Fabric)
+- 1.21.3 (Fabric)
+- 1.21.4 (Fabric)
+
+Support for more game versions and mod loaders is in developing currently.
+
+Below are platforms TouchController supports:
+
+- Windows (Minimum supported version is Windows 10, supports x86, x86_64 and ARM64 architecture)
+- [Fold Craft Launcher](https://github.com/FCL-Team/FoldCraftLauncher)
+- [Zalith Launcher](https://github.com/ZalithLauncher/ZalithLauncher)
+- [Pojav Glow·Worm](https://github.com/Vera-Firefly/Pojav-Glow-Worm)
+- [My fork of PojavLauncher](https://github.com/fifth-light/PojavLauncher)(No longer update)
+
+Support for touch screen for X11 and Wayland on Linux may be added in the future. iOS and macOS will not be supported
+because I don't have corresponding environment and devices, but pull requests for iOS and macOS supported will be
+accepted.
+
+## Features supported by now
+
+- Touch input of Minecraft Bedrock version style
+- Customizable controller layout
+- Ability to switch displaying buttons by conditions such as swimming and flying
+- Provide haptic feedback when breaking blocks (Only supported on Android platform currently)
+
+## Compile
+
+At first, Rust compiler is required, you can install it with [rustup](https://rustup.rs/).
+
+And then, you need to install Rust toolchains for targets below:
+
+- armv7-linux-androideabi
+- aarch64-linux-android
+- i686-linux-android
+- x86_64-linux-android
+- i686-pc-windows-gnullvm
+- x86_64-pc-windows-gnullvm
+- aarch64-pc-windows-gnullvm
+
+You can add these toolchain by `rustup target add <toolchain target>`.
+
+You also need install the Android SDK which is able to install in Android Studio, and create a file named
+`local.properties` in the project root directory with content below:
+
+```
+sdk.dir=<Android SDK directory>
+```
+
+By default Android Studio will do this for you. If you opened this project in Android Studio, there is no need for you
+to configure this file.
+
+You need to install the Android SDK, which is also able to install in Android Studio. After you installed the Android
+SDK, install the `cargo-ndk` tool by using `cargo install cargo-ndk`.
+
+You need to install LLVM MinGW toolchain which is avaliable
+at [mstorsjo/llvm-mingw](https://github.com/mstorsjo/llvm-mingw/releases), and add the `bin` directory into your PATH
+environment variable.
+
+Finally, you can run `./gradlew build` to compile, and built file can bu found in `mod/build/libs`.
+
+---
+
+# TouchController
+
 一个为 Minecraft Java 版添加触控支持的 Mod。目前处于早期开发中，如果遇到 Bug 或者其他问题，欢迎积极报告！
 
 ## 下载与安装
@@ -74,6 +159,8 @@ sdk.dir=<Android SDK 目录>
 bin 目录加入 PATH 环境变量即可。
 
 最后运行 `./gradlew build` 就可以编译了，编译好的 mod 文件在 `mod/build/libs` 下。
+
+---
 
 ## 添加新的启动器支持
 
