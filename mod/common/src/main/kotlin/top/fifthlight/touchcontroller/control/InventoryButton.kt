@@ -36,7 +36,7 @@ data class InventoryButton(
                 range = .5f..4f,
                 messageFormatter = {
                     textFactory.format(
-                        Texts.SCREEN_OPTIONS_WIDGET_CHAT_BUTTON_PROPERTY_SIZE,
+                        Texts.WIDGET_CHAT_BUTTON_PROPERTY_SIZE,
                         round(it * 100f).toString()
                     )
                 }

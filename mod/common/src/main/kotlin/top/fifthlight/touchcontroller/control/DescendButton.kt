@@ -49,7 +49,7 @@ data class DescendButton(
                 range = .5f..4f,
                 messageFormatter = {
                     textFactory.format(
-                        Texts.SCREEN_OPTIONS_WIDGET_DESCEND_BUTTON_PROPERTY_SIZE,
+                        Texts.WIDGET_DESCEND_BUTTON_PROPERTY_SIZE,
                         round(it * 100f).toString()
                     )
                 }
@@ -57,11 +57,11 @@ data class DescendButton(
             EnumProperty(
                 getValue = { it.texture },
                 setValue = { config, value -> config.copy(texture = value) },
-                name = textFactory.of(Texts.SCREEN_OPTIONS_WIDGET_DESCEND_BUTTON_PROPERTY_STYLE),
+                name = textFactory.of(Texts.WIDGET_DESCEND_BUTTON_PROPERTY_STYLE),
                 items = persistentListOf(
-                    DescendButtonTexture.CLASSIC to textFactory.of(Texts.SCREEN_OPTIONS_WIDGET_DESCEND_BUTTON_PROPERTY_STYLE_CLASSIC),
-                    DescendButtonTexture.SWIMMING to textFactory.of(Texts.SCREEN_OPTIONS_WIDGET_DESCEND_BUTTON_PROPERTY_STYLE_SWIMMING),
-                    DescendButtonTexture.FLYING to textFactory.of(Texts.SCREEN_OPTIONS_WIDGET_DESCEND_BUTTON_PROPERTY_STYLE_FLYING),
+                    DescendButtonTexture.CLASSIC to textFactory.of(Texts.WIDGET_DESCEND_BUTTON_PROPERTY_STYLE_CLASSIC),
+                    DescendButtonTexture.SWIMMING to textFactory.of(Texts.WIDGET_DESCEND_BUTTON_PROPERTY_STYLE_SWIMMING),
+                    DescendButtonTexture.FLYING to textFactory.of(Texts.WIDGET_DESCEND_BUTTON_PROPERTY_STYLE_FLYING),
                 )
             )
         ) as PersistentList<Property<ControllerWidget, *>>

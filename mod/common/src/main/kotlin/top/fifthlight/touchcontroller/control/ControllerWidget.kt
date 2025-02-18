@@ -41,7 +41,7 @@ sealed class ControllerWidget {
                 setValue = { config, value ->
                     config.cloneBase(lockMoving = value)
                 },
-                message = textFactory.of(Texts.SCREEN_OPTIONS_WIDGET_GENERAL_PROPERTY_LOCK_MOVING),
+                message = textFactory.of(Texts.WIDGET_GENERAL_PROPERTY_LOCK_MOVING),
             ),
             EnumProperty(
                 getValue = { it.align },
@@ -51,17 +51,17 @@ sealed class ControllerWidget {
                         offset = IntOffset.ZERO,
                     )
                 },
-                name = textFactory.of(Texts.SCREEN_OPTIONS_WIDGET_GENERAL_PROPERTY_ANCHOR_NAME),
+                name = textFactory.of(Texts.WIDGET_GENERAL_PROPERTY_ANCHOR_NAME),
                 items = listOf(
-                    Align.LEFT_TOP to textFactory.of(Texts.SCREEN_OPTIONS_WIDGET_GENERAL_PROPERTY_ANCHOR_TOP_LEFT),
-                    Align.LEFT_CENTER to textFactory.of(Texts.SCREEN_OPTIONS_WIDGET_GENERAL_PROPERTY_ANCHOR_CENTER_LEFT),
-                    Align.LEFT_BOTTOM to textFactory.of(Texts.SCREEN_OPTIONS_WIDGET_GENERAL_PROPERTY_ANCHOR_BOTTOM_LEFT),
-                    Align.CENTER_TOP to textFactory.of(Texts.SCREEN_OPTIONS_WIDGET_GENERAL_PROPERTY_ANCHOR_TOP_CENTER),
-                    Align.CENTER_CENTER to textFactory.of(Texts.SCREEN_OPTIONS_WIDGET_GENERAL_PROPERTY_ANCHOR_CENTER_CENTER),
-                    Align.CENTER_BOTTOM to textFactory.of(Texts.SCREEN_OPTIONS_WIDGET_GENERAL_PROPERTY_ANCHOR_BOTTOM_CENTER),
-                    Align.RIGHT_TOP to textFactory.of(Texts.SCREEN_OPTIONS_WIDGET_GENERAL_PROPERTY_ANCHOR_TOP_RIGHT),
-                    Align.RIGHT_CENTER to textFactory.of(Texts.SCREEN_OPTIONS_WIDGET_GENERAL_PROPERTY_ANCHOR_CENTER_RIGHT),
-                    Align.RIGHT_BOTTOM to textFactory.of(Texts.SCREEN_OPTIONS_WIDGET_GENERAL_PROPERTY_ANCHOR_BOTTOM_RIGHT),
+                    Align.LEFT_TOP to textFactory.of(Texts.WIDGET_GENERAL_PROPERTY_ANCHOR_TOP_LEFT),
+                    Align.LEFT_CENTER to textFactory.of(Texts.WIDGET_GENERAL_PROPERTY_ANCHOR_CENTER_LEFT),
+                    Align.LEFT_BOTTOM to textFactory.of(Texts.WIDGET_GENERAL_PROPERTY_ANCHOR_BOTTOM_LEFT),
+                    Align.CENTER_TOP to textFactory.of(Texts.WIDGET_GENERAL_PROPERTY_ANCHOR_TOP_CENTER),
+                    Align.CENTER_CENTER to textFactory.of(Texts.WIDGET_GENERAL_PROPERTY_ANCHOR_CENTER_CENTER),
+                    Align.CENTER_BOTTOM to textFactory.of(Texts.WIDGET_GENERAL_PROPERTY_ANCHOR_BOTTOM_CENTER),
+                    Align.RIGHT_TOP to textFactory.of(Texts.WIDGET_GENERAL_PROPERTY_ANCHOR_TOP_RIGHT),
+                    Align.RIGHT_CENTER to textFactory.of(Texts.WIDGET_GENERAL_PROPERTY_ANCHOR_CENTER_RIGHT),
+                    Align.RIGHT_BOTTOM to textFactory.of(Texts.WIDGET_GENERAL_PROPERTY_ANCHOR_BOTTOM_RIGHT),
                 ),
             ),
             FloatProperty(
@@ -69,7 +69,7 @@ sealed class ControllerWidget {
                 setValue = { config, value -> config.cloneBase(opacity = value) },
                 messageFormatter = { opacity ->
                     textFactory.format(
-                        Texts.SCREEN_OPTIONS_WIDGET_GENERAL_PROPERTY_OPACITY,
+                        Texts.WIDGET_GENERAL_PROPERTY_OPACITY,
                         round(opacity * 100f).toInt().toString()
                     )
                 }

@@ -67,17 +67,17 @@ data class DPad(
             EnumProperty(
                 getValue = { it.extraButton },
                 setValue = { config, value -> config.copy(extraButton = value) },
-                name = textFactory.of(Texts.SCREEN_OPTIONS_WIDGET_DPAD_PROPERTY_EXTRA_BUTTON_FUNCTION_NAME),
+                name = textFactory.of(Texts.WIDGET_DPAD_PROPERTY_EXTRA_BUTTON_FUNCTION_NAME),
                 items = listOf(
-                    DPadExtraButton.NONE to textFactory.of(Texts.SCREEN_OPTIONS_WIDGET_DPAD_PROPERTY_EXTRA_BUTTON_FUNCTION_NONE),
-                    DPadExtraButton.SNEAK_DOUBLE_CLICK to textFactory.of(Texts.SCREEN_OPTIONS_WIDGET_DPAD_PROPERTY_EXTRA_BUTTON_FUNCTION_SNEAK_DOUBLE_CLICK),
-                    DPadExtraButton.SNEAK_SINGLE_CLICK to textFactory.of(Texts.SCREEN_OPTIONS_WIDGET_DPAD_PROPERTY_EXTRA_BUTTON_FUNCTION_SNEAK_SINGLE_CLICK),
-                    DPadExtraButton.SNEAK_HOLD to textFactory.of(Texts.SCREEN_OPTIONS_WIDGET_DPAD_PROPERTY_EXTRA_BUTTON_FUNCTION_SNEAK_HOLD),
-                    DPadExtraButton.DISMOUNT_SINGLE_CLICK to textFactory.of(Texts.SCREEN_OPTIONS_WIDGET_DPAD_PROPERTY_EXTRA_BUTTON_FUNCTION_DISMOUNT_DOUBLE_CLICK),
-                    DPadExtraButton.DISMOUNT_DOUBLE_CLICK to textFactory.of(Texts.SCREEN_OPTIONS_WIDGET_DPAD_PROPERTY_EXTRA_BUTTON_FUNCTION_DISMOUNT_SINGLE_CLICK),
-                    DPadExtraButton.JUMP to textFactory.of(Texts.SCREEN_OPTIONS_WIDGET_DPAD_PROPERTY_EXTRA_BUTTON_FUNCTION_JUMP),
-                    DPadExtraButton.JUMP_WITHOUT_LOCKING to textFactory.of(Texts.SCREEN_OPTIONS_WIDGET_DPAD_PROPERTY_EXTRA_BUTTON_FUNCTION_JUMP_WITHOUT_LOCKING),
-                    DPadExtraButton.FLYING to textFactory.of(Texts.SCREEN_OPTIONS_WIDGET_DPAD_PROPERTY_EXTRA_BUTTON_FUNCTION_FLYING),
+                    DPadExtraButton.NONE to textFactory.of(Texts.WIDGET_DPAD_PROPERTY_EXTRA_BUTTON_FUNCTION_NONE),
+                    DPadExtraButton.SNEAK_DOUBLE_CLICK to textFactory.of(Texts.WIDGET_DPAD_PROPERTY_EXTRA_BUTTON_FUNCTION_SNEAK_DOUBLE_CLICK),
+                    DPadExtraButton.SNEAK_SINGLE_CLICK to textFactory.of(Texts.WIDGET_DPAD_PROPERTY_EXTRA_BUTTON_FUNCTION_SNEAK_SINGLE_CLICK),
+                    DPadExtraButton.SNEAK_HOLD to textFactory.of(Texts.WIDGET_DPAD_PROPERTY_EXTRA_BUTTON_FUNCTION_SNEAK_HOLD),
+                    DPadExtraButton.DISMOUNT_SINGLE_CLICK to textFactory.of(Texts.WIDGET_DPAD_PROPERTY_EXTRA_BUTTON_FUNCTION_DISMOUNT_DOUBLE_CLICK),
+                    DPadExtraButton.DISMOUNT_DOUBLE_CLICK to textFactory.of(Texts.WIDGET_DPAD_PROPERTY_EXTRA_BUTTON_FUNCTION_DISMOUNT_SINGLE_CLICK),
+                    DPadExtraButton.JUMP to textFactory.of(Texts.WIDGET_DPAD_PROPERTY_EXTRA_BUTTON_FUNCTION_JUMP),
+                    DPadExtraButton.JUMP_WITHOUT_LOCKING to textFactory.of(Texts.WIDGET_DPAD_PROPERTY_EXTRA_BUTTON_FUNCTION_JUMP_WITHOUT_LOCKING),
+                    DPadExtraButton.FLYING to textFactory.of(Texts.WIDGET_DPAD_PROPERTY_EXTRA_BUTTON_FUNCTION_FLYING),
                 ),
             ),
             FloatProperty(
@@ -86,7 +86,7 @@ data class DPad(
                 range = .5f..4f,
                 messageFormatter = {
                     textFactory.format(
-                        Texts.SCREEN_OPTIONS_WIDGET_DPAD_PROPERTY_SIZE,
+                        Texts.WIDGET_DPAD_PROPERTY_SIZE,
                         round(it * 100f).toString()
                     )
                 },
@@ -95,7 +95,7 @@ data class DPad(
                 getValue = { it.padding },
                 setValue = { config, value -> config.copy(padding = value) },
                 range = -1..16,
-                messageFormatter = { textFactory.format(Texts.SCREEN_OPTIONS_WIDGET_DPAD_PROPERTY_PADDING, it) }
+                messageFormatter = { textFactory.format(Texts.WIDGET_DPAD_PROPERTY_PADDING, it) }
             ),
             IntProperty(
                 getValue = { it.extraButtonSize },
@@ -103,7 +103,7 @@ data class DPad(
                 range = 12..22,
                 messageFormatter = {
                     textFactory.format(
-                        Texts.SCREEN_OPTIONS_WIDGET_DPAD_PROPERTY_EXTRA_BUTTON_SIZE,
+                        Texts.WIDGET_DPAD_PROPERTY_EXTRA_BUTTON_SIZE,
                         it
                     )
                 }
@@ -111,7 +111,7 @@ data class DPad(
             BooleanProperty(
                 getValue = { it.classic },
                 setValue = { config, value -> config.copy(classic = value) },
-                message = textFactory.of(Texts.SCREEN_OPTIONS_WIDGET_DPAD_PROPERTY_CLASSIC),
+                message = textFactory.of(Texts.WIDGET_DPAD_PROPERTY_CLASSIC),
             )
         ) as PersistentList<Property<ControllerWidget, *>>
     }

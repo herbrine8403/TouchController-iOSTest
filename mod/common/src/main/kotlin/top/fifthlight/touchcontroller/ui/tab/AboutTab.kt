@@ -16,16 +16,18 @@ import top.fifthlight.combine.modifier.placement.height
 import top.fifthlight.combine.modifier.placement.padding
 import top.fifthlight.combine.modifier.scroll.verticalScroll
 import top.fifthlight.combine.paint.Colors
-import top.fifthlight.combine.util.LocalCloseHandler
 import top.fifthlight.combine.widget.base.layout.Column
 import top.fifthlight.combine.widget.base.layout.Row
-import top.fifthlight.combine.widget.ui.*
+import top.fifthlight.combine.widget.ui.Icon
+import top.fifthlight.combine.widget.ui.Link
+import top.fifthlight.combine.widget.ui.Text
 import top.fifthlight.data.IntSize
 import top.fifthlight.touchcontroller.BuildInfo
 import top.fifthlight.touchcontroller.about.License
 import top.fifthlight.touchcontroller.assets.Texts
 import top.fifthlight.touchcontroller.assets.Textures
 import top.fifthlight.touchcontroller.ui.component.AppBar
+import top.fifthlight.touchcontroller.ui.component.BackButton
 import top.fifthlight.touchcontroller.ui.component.Scaffold
 import top.fifthlight.touchcontroller.ui.component.SideTabBar
 import top.fifthlight.touchcontroller.ui.model.AboutScreenModel
@@ -33,14 +35,13 @@ import top.fifthlight.touchcontroller.ui.screen.LicenseScreen
 
 object AboutTab : Tab() {
     override val options = TabOptions(
-        titleId = Texts.SCREEN_OPTIONS_CATEGORY_ABOUT_TITLE,
+        titleId = Texts.SCREEN_CONFIG_ABOUT_TITLE,
         group = null,
         index = 0,
     )
 
     @Composable
     override fun Content() {
-        val closeHandler = LocalCloseHandler.current
         val navigator = LocalNavigator.current
         val screenModel = koinScreenModel<AboutScreenModel>()
         val aboutInfo by screenModel.aboutInfo.collectAsState()
@@ -49,20 +50,14 @@ object AboutTab : Tab() {
                 AppBar(
                     modifier = Modifier.fillMaxWidth(),
                     leading = {
-                        TextButton(
-                            onClick = { closeHandler.close() }
-                        ) {
-                            Text("< Back")
-                        }
+                        BackButton(
+                            screenName = Text.translatable(Texts.SCREEN_CONFIG_TITLE),
+                            close = true
+                        )
                     },
                     title = {
-                        Text(Text.translatable(Texts.SCREEN_OPTIONS_CATEGORY_ABOUT_TITLE))
+                        Text(Text.translatable(Texts.SCREEN_CONFIG_ABOUT_TITLE))
                     },
-                    trailing = {
-                        Button(onClick = {}) {
-                            Text("Trailing")
-                        }
-                    }
                 )
             },
             sideBar = {
@@ -104,15 +99,15 @@ object AboutTab : Tab() {
 
                 Column {
                     Row {
-                        Text(Text.translatable(Texts.SCREEN_OPTIONS_CATEGORY_ABOUT_AUTHORS_TITLE))
+                        Text(Text.translatable(Texts.SCREEN_CONFIG_ABOUT_AUTHORS_TITLE))
                         Text(BuildInfo.MOD_AUTHORS)
                     }
                     Row {
-                        Text(Text.translatable(Texts.SCREEN_OPTIONS_CATEGORY_ABOUT_CONTRIBUTORS_TITLE))
+                        Text(Text.translatable(Texts.SCREEN_CONFIG_ABOUT_CONTRIBUTORS_TITLE))
                         Text(BuildInfo.MOD_CONTRIBUTORS)
                     }
                     Row {
-                        Text(Text.translatable(Texts.SCREEN_OPTIONS_CATEGORY_ABOUT_LICENSE_TITLE))
+                        Text(Text.translatable(Texts.SCREEN_CONFIG_ABOUT_LICENSE_TITLE))
                         aboutInfo?.modLicense?.let { modLicense ->
                             val license = License(
                                 name = BuildInfo.MOD_LICENSE,
@@ -151,7 +146,10 @@ object AboutTab : Tab() {
                                     library.artifactVersion?.let { version ->
                                         Text(version, color = Colors.ALTERNATE_WHITE)
                                     } ?: run {
-                                        Text("Unknown version", color = Colors.ALTERNATE_WHITE)
+                                        Text(
+                                            text = Text.translatable(Texts.SCREEN_CONFIG_ABOUT_UNKNOWN_VERSION),
+                                            color = Colors.ALTERNATE_WHITE
+                                        )
                                     }
                                 }
                                 Text(library.uniqueId, color = Colors.ALTERNATE_WHITE)
@@ -182,7 +180,7 @@ object AboutTab : Tab() {
                         }
                     }
                 } ?: run {
-                    Text("Loading")
+                    Text(Text.translatable(Texts.SCREEN_CONFIG_ABOUT_LOADING))
                 }
             }
         }

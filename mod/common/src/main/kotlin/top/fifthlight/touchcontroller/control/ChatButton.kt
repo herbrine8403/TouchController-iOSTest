@@ -37,7 +37,7 @@ data class ChatButton(
                 range = .5f..4f,
                 messageFormatter = {
                     textFactory.format(
-                        Texts.SCREEN_OPTIONS_WIDGET_CHAT_BUTTON_PROPERTY_SIZE,
+                        Texts.WIDGET_CHAT_BUTTON_PROPERTY_SIZE,
                         round(it * 100f).toString()
                     )
                 }
@@ -45,7 +45,7 @@ data class ChatButton(
             BooleanProperty(
                 getValue = { it.classic },
                 setValue = { config, value -> config.copy(classic = value) },
-                message = textFactory.of(Texts.SCREEN_OPTIONS_WIDGET_CHAT_BUTTON_PROPERTY_CLASSIC),
+                message = textFactory.of(Texts.WIDGET_CHAT_BUTTON_PROPERTY_CLASSIC),
             )
         ) as PersistentList<Property<ControllerWidget, *>>
     }

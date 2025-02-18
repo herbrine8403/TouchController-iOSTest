@@ -39,7 +39,7 @@ data class Joystick(
                 range = .5f..4f,
                 messageFormatter = {
                     textFactory.format(
-                        Texts.SCREEN_OPTIONS_WIDGET_JOYSTICK_PROPERTY_SIZE,
+                        Texts.WIDGET_JOYSTICK_PROPERTY_SIZE,
                         round(it * 100f).toString()
                     )
                 },
@@ -50,7 +50,7 @@ data class Joystick(
                 range = .5f..4f,
                 messageFormatter = {
                     textFactory.format(
-                        Texts.SCREEN_OPTIONS_WIDGET_JOYSTICK_PROPERTY_STICK_SIZE,
+                        Texts.WIDGET_JOYSTICK_PROPERTY_STICK_SIZE,
                         round(it * 100f).toString()
                     )
                 },
@@ -58,12 +58,12 @@ data class Joystick(
             BooleanProperty(
                 getValue = { it.triggerSprint },
                 setValue = { config, value -> config.copy(triggerSprint = value) },
-                message = textFactory.of(Texts.SCREEN_OPTIONS_WIDGET_JOYSTICK_PROPERTY_TRIGGER_SPRINT),
+                message = textFactory.of(Texts.WIDGET_JOYSTICK_PROPERTY_TRIGGER_SPRINT),
             ),
             BooleanProperty(
                 getValue = { it.increaseOpacityWhenActive },
                 setValue = { config, value -> config.copy(increaseOpacityWhenActive = value) },
-                message = textFactory.of(Texts.SCREEN_OPTIONS_WIDGET_JOYSTICK_PROPERTY_INCREASE_OPACITY_WHEN_ACTIVE),
+                message = textFactory.of(Texts.WIDGET_JOYSTICK_PROPERTY_INCREASE_OPACITY_WHEN_ACTIVE),
             )
         ) as PersistentList<Property<ControllerWidget, *>>
     }

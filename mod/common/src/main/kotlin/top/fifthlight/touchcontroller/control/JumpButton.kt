@@ -52,7 +52,7 @@ data class JumpButton(
                 range = .5f..4f,
                 messageFormatter = {
                     textFactory.format(
-                        Texts.SCREEN_OPTIONS_WIDGET_JUMP_BUTTON_PROPERTY_SIZE,
+                        Texts.WIDGET_JUMP_BUTTON_PROPERTY_SIZE,
                         round(it * 100f).toString()
                     )
                 },
@@ -60,12 +60,12 @@ data class JumpButton(
             EnumProperty(
                 getValue = { it.texture },
                 setValue = { config, value -> config.copy(texture = value) },
-                name = textFactory.of(Texts.SCREEN_OPTIONS_WIDGET_JUMP_BUTTON_PROPERTY_STYLE),
+                name = textFactory.of(Texts.WIDGET_JUMP_BUTTON_PROPERTY_STYLE),
                 items = persistentListOf(
-                    JumpButtonTexture.CLASSIC to textFactory.of(Texts.SCREEN_OPTIONS_WIDGET_JUMP_BUTTON_PROPERTY_STYLE_CLASSIC),
-                    JumpButtonTexture.CLASSIC_FLYING to textFactory.of(Texts.SCREEN_OPTIONS_WIDGET_JUMP_BUTTON_PROPERTY_STYLE_CLASSIC_FLYING),
-                    JumpButtonTexture.NEW to textFactory.of(Texts.SCREEN_OPTIONS_WIDGET_JUMP_BUTTON_PROPERTY_STYLE_NEW),
-                    JumpButtonTexture.NEW_HORSE to textFactory.of(Texts.SCREEN_OPTIONS_WIDGET_JUMP_BUTTON_PROPERTY_STYLE_NEW_HORSE),
+                    JumpButtonTexture.CLASSIC to textFactory.of(Texts.WIDGET_JUMP_BUTTON_PROPERTY_STYLE_CLASSIC),
+                    JumpButtonTexture.CLASSIC_FLYING to textFactory.of(Texts.WIDGET_JUMP_BUTTON_PROPERTY_STYLE_CLASSIC_FLYING),
+                    JumpButtonTexture.NEW to textFactory.of(Texts.WIDGET_JUMP_BUTTON_PROPERTY_STYLE_NEW),
+                    JumpButtonTexture.NEW_HORSE to textFactory.of(Texts.WIDGET_JUMP_BUTTON_PROPERTY_STYLE_NEW_HORSE),
                 )
             )
         ) as PersistentList<Property<ControllerWidget, *>>

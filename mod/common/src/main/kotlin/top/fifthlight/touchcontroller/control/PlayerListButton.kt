@@ -45,7 +45,7 @@ data class PlayerListButton(
                 range = .5f..4f,
                 messageFormatter = {
                     textFactory.format(
-                        Texts.SCREEN_OPTIONS_WIDGET_PLAYER_LIST_BUTTON_PROPERTY_SIZE,
+                        Texts.WIDGET_PLAYER_LIST_BUTTON_PROPERTY_SIZE,
                         round(it * 100f).toString()
                     )
                 }
@@ -53,10 +53,10 @@ data class PlayerListButton(
             EnumProperty(
                 getValue = { it.texture },
                 setValue = { config, value -> config.copy(texture = value) },
-                name = textFactory.of(Texts.SCREEN_OPTIONS_WIDGET_PLAYER_LIST_BUTTON_PROPERTY_STYLE),
+                name = textFactory.of(Texts.WIDGET_PLAYER_LIST_BUTTON_PROPERTY_STYLE),
                 items = listOf(
-                    PlayerListButtonTexture.CLASSIC to textFactory.of(Texts.SCREEN_OPTIONS_WIDGET_PLAYER_LIST_BUTTON_PROPERTY_STYLE_CLASSIC),
-                    PlayerListButtonTexture.NEW to textFactory.of(Texts.SCREEN_OPTIONS_WIDGET_PLAYER_LIST_BUTTON_PROPERTY_STYLE_NEW),
+                    PlayerListButtonTexture.CLASSIC to textFactory.of(Texts.WIDGET_PLAYER_LIST_BUTTON_PROPERTY_STYLE_CLASSIC),
+                    PlayerListButtonTexture.NEW to textFactory.of(Texts.WIDGET_PLAYER_LIST_BUTTON_PROPERTY_STYLE_NEW),
                 ),
             ),
         ) as PersistentList<Property<ControllerWidget, *>>

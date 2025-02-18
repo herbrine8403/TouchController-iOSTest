@@ -52,7 +52,7 @@ data class PerspectiveSwitchButton(
                 range = .5f..4f,
                 messageFormatter = {
                     textFactory.format(
-                        Texts.SCREEN_OPTIONS_WIDGET_PAUSE_BUTTON_PROPERTY_SIZE,
+                        Texts.WIDGET_PAUSE_BUTTON_PROPERTY_SIZE,
                         round(it * 100f).toString()
                     )
                 }
@@ -60,12 +60,12 @@ data class PerspectiveSwitchButton(
             EnumProperty(
                 getValue = { it.style },
                 setValue = { config, value -> config.copy(style = value) },
-                name = textFactory.format(Texts.SCREEN_OPTIONS_WIDGET_PERSPECTIVE_SWITCH_BUTTON_PROPERTY_STYLE),
+                name = textFactory.format(Texts.WIDGET_PERSPECTIVE_SWITCH_BUTTON_PROPERTY_STYLE),
                 items = listOf(
-                    PerspectiveSwitchButtonStyle.CLASSIC to textFactory.of(Texts.SCREEN_OPTIONS_WIDGET_PERSPECTIVE_SWITCH_BUTTON_PROPERTY_STYLE_CLASSIC),
-                    PerspectiveSwitchButtonStyle.CLASSIC_SIMPLE to textFactory.of(Texts.SCREEN_OPTIONS_WIDGET_PERSPECTIVE_SWITCH_BUTTON_PROPERTY_STYLE_CLASSIC_SIMPLE),
-                    PerspectiveSwitchButtonStyle.NEW to textFactory.of(Texts.SCREEN_OPTIONS_WIDGET_PERSPECTIVE_SWITCH_BUTTON_PROPERTY_STYLE_NEW),
-                    PerspectiveSwitchButtonStyle.NEW_SIMPLE to textFactory.of(Texts.SCREEN_OPTIONS_WIDGET_PERSPECTIVE_SWITCH_BUTTON_PROPERTY_STYLE_NEW_SIMPLE),
+                    PerspectiveSwitchButtonStyle.CLASSIC to textFactory.of(Texts.WIDGET_PERSPECTIVE_SWITCH_BUTTON_PROPERTY_STYLE_CLASSIC),
+                    PerspectiveSwitchButtonStyle.CLASSIC_SIMPLE to textFactory.of(Texts.WIDGET_PERSPECTIVE_SWITCH_BUTTON_PROPERTY_STYLE_CLASSIC_SIMPLE),
+                    PerspectiveSwitchButtonStyle.NEW to textFactory.of(Texts.WIDGET_PERSPECTIVE_SWITCH_BUTTON_PROPERTY_STYLE_NEW),
+                    PerspectiveSwitchButtonStyle.NEW_SIMPLE to textFactory.of(Texts.WIDGET_PERSPECTIVE_SWITCH_BUTTON_PROPERTY_STYLE_NEW_SIMPLE),
                 ),
             ),
         ) as PersistentList<Property<ControllerWidget, *>>

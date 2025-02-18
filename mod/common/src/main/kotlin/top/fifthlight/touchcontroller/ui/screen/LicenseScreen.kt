@@ -2,15 +2,16 @@ package top.fifthlight.touchcontroller.ui.screen
 
 import androidx.compose.runtime.Composable
 import cafe.adriel.voyager.core.screen.Screen
-import cafe.adriel.voyager.navigator.LocalNavigator
+import top.fifthlight.combine.data.Text
 import top.fifthlight.combine.modifier.Modifier
 import top.fifthlight.combine.modifier.placement.fillMaxWidth
 import top.fifthlight.combine.modifier.placement.padding
 import top.fifthlight.combine.modifier.scroll.verticalScroll
 import top.fifthlight.combine.widget.ui.Text
-import top.fifthlight.combine.widget.ui.TextButton
 import top.fifthlight.touchcontroller.about.License
+import top.fifthlight.touchcontroller.assets.Texts
 import top.fifthlight.touchcontroller.ui.component.AppBar
+import top.fifthlight.touchcontroller.ui.component.BackButton
 import top.fifthlight.touchcontroller.ui.component.Scaffold
 
 class LicenseScreen(
@@ -18,17 +19,14 @@ class LicenseScreen(
 ) : Screen {
     @Composable
     override fun Content() {
-        val navigator = LocalNavigator.current
         Scaffold(
             topBar = {
                 AppBar(
                     modifier = Modifier.fillMaxWidth(),
                     leading = {
-                        TextButton(
-                            onClick = { navigator?.pop() }
-                        ) {
-                            Text("< Back")
-                        }
+                        BackButton(
+                            screenName = Text.translatable(Texts.SCREEN_LICENSE_TITLE)
+                        )
                     },
                     title = {
                         Text(license.name)

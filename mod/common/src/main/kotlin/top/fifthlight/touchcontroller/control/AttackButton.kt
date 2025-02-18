@@ -46,7 +46,7 @@ data class AttackButton(
                 range = .5f..4f,
                 messageFormatter = {
                     textFactory.format(
-                        Texts.SCREEN_OPTIONS_WIDGET_ATTACK_BUTTON_PROPERTY_SIZE,
+                        Texts.WIDGET_ATTACK_BUTTON_PROPERTY_SIZE,
                         round(it * 100f).toString()
                     )
                 }
@@ -54,10 +54,10 @@ data class AttackButton(
             EnumProperty(
                 getValue = { it.texture },
                 setValue = { config, value -> config.copy(texture = value) },
-                name = textFactory.of(Texts.SCREEN_OPTIONS_WIDGET_ATTACK_BUTTON_PROPERTY_STYLE),
+                name = textFactory.of(Texts.WIDGET_ATTACK_BUTTON_PROPERTY_STYLE),
                 items = persistentListOf(
-                    AttackButtonTexture.NEW to textFactory.of(Texts.SCREEN_OPTIONS_WIDGET_ATTACK_BUTTON_PROPERTY_STYLE_NEW),
-                    AttackButtonTexture.CLASSIC to textFactory.of(Texts.SCREEN_OPTIONS_WIDGET_ATTACK_BUTTON_PROPERTY_STYLE_CLASSIC)
+                    AttackButtonTexture.NEW to textFactory.of(Texts.WIDGET_ATTACK_BUTTON_PROPERTY_STYLE_NEW),
+                    AttackButtonTexture.CLASSIC to textFactory.of(Texts.WIDGET_ATTACK_BUTTON_PROPERTY_STYLE_CLASSIC)
                 )
             )
         ) as PersistentList<Property<ControllerWidget, *>>

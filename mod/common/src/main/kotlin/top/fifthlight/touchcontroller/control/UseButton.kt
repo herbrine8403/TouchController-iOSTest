@@ -56,7 +56,7 @@ data class UseButton(
                 range = .5f..4f,
                 messageFormatter = {
                     textFactory.format(
-                        Texts.SCREEN_OPTIONS_WIDGET_USE_BUTTON_PROPERTY_SIZE,
+                        Texts.WIDGET_USE_BUTTON_PROPERTY_SIZE,
                         round(it * 100f).toString()
                     )
                 }
@@ -64,19 +64,19 @@ data class UseButton(
             EnumProperty(
                 getValue = { it.texture },
                 setValue = { config, value -> config.copy(texture = value) },
-                name = textFactory.of(Texts.SCREEN_OPTIONS_WIDGET_USE_BUTTON_PROPERTY_STYLE),
+                name = textFactory.of(Texts.WIDGET_USE_BUTTON_PROPERTY_STYLE),
                 items = persistentListOf(
-                    UseButtonTexture.NEW to textFactory.of(Texts.SCREEN_OPTIONS_WIDGET_USE_BUTTON_PROPERTY_STYLE_NEW),
-                    UseButtonTexture.CLASSIC to textFactory.of(Texts.SCREEN_OPTIONS_WIDGET_USE_BUTTON_PROPERTY_STYLE_CLASSIC)
+                    UseButtonTexture.NEW to textFactory.of(Texts.WIDGET_USE_BUTTON_PROPERTY_STYLE_NEW),
+                    UseButtonTexture.CLASSIC to textFactory.of(Texts.WIDGET_USE_BUTTON_PROPERTY_STYLE_CLASSIC)
                 )
             ),
             EnumProperty(
                 getValue = { it.trigger },
                 setValue = { config, value -> config.copy(trigger = value) },
-                name = textFactory.of(Texts.SCREEN_OPTIONS_WIDGET_USE_BUTTON_PROPERTY_TRIGGER),
+                name = textFactory.of(Texts.WIDGET_USE_BUTTON_PROPERTY_TRIGGER),
                 items = persistentListOf(
-                    UseButtonTrigger.HOLD to textFactory.of(Texts.SCREEN_OPTIONS_WIDGET_USE_BUTTON_PROPERTY_TRIGGER_HOLD),
-                    UseButtonTrigger.SINGLE_CLICK_LOCK to textFactory.of(Texts.SCREEN_OPTIONS_WIDGET_USE_BUTTON_PROPERTY_TRIGGER_SINGLE_CLICK_LOCK)
+                    UseButtonTrigger.HOLD to textFactory.of(Texts.WIDGET_USE_BUTTON_PROPERTY_TRIGGER_HOLD),
+                    UseButtonTrigger.SINGLE_CLICK_LOCK to textFactory.of(Texts.WIDGET_USE_BUTTON_PROPERTY_TRIGGER_SINGLE_CLICK_LOCK)
                 )
             ),
         ) as PersistentList<Property<ControllerWidget, *>>

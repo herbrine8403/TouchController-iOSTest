@@ -47,7 +47,7 @@ data class BoatButton(
                 range = .5f..4f,
                 messageFormatter = {
                     textFactory.format(
-                        Texts.SCREEN_OPTIONS_WIDGET_BOAT_BUTTON_PROPERTY_SIZE,
+                        Texts.WIDGET_BOAT_BUTTON_PROPERTY_SIZE,
                         round(it * 100f).toString()
                     )
                 },
@@ -55,16 +55,16 @@ data class BoatButton(
             EnumProperty(
                 getValue = { it.side },
                 setValue = { config, value -> config.copy(side = value) },
-                name = textFactory.of(Texts.SCREEN_OPTIONS_WIDGET_BOAT_BUTTON_PROPERTY_SIDE),
+                name = textFactory.of(Texts.WIDGET_BOAT_BUTTON_PROPERTY_SIDE),
                 items = persistentListOf(
-                    BoatButtonSide.LEFT to textFactory.of(Texts.SCREEN_OPTIONS_WIDGET_BOAT_BUTTON_PROPERTY_SIDE_LEFT),
-                    BoatButtonSide.RIGHT to textFactory.of(Texts.SCREEN_OPTIONS_WIDGET_BOAT_BUTTON_PROPERTY_SIDE_RIGHT),
+                    BoatButtonSide.LEFT to textFactory.of(Texts.WIDGET_BOAT_BUTTON_PROPERTY_SIDE_LEFT),
+                    BoatButtonSide.RIGHT to textFactory.of(Texts.WIDGET_BOAT_BUTTON_PROPERTY_SIDE_RIGHT),
                 )
             ),
             BooleanProperty(
                 getValue = { it.classic },
                 setValue = { config, value -> config.copy(classic = value) },
-                message = textFactory.of(Texts.SCREEN_OPTIONS_WIDGET_BOAT_BUTTON_PROPERTY_CLASSIC),
+                message = textFactory.of(Texts.WIDGET_BOAT_BUTTON_PROPERTY_CLASSIC),
             ),
         ) as PersistentList<Property<ControllerWidget, *>>
     }

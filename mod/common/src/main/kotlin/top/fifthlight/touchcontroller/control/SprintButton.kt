@@ -57,7 +57,7 @@ data class SprintButton(
                 range = .5f..4f,
                 messageFormatter = {
                     textFactory.format(
-                        Texts.SCREEN_OPTIONS_WIDGET_SPRINT_BUTTON_PROPERTY_SIZE,
+                        Texts.WIDGET_SPRINT_BUTTON_PROPERTY_SIZE,
                         round(it * 100f).toString()
                     )
                 }
@@ -65,19 +65,19 @@ data class SprintButton(
             EnumProperty(
                 getValue = { it.texture },
                 setValue = { config, value -> config.copy(texture = value) },
-                name = textFactory.of(Texts.SCREEN_OPTIONS_WIDGET_SPRINT_BUTTON_PROPERTY_STYLE),
+                name = textFactory.of(Texts.WIDGET_SPRINT_BUTTON_PROPERTY_STYLE),
                 items = persistentListOf(
-                    SprintButtonTexture.NEW to textFactory.of(Texts.SCREEN_OPTIONS_WIDGET_SPRINT_BUTTON_PROPERTY_STYLE_NEW),
-                    SprintButtonTexture.CLASSIC to textFactory.of(Texts.SCREEN_OPTIONS_WIDGET_SPRINT_BUTTON_PROPERTY_STYLE_CLASSIC)
+                    SprintButtonTexture.NEW to textFactory.of(Texts.WIDGET_SPRINT_BUTTON_PROPERTY_STYLE_NEW),
+                    SprintButtonTexture.CLASSIC to textFactory.of(Texts.WIDGET_SPRINT_BUTTON_PROPERTY_STYLE_CLASSIC)
                 )
             ),
             EnumProperty(
                 getValue = { it.trigger },
                 setValue = { config, value -> config.copy(trigger = value) },
-                name = textFactory.of(Texts.SCREEN_OPTIONS_WIDGET_SPRINT_BUTTON_PROPERTY_TRIGGER),
+                name = textFactory.of(Texts.WIDGET_SPRINT_BUTTON_PROPERTY_TRIGGER),
                 items = persistentListOf(
-                    SprintButtonTrigger.HOLD to textFactory.of(Texts.SCREEN_OPTIONS_WIDGET_SPRINT_BUTTON_PROPERTY_TRIGGER_HOLD),
-                    SprintButtonTrigger.SINGLE_CLICK_LOCK to textFactory.of(Texts.SCREEN_OPTIONS_WIDGET_SPRINT_BUTTON_PROPERTY_TRIGGER_SINGLE_CLICK_LOCK),
+                    SprintButtonTrigger.HOLD to textFactory.of(Texts.WIDGET_SPRINT_BUTTON_PROPERTY_TRIGGER_HOLD),
+                    SprintButtonTrigger.SINGLE_CLICK_LOCK to textFactory.of(Texts.WIDGET_SPRINT_BUTTON_PROPERTY_TRIGGER_SINGLE_CLICK_LOCK),
                 )
             )
         ) as PersistentList<Property<ControllerWidget, *>>

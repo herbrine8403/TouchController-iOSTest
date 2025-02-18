@@ -8,13 +8,13 @@ import top.fifthlight.touchcontroller.ui.view.ConfigScreen
 
 fun getConfigScreenButtonText(): Any = with(GlobalContext.get()) {
     val textFactory: TextFactory = get()
-    textFactory.of(Texts.SCREEN_OPTIONS)
+    textFactory.of(Texts.SCREEN_CONFIG)
 }
 
 fun getConfigScreen(parent: Any?): Any? = with(GlobalContext.get()) {
     val textFactory: TextFactory = get()
     val screenFactory: ScreenFactory = get()
-    screenFactory.getScreen(parent, textFactory.of(Texts.SCREEN_OPTIONS_TITLE)) {
+    screenFactory.getScreen(parent, textFactory.of(Texts.SCREEN_CONFIG_TITLE)) {
         ConfigScreen()
     }
 }

@@ -74,7 +74,7 @@ data class SneakButton(
                 range = .5f..4f,
                 messageFormatter = {
                     textFactory.format(
-                        Texts.SCREEN_OPTIONS_WIDGET_SNEAK_BUTTON_PROPERTY_SIZE,
+                        Texts.WIDGET_SNEAK_BUTTON_PROPERTY_SIZE,
                         round(it * 100f).toString()
                     )
                 },
@@ -82,23 +82,23 @@ data class SneakButton(
             EnumProperty(
                 getValue = { it.texture },
                 setValue = { config, value -> config.copy(texture = value) },
-                name = textFactory.of(Texts.SCREEN_OPTIONS_WIDGET_SNEAK_BUTTON_PROPERTY_STYLE),
+                name = textFactory.of(Texts.WIDGET_SNEAK_BUTTON_PROPERTY_STYLE),
                 items = listOf(
-                    SneakButtonTexture.CLASSIC to textFactory.of(Texts.SCREEN_OPTIONS_WIDGET_SNEAK_BUTTON_PROPERTY_STYLE_CLASSIC),
-                    SneakButtonTexture.NEW to textFactory.of(Texts.SCREEN_OPTIONS_WIDGET_SNEAK_BUTTON_PROPERTY_STYLE_NEW),
-                    SneakButtonTexture.DISMOUNT to textFactory.of(Texts.SCREEN_OPTIONS_WIDGET_SNEAK_BUTTON_PROPERTY_STYLE_DISMOUNT),
+                    SneakButtonTexture.CLASSIC to textFactory.of(Texts.WIDGET_SNEAK_BUTTON_PROPERTY_STYLE_CLASSIC),
+                    SneakButtonTexture.NEW to textFactory.of(Texts.WIDGET_SNEAK_BUTTON_PROPERTY_STYLE_NEW),
+                    SneakButtonTexture.DISMOUNT to textFactory.of(Texts.WIDGET_SNEAK_BUTTON_PROPERTY_STYLE_DISMOUNT),
                 ),
             ),
             EnumProperty(
                 getValue = { it.trigger },
                 setValue = { config, value -> config.copy(trigger = value) },
-                name = textFactory.of(Texts.SCREEN_OPTIONS_WIDGET_SNEAK_BUTTON_PROPERTY_TRIGGER),
+                name = textFactory.of(Texts.WIDGET_SNEAK_BUTTON_PROPERTY_TRIGGER),
                 items = listOf(
-                    SneakButtonTrigger.DOUBLE_CLICK_LOCK to textFactory.of(Texts.SCREEN_OPTIONS_WIDGET_SNEAK_BUTTON_PROPERTY_TRIGGER_DOUBLE_CLICK_LOCK),
-                    SneakButtonTrigger.SINGLE_CLICK_LOCK to textFactory.of(Texts.SCREEN_OPTIONS_WIDGET_SNEAK_BUTTON_PROPERTY_TRIGGER_SINGLE_CLICK_LOCK),
-                    SneakButtonTrigger.HOLD to textFactory.of(Texts.SCREEN_OPTIONS_WIDGET_SNEAK_BUTTON_PROPERTY_TRIGGER_HOLD),
-                    SneakButtonTrigger.SINGLE_CLICK_TRIGGER to textFactory.of(Texts.SCREEN_OPTIONS_WIDGET_SNEAK_BUTTON_PROPERTY_TRIGGER_SINGLE_CLICK_TRIGGER),
-                    SneakButtonTrigger.DOUBLE_CLICK_TRIGGER to textFactory.of(Texts.SCREEN_OPTIONS_WIDGET_SNEAK_BUTTON_PROPERTY_TRIGGER_DOUBLE_CLICK_TRIGGER),
+                    SneakButtonTrigger.DOUBLE_CLICK_LOCK to textFactory.of(Texts.WIDGET_SNEAK_BUTTON_PROPERTY_TRIGGER_DOUBLE_CLICK_LOCK),
+                    SneakButtonTrigger.SINGLE_CLICK_LOCK to textFactory.of(Texts.WIDGET_SNEAK_BUTTON_PROPERTY_TRIGGER_SINGLE_CLICK_LOCK),
+                    SneakButtonTrigger.HOLD to textFactory.of(Texts.WIDGET_SNEAK_BUTTON_PROPERTY_TRIGGER_HOLD),
+                    SneakButtonTrigger.SINGLE_CLICK_TRIGGER to textFactory.of(Texts.WIDGET_SNEAK_BUTTON_PROPERTY_TRIGGER_SINGLE_CLICK_TRIGGER),
+                    SneakButtonTrigger.DOUBLE_CLICK_TRIGGER to textFactory.of(Texts.WIDGET_SNEAK_BUTTON_PROPERTY_TRIGGER_DOUBLE_CLICK_TRIGGER),
                 ),
             ),
         ) as PersistentList<Property<ControllerWidget, *>>

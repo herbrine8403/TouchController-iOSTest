@@ -37,7 +37,7 @@ data class PauseButton(
                 range = .5f..4f,
                 messageFormatter = {
                     textFactory.format(
-                        Texts.SCREEN_OPTIONS_WIDGET_PAUSE_BUTTON_PROPERTY_SIZE,
+                        Texts.WIDGET_PAUSE_BUTTON_PROPERTY_SIZE,
                         round(it * 100f).toString()
                     )
                 }
@@ -45,7 +45,7 @@ data class PauseButton(
             BooleanProperty(
                 getValue = { it.classic },
                 setValue = { config, value -> config.copy(classic = value) },
-                message = textFactory.of(Texts.SCREEN_OPTIONS_WIDGET_PAUSE_BUTTON_PROPERTY_CLASSIC),
+                message = textFactory.of(Texts.WIDGET_PAUSE_BUTTON_PROPERTY_CLASSIC),
             )
         ) as PersistentList<Property<ControllerWidget, *>>
     }

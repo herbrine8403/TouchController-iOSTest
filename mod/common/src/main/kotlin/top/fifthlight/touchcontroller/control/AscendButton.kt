@@ -49,7 +49,7 @@ data class AscendButton(
                 range = .5f..4f,
                 messageFormatter = {
                     textFactory.format(
-                        Texts.SCREEN_OPTIONS_WIDGET_ASCEND_BUTTON_PROPERTY_SIZE,
+                        Texts.WIDGET_ASCEND_BUTTON_PROPERTY_SIZE,
                         round(it * 100f).toString()
                     )
                 }
@@ -57,11 +57,11 @@ data class AscendButton(
             EnumProperty(
                 getValue = { it.texture },
                 setValue = { config, value -> config.copy(texture = value) },
-                name = textFactory.of(Texts.SCREEN_OPTIONS_WIDGET_ASCEND_BUTTON_PROPERTY_STYLE),
+                name = textFactory.of(Texts.WIDGET_ASCEND_BUTTON_PROPERTY_STYLE),
                 items = persistentListOf(
-                    AscendButtonTexture.CLASSIC to textFactory.of(Texts.SCREEN_OPTIONS_WIDGET_ASCEND_BUTTON_PROPERTY_STYLE_CLASSIC),
-                    AscendButtonTexture.SWIMMING to textFactory.of(Texts.SCREEN_OPTIONS_WIDGET_ASCEND_BUTTON_PROPERTY_STYLE_SWIMMING),
-                    AscendButtonTexture.FLYING to textFactory.of(Texts.SCREEN_OPTIONS_WIDGET_ASCEND_BUTTON_PROPERTY_STYLE_FLYING),
+                    AscendButtonTexture.CLASSIC to textFactory.of(Texts.WIDGET_ASCEND_BUTTON_PROPERTY_STYLE_CLASSIC),
+                    AscendButtonTexture.SWIMMING to textFactory.of(Texts.WIDGET_ASCEND_BUTTON_PROPERTY_STYLE_SWIMMING),
+                    AscendButtonTexture.FLYING to textFactory.of(Texts.WIDGET_ASCEND_BUTTON_PROPERTY_STYLE_FLYING),
                 )
             )
         ) as PersistentList<Property<ControllerWidget, *>>
