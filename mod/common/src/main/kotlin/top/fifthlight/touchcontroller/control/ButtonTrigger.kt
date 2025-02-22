@@ -22,11 +22,9 @@ sealed class ButtonTrigger {
     ) : ButtonTrigger() {
         @Serializable
         enum class LockMethod {
-            @Serializable
             @SerialName("single_click")
             SINGLE_CLICK,
 
-            @Serializable
             @SerialName("double_click")
             DOUBLE_CLICK,
         }

@@ -51,9 +51,15 @@ sealed class WidgetTriggerAction {
             override val type: KeyBindingType,
             val actionType: LockActionType = LockActionType.INVERT,
         ) : Key() {
+            @Serializable
             enum class LockActionType {
+                @SerialName("start")
                 START,
+
+                @SerialName("end")
                 END,
+
+                @SerialName("invert")
                 INVERT,
             }
 
