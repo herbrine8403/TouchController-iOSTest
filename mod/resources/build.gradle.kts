@@ -32,6 +32,7 @@ task<JavaExec>("generateResource") {
 
     inputs.properties(buildInfo)
     inputs.dir(resourcesDir)
+    inputs.files(sourceSets["main"].runtimeClasspath)
     outputs.apply {
         dir(generateSourcesDir)
         file(generateAtlasFile)
