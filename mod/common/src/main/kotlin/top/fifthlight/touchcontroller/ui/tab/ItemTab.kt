@@ -23,6 +23,7 @@ import top.fifthlight.touchcontroller.assets.Texts
 import top.fifthlight.touchcontroller.config.GlobalConfigHolder
 import top.fifthlight.touchcontroller.config.ItemList
 import top.fifthlight.touchcontroller.ui.component.HorizontalPreferenceItem
+import top.fifthlight.touchcontroller.ui.screen.ComponentScreen
 import top.fifthlight.touchcontroller.ui.screen.ItemListScreen
 
 object ItemTabs : KoinComponent {
@@ -123,7 +124,12 @@ class ItemTab(
                 ) {
                     Button(
                         onClick = {
-
+                            navigator?.push(
+                                ComponentScreen(
+                                    initialValue = value.components,
+                                    onValueChanged = { onValueChanged(value.copy(components = it)) }
+                                )
+                            )
                         }
                     ) {
                         Text(Text.translatable(Texts.SCREEN_CONFIG_ITEM_EDIT_TITLE))

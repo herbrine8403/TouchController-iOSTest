@@ -10,19 +10,30 @@ import kotlin.math.max
 fun FlowRow(
     modifier: Modifier = Modifier,
     maxColumns: Int = Int.MAX_VALUE,
+    expandColumnWidth: Boolean = false,
     content: @Composable () -> Unit = {},
 ) {
     // TODO add arrangement support for flow line
     Layout(
         modifier = modifier,
         measurePolicy = { measurables, constraints ->
-            val childConstraint = constraints.copy(minWidth = 0, minHeight = 0)
+            val childConstraint = if (expandColumnWidth) {
+                val width = constraints.maxWidth / 2
+                constraints.copy(
+                    minWidth = width,
+                    maxWidth = width,
+                    minHeight = 0,
+                )
+            } else {
+                constraints.copy(minWidth = 0, minHeight = 0)
+            }
 
             val childPositions = Array(measurables.size) { IntOffset.ZERO }
             var cursorPosition = IntOffset(0, 0)
             var maxWidth = 0
             var rowMaxHeight = 0
             var column = 0
+            var row = 0
 
             val placeables = measurables.mapIndexed { index, measurable ->
                 val placeable = measurable.measure(childConstraint)
@@ -31,6 +42,7 @@ fun FlowRow(
                     cursorPosition = IntOffset(0, cursorPosition.y + rowMaxHeight)
                     rowMaxHeight = 0
                     column = 0
+                    row++
                 }
                 column++
                 childPositions[index] = cursorPosition

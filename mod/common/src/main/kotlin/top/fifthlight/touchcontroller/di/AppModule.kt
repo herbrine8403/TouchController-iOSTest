@@ -9,6 +9,7 @@ import top.fifthlight.touchcontroller.config.GlobalConfigHolder
 import top.fifthlight.touchcontroller.model.ControllerHudModel
 import top.fifthlight.touchcontroller.model.TouchStateModel
 import top.fifthlight.touchcontroller.ui.model.AboutScreenModel
+import top.fifthlight.touchcontroller.ui.model.ComponentScreenModel
 import top.fifthlight.touchcontroller.ui.model.ItemListScreenModel
 
 val appModule = module {
@@ -28,6 +29,7 @@ val appModule = module {
     single { TouchStateModel() }
     single<AboutInfoProvider> { ResourcesAboutInfoProvider }
     factory<ItemListScreenModel> { params -> ItemListScreenModel(params[0], params[1]) }
+    factory<ComponentScreenModel> { params -> ComponentScreenModel(params[0], params[1]) }
 
     factory { AboutScreenModel() }
 }

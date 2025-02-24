@@ -102,6 +102,11 @@
   "touchcontroller.screen.item_list.inventory.armor": "装备栏",
   "touchcontroller.screen.item_list.inventory.offhand": "副手",
 
+  "touchcontroller.screen.component_list.title": "组件列表",
+  "touchcontroller.screen.component_list.search_placeholder": "搜索…",
+  "touchcontroller.screen.component_list.remove": "移除 >",
+  "touchcontroller.screen.component_list.add": "添加 +",
+
   "touchcontroller.screen.license.title": "许可证",
 
   "touchcontroller.widget.general.property.lock_moving": "移动锁定",

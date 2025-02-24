@@ -29,6 +29,7 @@ import top.fifthlight.touchcontroller.assets.Texts
 import top.fifthlight.touchcontroller.assets.Textures
 import top.fifthlight.touchcontroller.ui.component.AppBar
 import top.fifthlight.touchcontroller.ui.component.BackButton
+import top.fifthlight.touchcontroller.ui.component.ListButton
 import top.fifthlight.touchcontroller.ui.component.Scaffold
 import top.fifthlight.touchcontroller.ui.component.TouchControllerNavigator
 import top.fifthlight.touchcontroller.ui.model.ItemListScreenModel
@@ -65,17 +66,20 @@ class ItemListScreen(
                 ) {
                     val items by screenModel.value.collectAsState()
                     for ((index, item) in items.withIndex()) {
-                        Row(
-                            modifier = Modifier
-                                .border(Textures.WIDGET_LIST_LIST)
-                                .fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(4),
-                            verticalAlignment = Alignment.CenterVertically,
+                        ListButton(
+                            modifier = Modifier.fillMaxWidth(),
+                            onClick = { screenModel.removeItem(index) },
                         ) {
-                            Item(item = item)
-                            Text(text = item.toStack().name)
-                            Spacer(modifier = Modifier.weight(1f))
-                            TextButton(onClick = { screenModel.removeItem(index) }) {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.spacedBy(4),
+                                verticalAlignment = Alignment.CenterVertically,
+                            ) {
+                                Item(item = item)
+                                Text(
+                                    modifier = Modifier.weight(1f),
+                                    text = item.toStack().name,
+                                )
                                 Text(Text.translatable(Texts.SCREEN_ITEM_LIST_REMOVE))
                             }
                         }

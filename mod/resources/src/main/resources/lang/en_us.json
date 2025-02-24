@@ -102,6 +102,11 @@
   "touchcontroller.screen.item_list.inventory.armor": "Equipment",
   "touchcontroller.screen.item_list.inventory.offhand": "Offhand",
 
+  "touchcontroller.screen.component_list.title": "Component list",
+  "touchcontroller.screen.component_list.search_placeholder": "Search...",
+  "touchcontroller.screen.component_list.remove": "Remove >",
+  "touchcontroller.screen.component_list.add": "Add +",
+
   "touchcontroller.screen.license.title": "License",
 
   "touchcontroller.widget.general.property.lock_moving": "Lock moving",
