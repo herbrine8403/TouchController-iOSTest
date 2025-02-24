@@ -85,6 +85,8 @@ class TouchController : KoinComponent {
         val configHolder: GlobalConfigHolder = get()
         configHolder.load()
 
+        GameConfigEditorImpl.executePendingCallback()
+
         ModLoadingContext.get().activeContainer.registerExtensionPoint(ConfigScreenFactory::class.java) {
             ConfigScreenFactory(
                 BiFunction<Minecraft, Screen, Screen> { client, parent ->

@@ -1,13 +1,47 @@
 package top.fifthlight.touchcontroller
 
+import net.minecraft.client.GameSettings
 import net.minecraft.client.Minecraft
 import top.fifthlight.touchcontroller.config.GameConfigEditor
+import java.util.concurrent.locks.ReentrantLock
+import kotlin.concurrent.withLock
 
 object GameConfigEditorImpl : GameConfigEditor {
-    override fun enableAutoJump() {
-        val client = Minecraft.getInstance()
-        val options = client.options
-        options.autoJump = true
-        options.save()
+    private val pendingCallbackLock = ReentrantLock()
+    private var pendingCallbacks: MutableList<GameConfigEditor.Callback>? = mutableListOf()
+
+    private class EditorImpl(val options: GameSettings) : GameConfigEditor.Editor {
+        override var autoJump: Boolean
+            get() = options.autoJump
+            set(value) {
+                options.autoJump = value
+            }
+    }
+
+    fun executePendingCallback() {
+        pendingCallbackLock.withLock {
+            val callbacks = pendingCallbacks
+            if (callbacks == null) {
+                return
+            }
+            pendingCallbacks = null
+            with(EditorImpl(Minecraft.getInstance().options)) {
+                callbacks.forEach { callback ->
+                    callback.invoke(this)
+                }
+                options.save()
+            }
+        }
+    }
+
+    override fun submit(callback: GameConfigEditor.Callback) {
+        pendingCallbackLock.withLock {
+            pendingCallbacks?.add(callback) ?: run {
+                with(EditorImpl(Minecraft.getInstance().options)) {
+                    callback.invoke(this)
+                    options.save()
+                }
+            }
+        }
     }
 }

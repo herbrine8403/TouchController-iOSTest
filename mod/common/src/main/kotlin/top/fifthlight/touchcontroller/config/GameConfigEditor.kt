@@ -1,5 +1,13 @@
 package top.fifthlight.touchcontroller.config
 
 interface GameConfigEditor {
-    fun enableAutoJump()
+    interface Editor {
+        var autoJump: Boolean
+    }
+
+    fun interface Callback {
+        fun invoke(editor: Editor)
+    }
+
+    fun submit(callback: Callback)
 }

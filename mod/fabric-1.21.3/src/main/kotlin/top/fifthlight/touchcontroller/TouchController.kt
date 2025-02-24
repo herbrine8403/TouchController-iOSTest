@@ -85,6 +85,7 @@ class TouchController : ClientModInitializer, KoinComponent {
         ClientLifecycleEvents.CLIENT_STARTED.register {
             val client = MinecraftClient.getInstance()
             WindowCreateEvents.onPlatformWindowCreated(PlatformWindowImpl(client.window))
+            GameConfigEditorImpl.executePendingCallback()
         }
         ClientPlayerBlockBreakEvents.AFTER.register { _, _, _, _ ->
             BlockBreakEvents.afterBlockBreak()

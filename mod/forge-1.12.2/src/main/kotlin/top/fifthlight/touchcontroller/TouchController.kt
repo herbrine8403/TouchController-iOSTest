@@ -82,6 +82,8 @@ class TouchController : KoinComponent {
         val configHolder: GlobalConfigHolder = get()
         configHolder.load()
 
+        GameConfigEditorImpl.executePendingCallback()
+
         MinecraftForge.EVENT_BUS.register(object {
             @SubscribeEvent
             fun hudRender(event: RenderGameOverlayEvent.Post) {

@@ -11,10 +11,8 @@ import org.slf4j.LoggerFactory
 import top.fifthlight.touchcontroller.ext.ControllerLayoutSerializer
 import top.fifthlight.touchcontroller.gal.DefaultItemListProvider
 import java.io.IOException
-import kotlin.io.path.createDirectory
-import kotlin.io.path.exists
-import kotlin.io.path.readText
-import kotlin.io.path.writeText
+import java.nio.file.Path
+import kotlin.io.path.*
 
 class GlobalConfigHolder : KoinComponent {
     private val logger = LoggerFactory.getLogger(GlobalConfig::class.java)
@@ -34,17 +32,41 @@ class GlobalConfigHolder : KoinComponent {
     private val _presets = MutableStateFlow(LayoutPresets())
     val presets = _presets.asStateFlow()
 
+    private fun tryBackupFile(file: Path) {
+        val timeStamp = System.currentTimeMillis()
+        val backupFileName = file.resolveSibling("${file.fileName}-backup-$timeStamp")
+        runCatching {
+            file.moveTo(backupFileName, overwrite = true)
+        }
+    }
+
     fun load() {
         try {
             createConfigDirectory()
+        } catch (ex: Exception) {
+            logger.warn("Failed to create config folder: ", ex)
+            return
+        }
+        try {
             logger.info("Reading TouchController config file")
             _config.value = json.decodeFromString(configFile.readText())
+        } catch (ex: Exception) {
+            logger.warn("Failed to read config: ", ex)
+            tryBackupFile(configFile)
+        }
+        try {
             logger.info("Reading TouchController layout file")
             _layout.value = json.decodeFromString(ControllerLayoutSerializer(), layoutFile.readText())
+        } catch (ex: Exception) {
+            logger.warn("Failed to read layout: ", ex)
+            tryBackupFile(layoutFile)
+        }
+        try {
             logger.info("Reading TouchController preset file")
             _presets.value = json.decodeFromString(presetFile.readText())
         } catch (ex: Exception) {
-            logger.warn("Failed to read config: ", ex)
+            logger.warn("Failed to read preset: ", ex)
+            tryBackupFile(presetFile)
         }
     }
 
@@ -52,7 +74,9 @@ class GlobalConfigHolder : KoinComponent {
         if (!configDir.exists()) {
             // Change Minecraft options
             logger.info("First startup of TouchController, turn on auto jumping")
-            gameConfigEditor.enableAutoJump()
+            gameConfigEditor.submit { editor ->
+                editor.autoJump = true
+            }
         }
         try {
             configDir.createDirectory()
