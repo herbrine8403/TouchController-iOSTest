@@ -17,7 +17,11 @@ data class LayoutPreset(
     val name: String,
     val controlInfo: PresetControlInfo = PresetControlInfo(),
     val layout: ControllerLayout = ControllerLayout(),
-)
+) {
+    companion object {
+        const val DEFAULT_LAYOUT_NAME = "Empty layout"
+    }
+}
 
 @Immutable
 @Serializable

@@ -33,7 +33,7 @@ object WidgetsTab : CustomTab() {
             SideBarScaffold(
                 modifier = modifier,
                 title = {
-                    Text(Text.translatable(Texts.SCREEN_CONFIG_LAYOUT_CUSTOM_CONTROL_LAYOUT_WIDGETS))
+                    Text(Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_WIDGETS))
                 },
                 actions = {
                     Button(
@@ -42,7 +42,7 @@ object WidgetsTab : CustomTab() {
 
                         }
                     ) {
-                        Text(Text.translatable(Texts.SCREEN_CONFIG_LAYOUT_CUSTOM_CONTROL_LAYOUT_WIDGETS_BUILTIN))
+                        Text(Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_WIDGETS_BUILTIN))
                     }
                     Button(
                         modifier = Modifier.weight(1f),
@@ -50,7 +50,7 @@ object WidgetsTab : CustomTab() {
 
                         }
                     ) {
-                        Text(Text.translatable(Texts.SCREEN_CONFIG_LAYOUT_CUSTOM_CONTROL_LAYOUT_WIDGETS_PRESET))
+                        Text(Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_WIDGETS_PRESET))
                     }
                 }
             ) {

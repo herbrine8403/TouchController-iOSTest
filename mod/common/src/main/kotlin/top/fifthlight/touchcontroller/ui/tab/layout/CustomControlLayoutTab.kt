@@ -226,7 +226,7 @@ object CustomControlLayoutTab : Tab(), KoinComponent {
                         modifier = Modifier.fillMaxWidth(),
                         leading = {
                             BackButton(
-                                screenName = Text.translatable(Texts.SCREEN_CONFIG_LAYOUT_CUSTOM_CONTROL_LAYOUT_TITLE),
+                                screenName = Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_TITLE),
                                 close = false
                             )
 
@@ -237,7 +237,7 @@ object CustomControlLayoutTab : Tab(), KoinComponent {
                                 },
                                 enabled = copiedWidget != null
                             ) {
-                                Text(Text.translatable(Texts.SCREEN_CONFIG_LAYOUT_CUSTOM_CONTROL_LAYOUT_PASTE_WIDGET))
+                                Text(Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_PASTE_WIDGET))
                             }
 
                             val widgetIndex = uiState.selectedLayer?.widgets?.indices?.let { indices ->
@@ -249,7 +249,7 @@ object CustomControlLayoutTab : Tab(), KoinComponent {
                                 },
                                 enabled = widgetIndex != null
                             ) {
-                                Text(Text.translatable(Texts.SCREEN_CONFIG_LAYOUT_CUSTOM_CONTROL_LAYOUT_DELETE_WIDGET))
+                                Text(Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_DELETE_WIDGET))
                             }
                         },
                         trailing = {
@@ -259,7 +259,7 @@ object CustomControlLayoutTab : Tab(), KoinComponent {
                                     screenModel.setShowSideBar(!uiState.pageState.showSideBar)
                                 },
                             ) {
-                                Text(Text.translatable(Texts.SCREEN_CONFIG_LAYOUT_CUSTOM_CONTROL_LAYOUT_SHOW_SIDE_BAR))
+                                Text(Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_SHOW_SIDE_BAR))
                             }
                         }
                     )
@@ -284,9 +284,9 @@ object CustomControlLayoutTab : Tab(), KoinComponent {
                             onWidgetChanged = screenModel::editWidget,
                         )
                     } else if (uiState.selectedPreset != null) {
-                        Text(Text.translatable(Texts.SCREEN_CONFIG_LAYOUT_CUSTOM_CONTROL_LAYOUT_NO_LAYER_SELECTED))
+                        Text(Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_NO_LAYER_SELECTED))
                     } else {
-                        Text(Text.translatable(Texts.SCREEN_CONFIG_LAYOUT_CUSTOM_CONTROL_LAYOUT_NO_PRESET_SELECTED))
+                        Text(Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_NO_PRESET_SELECTED))
                     }
 
                     if (uiState.pageState.showSideBar) {
@@ -350,7 +350,7 @@ object CustomControlLayoutTab : Tab(), KoinComponent {
                         modifier = Modifier.fillMaxWidth(),
                         leading = {
                             BackButton(
-                                screenName = Text.translatable(Texts.SCREEN_CONFIG_LAYOUT_CUSTOM_CONTROL_LAYOUT_TITLE),
+                                screenName = Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_TITLE),
                                 close = false
                             )
                         },
@@ -370,7 +370,7 @@ object CustomControlLayoutTab : Tab(), KoinComponent {
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.spacedBy(12),
                     ) {
-                        Text(Text.translatable(Texts.SCREEN_CONFIG_LAYOUT_CUSTOM_CONTROL_LAYOUT_SWITCH_MESSAGE))
+                        Text(Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_SWITCH_MESSAGE))
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.spacedBy(12),
@@ -380,14 +380,14 @@ object CustomControlLayoutTab : Tab(), KoinComponent {
                                     screenModel.enableCustomLayout()
                                 }
                             ) {
-                                Text(Text.translatable(Texts.SCREEN_CONFIG_LAYOUT_CUSTOM_CONTROL_LAYOUT_SWITCH_SWITCH))
+                                Text(Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_SWITCH_SWITCH))
                             }
                             GuideButton(
                                 onClick = {
                                     navigator?.replace(ManageControlPresetsTab)
                                 }
                             ) {
-                                Text(Text.translatable(Texts.SCREEN_CONFIG_LAYOUT_CUSTOM_CONTROL_LAYOUT_SWITCH_GOTO_PRESET))
+                                Text(Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_SWITCH_GOTO_PRESET))
                             }
                         }
                     }

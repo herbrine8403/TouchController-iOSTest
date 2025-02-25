@@ -60,6 +60,13 @@ class CustomControlLayoutTabModel : TouchControllerScreenModel() {
         pageState.getAndUpdate { it.copy(moveLocked = moveLocked) }
     }
 
+    fun editPreset(uuid: Uuid, editor: LayoutPreset.() -> LayoutPreset) {
+        val uiState = uiState.value as? CustomControlLayoutTabState.Enabled ?: return
+        val preset = uiState.allPresets[uuid] ?: return
+        val newPreset = editor(preset)
+        presetManager.savePreset(uuid, newPreset)
+    }
+
     fun selectPreset(uuid: Uuid) {
         pageState.getAndUpdate {
             it.copy(
@@ -68,15 +75,7 @@ class CustomControlLayoutTabModel : TouchControllerScreenModel() {
             )
         }
         globalConfigHolder.updateConfig {
-            if (preset is PresetConfig.Custom) {
-                copy(
-                    preset = preset.copy(
-                        uuid = uuid,
-                    )
-                )
-            } else {
-                this
-            }
+            copy(preset = PresetConfig.Custom(uuid))
         }
     }
 

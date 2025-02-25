@@ -5,6 +5,7 @@ import kotlinx.collections.immutable.plus
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.getAndUpdate
+import kotlinx.coroutines.flow.updateAndGet
 import top.fifthlight.combine.data.Item
 
 class ItemListScreenModel(
@@ -15,7 +16,7 @@ class ItemListScreenModel(
     val value = _value.asStateFlow()
 
     fun addItem(item: Item) {
-        val newValue = _value.getAndUpdate {
+        val newValue = _value.updateAndGet {
             if (item !in it) {
                 it + item
             } else {
@@ -26,7 +27,7 @@ class ItemListScreenModel(
     }
 
     fun removeItem(index: Int) {
-        val newValue = _value.getAndUpdate { it.removeAt(index) }
+        val newValue = _value.updateAndGet { it.removeAt(index) }
         onValueChanged(newValue)
     }
 }

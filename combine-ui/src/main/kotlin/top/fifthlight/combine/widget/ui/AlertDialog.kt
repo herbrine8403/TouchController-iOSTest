@@ -5,6 +5,7 @@ import top.fifthlight.combine.layout.Alignment
 import top.fifthlight.combine.layout.Arrangement
 import top.fifthlight.combine.modifier.Modifier
 import top.fifthlight.combine.modifier.drawing.border
+import top.fifthlight.combine.modifier.placement.padding
 import top.fifthlight.combine.modifier.pointer.consumePress
 import top.fifthlight.combine.modifier.scroll.verticalScroll
 import top.fifthlight.combine.widget.base.Dialog
@@ -24,7 +25,8 @@ fun AlertDialog(
     Dialog(onDismissRequest = onDismissRequest) {
         Column(
             modifier = Modifier
-                .border(Textures.WIDGET_BACKGROUND_BACKGROUND_LIGHTGRAY)
+                .padding(8)
+                .border(Textures.WIDGET_BACKGROUND_BACKGROUND_GRAY)
                 .verticalScroll()
                 .consumePress(),
             horizontalAlignment = Alignment.CenterHorizontally,

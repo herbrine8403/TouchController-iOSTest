@@ -47,7 +47,7 @@ object ManageControlPresetsTab : Tab() {
                     modifier = Modifier.fillMaxWidth(),
                     leading = {
                         BackButton(
-                            screenName = Text.translatable(Texts.SCREEN_CONFIG_LAYOUT_MANAGE_CONTROL_PRESET_TITLE),
+                            screenName = Text.translatable(Texts.SCREEN_MANAGE_CONTROL_PRESET_TITLE),
                             close = false
                         )
                     },
@@ -139,7 +139,7 @@ object ManageControlPresetsTab : Tab() {
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.spacedBy(12),
                     ) {
-                        Text(Text.translatable(Texts.SCREEN_CONFIG_LAYOUT_MANAGE_CONTROL_PRESET_SWITCH_MESSAGE))
+                        Text(Text.translatable(Texts.SCREEN_MANAGE_CONTROL_PRESET_SWITCH_MESSAGE))
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.spacedBy(12),
@@ -149,14 +149,14 @@ object ManageControlPresetsTab : Tab() {
                                     screenModel.update(PresetConfig.BuiltIn())
                                 }
                             ) {
-                                Text(Text.translatable(Texts.SCREEN_CONFIG_LAYOUT_MANAGE_CONTROL_PRESET_SWITCH_SWITCH))
+                                Text(Text.translatable(Texts.SCREEN_MANAGE_CONTROL_PRESET_SWITCH_SWITCH))
                             }
                             GuideButton(
                                 onClick = {
                                     navigator?.replace(CustomControlLayoutTab)
                                 }
                             ) {
-                                Text(Text.translatable(Texts.SCREEN_CONFIG_LAYOUT_MANAGE_CONTROL_PRESET_SWITCH_GOTO_CUSTOM))
+                                Text(Text.translatable(Texts.SCREEN_MANAGE_CONTROL_PRESET_SWITCH_GOTO_CUSTOM))
                             }
                         }
                     }

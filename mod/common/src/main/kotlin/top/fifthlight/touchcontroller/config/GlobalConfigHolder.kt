@@ -74,7 +74,7 @@ class GlobalConfigHolder : KoinComponent {
     }
 
     fun updateConfig(editor: GlobalConfig.() -> GlobalConfig) {
-        val config = _config.getAndUpdate(editor)
+        val config = _config.updateAndGet(editor)
         createConfigDirectory()
         logger.info("Saving TouchController config file")
         configFile.writeText(json.encodeToString(config))

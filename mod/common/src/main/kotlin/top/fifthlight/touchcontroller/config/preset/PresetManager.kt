@@ -1,16 +1,9 @@
 package top.fifthlight.touchcontroller.config.preset
 
-import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.ImmutableMap
-import kotlinx.collections.immutable.PersistentList
-import kotlinx.collections.immutable.PersistentMap
-import kotlinx.collections.immutable.persistentListOf
-import kotlinx.collections.immutable.plus
-import kotlinx.collections.immutable.toPersistentList
-import kotlinx.collections.immutable.toPersistentMap
+import kotlinx.collections.immutable.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.getAndUpdate
+import kotlinx.coroutines.flow.updateAndGet
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.decodeFromStream
@@ -95,7 +88,7 @@ class PresetManager : KoinComponent {
     fun savePreset(uuid: Uuid, preset: LayoutPreset) {
         presetDir.createDirectories()
         getPresetFile(uuid).outputStream().use { json.encodeToStream(preset, it) }
-        val newPresets = _presets.getAndUpdate {
+        val newPresets = _presets.updateAndGet {
             if (it.containsKey(uuid)) {
                 val index = it.orderedEntries.indexOfFirst { (id, _) -> id == uuid }
                 PresetsContainer(it.orderedEntries.set(index, Pair(uuid, preset)))
@@ -106,9 +99,22 @@ class PresetManager : KoinComponent {
         saveOrder(newPresets.order)
     }
 
+    fun movePreset(uuid: Uuid, offset: Int) {
+        val newPresets = _presets.updateAndGet {
+            val index = it.orderedEntries
+                .indexOfFirst { (id, _) -> id == uuid }
+                .takeIf { it != -1 } ?: return@updateAndGet it
+            val newIndex = (index + offset).coerceIn(it.orderedEntries.indices)
+            val preset = it.orderedEntries[index]
+            val newEntries = it.orderedEntries.removeAt(index).add(newIndex, preset)
+            PresetsContainer(newEntries)
+        }
+        saveOrder(newPresets.order)
+    }
+
     fun removePreset(uuid: Uuid) {
         getPresetFile(uuid).deleteIfExists()
-        val newPresets = _presets.getAndUpdate {
+        val newPresets = _presets.updateAndGet {
             PresetsContainer(it.orderedEntries.removeAll { it.first == uuid })
         }
         saveOrder(newPresets.order)

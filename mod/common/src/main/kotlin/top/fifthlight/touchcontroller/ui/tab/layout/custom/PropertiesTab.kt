@@ -55,7 +55,7 @@ object PropertiesTab : CustomTab() {
             SideBarScaffold(
                 modifier = modifier,
                 title = {
-                    Text(Text.translatable(Texts.SCREEN_CONFIG_LAYOUT_CUSTOM_CONTROL_LAYOUT_PROPERTIES))
+                    Text(Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_PROPERTIES))
                 },
                 actions = if (uiState.selectedWidget != null) {
                     {
@@ -65,7 +65,7 @@ object PropertiesTab : CustomTab() {
                                 screenModel.copyWidget(uiState.selectedWidget)
                             }
                         ) {
-                            Text(Text.translatable(Texts.SCREEN_CONFIG_LAYOUT_CUSTOM_CONTROL_LAYOUT_COPY))
+                            Text(Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_COPY))
                         }
                         Button(
                             modifier = Modifier.weight(1f),
@@ -73,7 +73,7 @@ object PropertiesTab : CustomTab() {
 
                             }
                         ) {
-                            Text(Text.translatable(Texts.SCREEN_CONFIG_LAYOUT_CUSTOM_CONTROL_LAYOUT_CUT))
+                            Text(Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_CUT))
                         }
                     }
                 } else {
@@ -101,7 +101,7 @@ object PropertiesTab : CustomTab() {
                         modifier = Modifier.fillMaxSize(),
                         alignment = Alignment.Center,
                     ) {
-                        Text(Text.translatable(Texts.SCREEN_CONFIG_LAYOUT_CUSTOM_CONTROL_LAYOUT_NO_WIDGET_SELECTED))
+                        Text(Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_NO_WIDGET_SELECTED))
                     }
                 }
             }
