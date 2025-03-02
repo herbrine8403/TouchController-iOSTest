@@ -75,6 +75,32 @@ class CanvasImpl(
         drawContext.fill(offset.x, offset.y, offset.x + size.width, offset.y + size.height, color.value)
     }
 
+    override fun fillGradientRect(
+        offset: Offset,
+        size: Size,
+        leftTopColor: Color,
+        leftBottomColor: Color,
+        rightTopColor: Color,
+        rightBottomColor: Color
+    ) {
+        val renderLayer = RenderLayer.getGui()
+        val matrix = drawContext.matrices.peek().positionMatrix
+        val vertexConsumer = drawContext.vertexConsumers.getBuffer(renderLayer)
+        val dstRect = Rect(offset, size)
+        vertexConsumer
+            .vertex(matrix, dstRect.left, dstRect.top, 0f)
+            .color(leftTopColor.value)
+        vertexConsumer
+            .vertex(matrix, dstRect.left, dstRect.bottom, 0f)
+            .color(leftBottomColor.value)
+        vertexConsumer
+            .vertex(matrix, dstRect.right, dstRect.bottom, 0f)
+            .color(rightBottomColor.value)
+        vertexConsumer
+            .vertex(matrix, dstRect.right, dstRect.top, 0f)
+            .color(rightTopColor.value)
+    }
+
     override fun drawRect(offset: IntOffset, size: IntSize, color: Color) {
         drawContext.drawBorder(offset.x, offset.y, size.width, size.height, color.value)
     }
@@ -101,6 +127,7 @@ class CanvasImpl(
         uvRect: Rect,
         tint: Color = Colors.WHITE,
     ) {
+        drawContext.draw()
         if (blendEnabled) {
             enableBlend()
         } else {

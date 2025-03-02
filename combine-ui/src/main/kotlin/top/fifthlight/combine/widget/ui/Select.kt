@@ -16,8 +16,8 @@ import top.fifthlight.combine.modifier.pointer.consumePress
 import top.fifthlight.combine.node.LocalTextMeasurer
 import top.fifthlight.combine.paint.Colors
 import top.fifthlight.combine.ui.style.ColorTheme
+import top.fifthlight.combine.ui.style.DrawableSet
 import top.fifthlight.combine.ui.style.LocalColorTheme
-import top.fifthlight.combine.ui.style.NinePatchTextureSet
 import top.fifthlight.combine.widget.base.Popup
 import top.fifthlight.combine.widget.base.layout.Box
 import top.fifthlight.combine.widget.base.layout.Row
@@ -27,15 +27,15 @@ import top.fifthlight.data.IntSize
 import top.fifthlight.touchcontroller.assets.Textures
 import kotlin.math.max
 
-data class SelectTextureSet(
-    val menuBox: NinePatchTextureSet,
+data class SelectDrawableSet(
+    val menuBox: DrawableSet,
     val floatPanel: NinePatchTexture,
-    val itemUnselected: NinePatchTextureSet,
-    val itemSelected: NinePatchTextureSet,
+    val itemUnselected: DrawableSet,
+    val itemSelected: DrawableSet,
 )
 
-val defaultSelectTextureSet = SelectTextureSet(
-    menuBox = NinePatchTextureSet(
+val defaultSelectDrawableSet = SelectDrawableSet(
+    menuBox = DrawableSet(
         normal = Textures.WIDGET_SELECT_SELECT,
         focus = Textures.WIDGET_SELECT_SELECT_HOVER,
         hover = Textures.WIDGET_SELECT_SELECT_HOVER,
@@ -43,14 +43,14 @@ val defaultSelectTextureSet = SelectTextureSet(
         disabled = Textures.WIDGET_SELECT_SELECT_DISABLED,
     ),
     floatPanel = Textures.WIDGET_BACKGROUND_FLOAT_WINDOW,
-    itemUnselected = NinePatchTextureSet(
+    itemUnselected = DrawableSet(
         normal = Textures.WIDGET_LIST_LIST,
         focus = Textures.WIDGET_LIST_LIST_HOVER,
         hover = Textures.WIDGET_LIST_LIST_HOVER,
         active = Textures.WIDGET_LIST_LIST_ACTIVE,
         disabled = Textures.WIDGET_LIST_LIST_DISABLED,
     ),
-    itemSelected = NinePatchTextureSet(
+    itemSelected = DrawableSet(
         normal = Textures.WIDGET_LIST_LIST_PRESSLOCK,
         focus = Textures.WIDGET_LIST_LIST_PRESSLOCK_HOVER,
         hover = Textures.WIDGET_LIST_LIST_PRESSLOCK_HOVER,
@@ -59,7 +59,7 @@ val defaultSelectTextureSet = SelectTextureSet(
     )
 )
 
-val LocalSelectTextureSet = staticCompositionLocalOf<SelectTextureSet> { defaultSelectTextureSet }
+val LocalSelectDrawableSet = staticCompositionLocalOf<SelectDrawableSet> { defaultSelectDrawableSet }
 
 @Composable
 fun SelectIcon(
@@ -68,7 +68,7 @@ fun SelectIcon(
 ) {
     Icon(
         modifier = modifier,
-        texture = if (expanded) {
+        drawable = if (expanded) {
             Textures.ICON_UP
         } else {
             Textures.ICON_DOWN
@@ -98,14 +98,14 @@ fun <T> SelectScope.SelectItemList(
 @Composable
 fun <T> SelectScope.SelectItemList(
     modifier: Modifier = Modifier,
-    textureSet: SelectTextureSet = LocalSelectTextureSet.current,
+    drawableSet: SelectDrawableSet = LocalSelectDrawableSet.current,
     items: List<T>,
     textProvider: (T) -> Text,
     selectedIndex: Int = -1,
     onItemSelected: (Int) -> Unit = {},
 ) {
-    val itemTextureWidth = textureSet.itemUnselected.normal.padding.width
-    val itemTextureHeight = textureSet.itemUnselected.normal.padding.height
+    val itemTextureWidth = drawableSet.itemUnselected.normal.padding.width
+    val itemTextureHeight = drawableSet.itemUnselected.normal.padding.height
     val textMeasurer = LocalTextMeasurer.current
     Layout(
         modifier = modifier,
@@ -148,14 +148,14 @@ fun <T> SelectScope.SelectItemList(
             val text = textProvider(item)
             val interactionSource = remember { MutableInteractionSource() }
             val state by widgetState(interactionSource)
-            val texture = if (index == selectedIndex) {
-                textureSet.itemSelected
+            val drawable = if (index == selectedIndex) {
+                drawableSet.itemSelected
             } else {
-                textureSet.itemUnselected
+                drawableSet.itemUnselected
             }.getByState(state)
             Text(
                 modifier = Modifier
-                    .border(texture)
+                    .border(drawable)
                     .clickable(interactionSource) {
                         onItemSelected(index)
                     }
@@ -173,21 +173,21 @@ fun <T> SelectScope.SelectItemList(
 
 interface SelectScope {
     val anchor: IntRect
-    val textureSet: SelectTextureSet
+    val drawableSet: SelectDrawableSet
     val contentWidth: Int
 }
 
 private data class SelectScopeImpl(
     override val anchor: IntRect,
-    override val textureSet: SelectTextureSet
+    override val drawableSet: SelectDrawableSet
 ): SelectScope {
-    override val contentWidth = anchor.size.width - textureSet.floatPanel.padding.width
+    override val contentWidth = anchor.size.width - drawableSet.floatPanel.padding.width
 }
 
 @Composable
 fun Select(
     modifier: Modifier = Modifier,
-    textureSet: SelectTextureSet = LocalSelectTextureSet.current,
+    drawableSet: SelectDrawableSet = LocalSelectDrawableSet.current,
     colorTheme: ColorTheme? = null,
     expanded: Boolean = false,
     onExpandedChanged: (Boolean) -> Unit,
@@ -196,7 +196,7 @@ fun Select(
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     val state by widgetState(interactionSource)
-    val menuTexture = textureSet.menuBox.getByState(state)
+    val menuTexture = drawableSet.menuBox.getByState(state)
 
     var anchor by remember { mutableStateOf<IntRect?>(null) }
     val colorTheme = colorTheme ?: ColorTheme.light
@@ -223,7 +223,7 @@ fun Select(
 
     val currentAnchor = anchor
     if (expanded && currentAnchor != null) {
-        val scope = SelectScopeImpl(currentAnchor, textureSet)
+        val scope = SelectScopeImpl(currentAnchor, drawableSet)
         Popup(
             onDismissRequest = {
                 onExpandedChanged(false)
@@ -232,7 +232,9 @@ fun Select(
             var screenSize by remember { mutableStateOf<IntSize?>(null) }
             var contentSize by remember { mutableStateOf(IntSize.ZERO) }
             val currentScreenSize = screenSize ?: IntSize.ZERO
-            val top = if (currentAnchor.bottom + contentSize.height > currentScreenSize.height) {
+            val anchorCenter = currentAnchor.offset + currentAnchor.size / 2
+            val topSide = anchorCenter.top > currentScreenSize.height / 2
+            val top = if (topSide) {
                 currentAnchor.top - contentSize.height
             } else {
                 currentAnchor.bottom
@@ -260,9 +262,15 @@ fun Select(
                 screenSize?.let { screenSize ->
                     Box(
                         modifier = Modifier
-                            .border(textureSet.floatPanel)
+                            .border(drawableSet.floatPanel)
                             .minWidth(currentAnchor.size.width - 2)
-                            .maxHeight(screenSize.height / 2)
+                            .maxHeight(
+                                if (topSide) {
+                                    currentAnchor.top
+                                } else {
+                                    screenSize.height - currentAnchor.bottom
+                                }
+                            )
                             .onPlaced { contentSize = it.size }
                             .consumePress()
                     ) {

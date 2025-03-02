@@ -46,7 +46,7 @@ sealed class WidgetTriggerAction {
         }
 
         @Serializable
-        @SerialName("click")
+        @SerialName("lock")
         data class Lock(
             override val type: KeyBindingType,
             val actionType: LockActionType = LockActionType.INVERT,
@@ -133,7 +133,7 @@ sealed class WidgetTriggerAction {
         }
 
         @Serializable
-        @SerialName("cancel_flying")
+        @SerialName("start_sprint")
         data object StartSprint : Player() {
             override fun trigger(player: PlayerHandle) {
                 player.isSprinting = true

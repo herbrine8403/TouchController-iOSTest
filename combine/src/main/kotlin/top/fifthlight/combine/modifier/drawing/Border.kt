@@ -5,9 +5,11 @@ import top.fifthlight.combine.layout.MeasureResult
 import top.fifthlight.combine.layout.MeasureScope
 import top.fifthlight.combine.layout.Placeable
 import top.fifthlight.combine.modifier.*
+import top.fifthlight.combine.paint.Canvas
 import top.fifthlight.combine.paint.Color
-import top.fifthlight.combine.paint.RenderContext
+import top.fifthlight.combine.paint.Drawable
 import top.fifthlight.data.IntOffset
+import top.fifthlight.data.IntRect
 import top.fifthlight.data.IntSize
 
 fun Modifier.border(size: Int = 0, color: Color): Modifier = border(size, size, color)
@@ -24,30 +26,30 @@ private data class BorderNode(
     val bottom: Int = 0,
     val color: Color,
 ) : DrawModifierNode, LayoutModifierNode, Modifier.Node<BorderNode> {
-    override fun renderAfterContext(context: RenderContext, node: Placeable) {
+    override fun Canvas.renderAfter(node: Placeable) {
         if (left > 0) {
-            context.canvas.fillRect(
+            fillRect(
                 offset = IntOffset(0, 0),
                 size = IntSize(left, node.height),
                 color = color
             )
         }
         if (top > 0) {
-            context.canvas.fillRect(
+            fillRect(
                 offset = IntOffset(0, 0),
                 size = IntSize(node.width, top),
                 color = color
             )
         }
         if (right > 0) {
-            context.canvas.fillRect(
+            fillRect(
                 offset = IntOffset(node.width - right, 0),
                 size = IntSize(right, node.height),
                 color = color
             )
         }
         if (bottom > 0) {
-            context.canvas.fillRect(
+            fillRect(
                 offset = IntOffset(0, node.height - bottom),
                 size = IntSize(node.width, bottom),
                 color = color
@@ -69,4 +71,27 @@ private data class BorderNode(
         }
     }
 }
+
+fun Modifier.border(drawable: Drawable): Modifier = then(DrawableBorderNode(drawable))
+
+private data class DrawableBorderNode(
+    val drawable: Drawable,
+) : DrawModifierNode, LayoutModifierNode, Modifier.Node<DrawableBorderNode> {
+    override fun Canvas.renderBefore(node: Placeable) {
+        drawable.run { draw(IntRect(offset = IntOffset.ZERO, size = node.size)) }
+    }
+
+    override fun MeasureScope.measure(measurable: Measurable, constraints: Constraints): MeasureResult {
+        val padding = drawable.padding
+        val adjustedConstraints = constraints.offset(-padding.width, -padding.height)
+
+        val placeable = measurable.measure(adjustedConstraints)
+        val size = (placeable.size + padding.size).coerceIn(constraints)
+
+        return layout(size) {
+            placeable.placeAt(padding.left, padding.top)
+        }
+    }
+}
+
 

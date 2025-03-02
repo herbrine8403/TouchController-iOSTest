@@ -57,7 +57,7 @@ object AboutTab : Tab() {
                 horizontalArrangement = Arrangement.spacedBy(8),
             ) {
                 Icon(
-                    texture = Textures.CONTROL_CLASSIC_DPAD_UP,
+                    drawable = Textures.CONTROL_CLASSIC_DPAD_UP,
                     size = IntSize(iconSize),
                 )
                 Column(

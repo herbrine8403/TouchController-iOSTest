@@ -59,6 +59,7 @@ data class WidgetsTabState(
                 SneakButton(),
                 SprintButton(),
                 UseButton(),
+                CustomWidget(),
             )
         }
 

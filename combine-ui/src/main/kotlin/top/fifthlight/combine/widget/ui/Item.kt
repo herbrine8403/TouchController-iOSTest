@@ -28,9 +28,7 @@ fun Item(
             .then(modifier),
     ) {
         if (itemStack != null) {
-            with(canvas) {
-                drawItemStack(IntOffset.ZERO, IntSize(size), itemStack)
-            }
+            drawItemStack(IntOffset.ZERO, IntSize(size), itemStack)
         }
     }
 }

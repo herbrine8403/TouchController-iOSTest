@@ -4,7 +4,6 @@ import com.mojang.blaze3d.platform.GlStateManager
 import com.mojang.blaze3d.systems.RenderSystem
 import net.minecraft.client.MinecraftClient
 import net.minecraft.client.gl.ShaderProgramKey
-import net.minecraft.client.gl.ShaderProgramKeys
 import net.minecraft.client.gui.DrawContext
 import net.minecraft.client.render.*
 import net.minecraft.text.Text
@@ -18,6 +17,7 @@ import top.fifthlight.data.*
 import top.fifthlight.touchcontroller.assets.Textures
 import top.fifthlight.touchcontroller.mixin.DrawContextAccessor
 import top.fifthlight.combine.data.Text as CombineText
+
 
 private inline fun withShader(program: ShaderProgramKey, crossinline block: () -> Unit) {
     val originalShader = RenderSystem.getShader()
@@ -76,6 +76,32 @@ class CanvasImpl(
         drawContext.fill(offset.x, offset.y, offset.x + size.width, offset.y + size.height, color.value)
     }
 
+    override fun fillGradientRect(
+        offset: Offset,
+        size: Size,
+        leftTopColor: Color,
+        leftBottomColor: Color,
+        rightTopColor: Color,
+        rightBottomColor: Color,
+    ) {
+        val matrix = drawContext.matrices.peek().positionMatrix
+        val dstRect = Rect(offset, size)
+        val renderLayer = RenderLayer.getGui()
+        val vertexConsumer = vertexConsumers.getBuffer(renderLayer)
+        vertexConsumer
+            .vertex(matrix, dstRect.left, dstRect.top, 0f)
+            .color(leftTopColor.value)
+        vertexConsumer
+            .vertex(matrix, dstRect.left, dstRect.bottom, 0f)
+            .color(leftBottomColor.value)
+        vertexConsumer
+            .vertex(matrix, dstRect.right, dstRect.bottom, 0f)
+            .color(rightBottomColor.value)
+        vertexConsumer
+            .vertex(matrix, dstRect.right, dstRect.top, 0f)
+            .color(rightTopColor.value)
+    }
+
     override fun drawRect(offset: IntOffset, size: IntSize, color: Color) {
         drawContext.drawBorder(offset.x, offset.y, size.width, size.height, color.value)
     }
@@ -102,27 +128,25 @@ class CanvasImpl(
         uvRect: Rect,
         tint: Color = Colors.WHITE,
     ) {
-        val renderLayer = RenderLayer::getGuiTextured.invoke(identifier)
-        withShader(ShaderProgramKeys.POSITION_TEX_COLOR) {
-            val matrix = drawContext.matrices.peek().positionMatrix
-            val vertexConsumer = vertexConsumers.getBuffer(renderLayer)
-            vertexConsumer
-                .vertex(matrix, dstRect.left, dstRect.top, 0f)
-                .texture(uvRect.left, uvRect.top)
-                .color(tint.value)
-            vertexConsumer
-                .vertex(matrix, dstRect.left, dstRect.bottom, 0f)
-                .texture(uvRect.left, uvRect.bottom)
-                .color(tint.value)
-            vertexConsumer
-                .vertex(matrix, dstRect.right, dstRect.bottom, 0f)
-                .texture(uvRect.right, uvRect.bottom)
-                .color(tint.value)
-            vertexConsumer
-                .vertex(matrix, dstRect.right, dstRect.top, 0f)
-                .texture(uvRect.right, uvRect.top)
-                .color(tint.value)
-        }
+        val renderLayer = RenderLayer.getGuiTextured(identifier)
+        val matrix = drawContext.matrices.peek().positionMatrix
+        val vertexConsumer = vertexConsumers.getBuffer(renderLayer)
+        vertexConsumer
+            .vertex(matrix, dstRect.left, dstRect.top, 0f)
+            .texture(uvRect.left, uvRect.top)
+            .color(tint.value)
+        vertexConsumer
+            .vertex(matrix, dstRect.left, dstRect.bottom, 0f)
+            .texture(uvRect.left, uvRect.bottom)
+            .color(tint.value)
+        vertexConsumer
+            .vertex(matrix, dstRect.right, dstRect.bottom, 0f)
+            .texture(uvRect.right, uvRect.bottom)
+            .color(tint.value)
+        vertexConsumer
+            .vertex(matrix, dstRect.right, dstRect.top, 0f)
+            .texture(uvRect.right, uvRect.top)
+            .color(tint.value)
     }
 
     override fun drawTexture(

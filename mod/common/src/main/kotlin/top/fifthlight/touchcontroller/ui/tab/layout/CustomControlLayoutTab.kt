@@ -8,6 +8,7 @@ import kotlinx.collections.immutable.PersistentList
 import org.koin.core.component.KoinComponent
 import org.koin.core.parameter.parametersOf
 import top.fifthlight.combine.data.Text
+import top.fifthlight.combine.input.focus.LocalFocusManager
 import top.fifthlight.combine.layout.Alignment
 import top.fifthlight.combine.layout.Arrangement
 import top.fifthlight.combine.layout.Layout
@@ -316,6 +317,7 @@ object CustomControlLayoutTab : Tab(), KoinComponent {
                                 sideBarAtRight = sideBarAtRight,
                             )
 
+                            val focusManager = LocalFocusManager.current
                             Box(
                                 modifier = Modifier
                                     .fillMaxWidth(.4f)
@@ -327,7 +329,7 @@ object CustomControlLayoutTab : Tab(), KoinComponent {
                                             Alignment.CenterLeft
                                         }
                                     )
-                                    .consumePress(),
+                                    .consumePress { focusManager.requestBlur() },
                             ) {
                                 CompositionLocalProvider(
                                     LocalCustomTabContext provides currentCustomTabContext,

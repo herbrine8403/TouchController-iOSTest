@@ -13,15 +13,15 @@ import top.fifthlight.combine.paint.Colors
 import top.fifthlight.combine.sound.LocalSoundManager
 import top.fifthlight.combine.sound.SoundKind
 import top.fifthlight.combine.ui.style.ColorTheme
+import top.fifthlight.combine.ui.style.DrawableSet
 import top.fifthlight.combine.ui.style.LocalColorTheme
-import top.fifthlight.combine.ui.style.NinePatchTextureSet
 import top.fifthlight.combine.widget.base.layout.Box
 import top.fifthlight.combine.widget.base.layout.BoxScope
 import top.fifthlight.data.IntPadding
 import top.fifthlight.data.IntSize
 import top.fifthlight.touchcontroller.assets.Textures
 
-val defaultButtonTexture = NinePatchTextureSet(
+val defaultButtonDrawable = DrawableSet(
     normal = Textures.WIDGET_BUTTON_BUTTON,
     focus = Textures.WIDGET_BUTTON_BUTTON_HOVER,
     hover = Textures.WIDGET_BUTTON_BUTTON_HOVER,
@@ -29,27 +29,27 @@ val defaultButtonTexture = NinePatchTextureSet(
     disabled = Textures.WIDGET_BUTTON_BUTTON_DISABLED,
 )
 
-val guideButtonTexture = defaultButtonTexture.copy(
+val guideButtonTexture = defaultButtonDrawable.copy(
     normal = Textures.WIDGET_BUTTON_BUTTON_GUIDE,
     focus = Textures.WIDGET_BUTTON_BUTTON_GUIDE_HOVER,
     hover = Textures.WIDGET_BUTTON_BUTTON_GUIDE_HOVER,
 )
 
-val warningButtonTexture = defaultButtonTexture.copy(
+val warningButtonTexture = defaultButtonDrawable.copy(
     normal = Textures.WIDGET_BUTTON_BUTTON_WARNING,
     focus = Textures.WIDGET_BUTTON_BUTTON_WARNING_HOVER,
     hover = Textures.WIDGET_BUTTON_BUTTON_WARNING_HOVER,
 )
 
-val LocalButtonTexture = staticCompositionLocalOf { defaultButtonTexture }
-val LocalGuideButtonTexture = staticCompositionLocalOf { guideButtonTexture }
-val LocalWarningButtonTexture = staticCompositionLocalOf { warningButtonTexture }
+val LocalButtonDrawable = staticCompositionLocalOf { defaultButtonDrawable }
+val LocalGuideButtonDrawable = staticCompositionLocalOf { guideButtonTexture }
+val LocalWarningButtonDrawable = staticCompositionLocalOf { warningButtonTexture }
 
 @NonSkippableComposable
 @Composable
 fun GuideButton(
     modifier: Modifier = Modifier,
-    textureSet: NinePatchTextureSet = LocalGuideButtonTexture.current,
+    drawableSet: DrawableSet = LocalGuideButtonDrawable.current,
     colorTheme: ColorTheme? = ColorTheme.dark,
     minSize: IntSize = IntSize(48, 20),
     enabled: Boolean = true,
@@ -59,7 +59,7 @@ fun GuideButton(
 ) {
     Button(
         modifier = modifier,
-        textureSet = textureSet,
+        drawableSet = drawableSet,
         colorTheme = colorTheme,
         minSize = minSize,
         enabled = enabled,
@@ -73,7 +73,7 @@ fun GuideButton(
 @Composable
 fun WarningButton(
     modifier: Modifier = Modifier,
-    textureSet: NinePatchTextureSet = LocalWarningButtonTexture.current,
+    drawableSet: DrawableSet = LocalWarningButtonDrawable.current,
     colorTheme: ColorTheme? = ColorTheme.dark,
     minSize: IntSize = IntSize(48, 20),
     enabled: Boolean = true,
@@ -83,7 +83,7 @@ fun WarningButton(
 ) {
     Button(
         modifier = modifier,
-        textureSet = textureSet,
+        drawableSet = drawableSet,
         colorTheme = colorTheme,
         minSize = minSize,
         enabled = enabled,
@@ -96,7 +96,7 @@ fun WarningButton(
 @Composable
 fun Button(
     modifier: Modifier = Modifier,
-    textureSet: NinePatchTextureSet = LocalButtonTexture.current,
+    drawableSet: DrawableSet = LocalButtonDrawable.current,
     colorTheme: ColorTheme? = null,
     minSize: IntSize = IntSize(48, 20),
     padding: IntPadding = IntPadding(left = 4, right = 4, top = 1),
@@ -108,12 +108,12 @@ fun Button(
     val soundManager = LocalSoundManager.current
     val interactionSource = remember { MutableInteractionSource() }
     val state by widgetState(interactionSource)
-    val texture = textureSet.getByState(state, enabled = enabled)
+    val drawable = drawableSet.getByState(state, enabled = enabled)
 
     Box(
         modifier = Modifier
             .padding(padding)
-            .border(texture)
+            .border(drawable)
             .minSize(minSize)
             .then(
                 if (enabled) {

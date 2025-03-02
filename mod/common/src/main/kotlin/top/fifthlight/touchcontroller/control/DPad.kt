@@ -124,7 +124,7 @@ data class DPad(
             BooleanProperty(
                 getValue = { it.classic },
                 setValue = { config, value -> config.copy(classic = value) },
-                message = textFactory.of(Texts.WIDGET_DPAD_PROPERTY_CLASSIC),
+                name = textFactory.of(Texts.WIDGET_DPAD_PROPERTY_CLASSIC),
             )
         ) as PersistentList<Property<ControllerWidget, *>>
     }

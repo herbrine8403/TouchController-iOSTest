@@ -25,9 +25,7 @@ data class BlendFunction(
 
 inline fun Canvas.withBlend(crossinline block: Canvas.() -> Unit) {
     val enabled = blendEnabled
-    if (!enabled) {
-        enableBlend()
-    }
+    enableBlend()
     try {
         block()
     } finally {
@@ -60,6 +58,14 @@ interface Canvas {
     fun rotate(degrees: Float)
     fun scale(x: Float, y: Float)
     fun fillRect(offset: IntOffset = IntOffset.ZERO, size: IntSize = IntSize.ZERO, color: Color)
+    fun fillGradientRect(
+        offset: Offset = Offset.ZERO,
+        size: Size = Size.ZERO,
+        leftTopColor: Color,
+        leftBottomColor: Color = leftTopColor,
+        rightTopColor: Color,
+        rightBottomColor: Color = rightTopColor,
+    )
     fun drawRect(offset: IntOffset = IntOffset.ZERO, size: IntSize = IntSize.ZERO, color: Color)
     fun drawText(offset: IntOffset, text: String, color: Color)
     fun drawText(offset: IntOffset, width: Int, text: String, color: Color)
@@ -80,6 +86,12 @@ interface Canvas {
     fun defaultBlendFunction()
     fun pushClip(absoluteArea: IntRect, relativeArea: IntRect)
     fun popClip()
+}
+
+inline fun Canvas.withState(crossinline block: () -> Unit) {
+    pushState()
+    block()
+    popState()
 }
 
 fun Canvas.translate(offset: IntOffset) = translate(offset.x, offset.y)

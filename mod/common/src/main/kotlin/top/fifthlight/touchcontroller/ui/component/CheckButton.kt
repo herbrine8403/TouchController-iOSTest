@@ -4,17 +4,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.staticCompositionLocalOf
 import top.fifthlight.combine.modifier.Modifier
 import top.fifthlight.combine.ui.style.ColorTheme
-import top.fifthlight.combine.ui.style.NinePatchTextureSet
+import top.fifthlight.combine.ui.style.DrawableSet
 import top.fifthlight.combine.widget.base.layout.BoxScope
 import top.fifthlight.combine.widget.ui.Button
-import top.fifthlight.combine.widget.ui.defaultButtonTexture
+import top.fifthlight.combine.widget.ui.defaultButtonDrawable
 import top.fifthlight.data.IntPadding
 import top.fifthlight.data.IntSize
 import top.fifthlight.touchcontroller.assets.Textures
 
-data class CheckButtonTextures(
-    val unchecked: NinePatchTextureSet,
-    val checked: NinePatchTextureSet,
+data class CheckButtonDrawables(
+    val unchecked: DrawableSet,
+    val checked: DrawableSet,
 )
 
 data class CheckButtonColors(
@@ -22,15 +22,15 @@ data class CheckButtonColors(
     val checked: ColorTheme,
 )
 
-val tabButtonTexture = CheckButtonTextures(
-    unchecked = NinePatchTextureSet(
+val tabButtonDrawable = CheckButtonDrawables(
+    unchecked = DrawableSet(
         normal = Textures.WIDGET_TAB_TAB,
         focus = Textures.WIDGET_TAB_TAB_HOVER,
         hover = Textures.WIDGET_TAB_TAB_HOVER,
         active = Textures.WIDGET_TAB_TAB_ACTIVE,
         disabled = Textures.WIDGET_TAB_TAB_DISABLED,
     ),
-    checked = NinePatchTextureSet(
+    checked = DrawableSet(
         normal = Textures.WIDGET_TAB_TAB_PRESSLOCK,
         focus = Textures.WIDGET_TAB_TAB_PRESSLOCK_HOVER,
         hover = Textures.WIDGET_TAB_TAB_PRESSLOCK_HOVER,
@@ -44,15 +44,15 @@ val tabButtonColors = CheckButtonColors(
     checked = ColorTheme.light,
 )
 
-val listButtonTexture = CheckButtonTextures(
-    unchecked = NinePatchTextureSet(
+val listButtonDrawable = CheckButtonDrawables(
+    unchecked = DrawableSet(
         normal = Textures.WIDGET_LIST_LIST,
         focus = Textures.WIDGET_LIST_LIST_HOVER,
         hover = Textures.WIDGET_LIST_LIST_HOVER,
         active = Textures.WIDGET_LIST_LIST_ACTIVE,
         disabled = Textures.WIDGET_LIST_LIST_DISABLED,
     ),
-    checked = NinePatchTextureSet(
+    checked = DrawableSet(
         normal = Textures.WIDGET_LIST_LIST_PRESSLOCK,
         focus = Textures.WIDGET_LIST_LIST_PRESSLOCK_HOVER,
         hover = Textures.WIDGET_LIST_LIST_PRESSLOCK_HOVER,
@@ -66,9 +66,9 @@ val listButtonColors = CheckButtonColors(
     checked = ColorTheme.light,
 )
 
-val checkButtonTexture = CheckButtonTextures(
-    unchecked = defaultButtonTexture,
-    checked = defaultButtonTexture.copy(
+val checkButtonDrawable = CheckButtonDrawables(
+    unchecked = defaultButtonDrawable,
+    checked = defaultButtonDrawable.copy(
         normal = Textures.WIDGET_BUTTON_BUTTON_PRESSLOCK,
         hover = Textures.WIDGET_BUTTON_BUTTON_PRESSLOCK_HOVER,
         focus = Textures.WIDGET_BUTTON_BUTTON_PRESSLOCK_HOVER,
@@ -81,17 +81,17 @@ val checkButtonColors = CheckButtonColors(
     checked = ColorTheme.light,
 )
 
-val LocalTabButtonTexture = staticCompositionLocalOf { tabButtonTexture }
+val LocalTabButtonDrawable = staticCompositionLocalOf { tabButtonDrawable }
 val LocalTabButtonColors = staticCompositionLocalOf { tabButtonColors }
-val LocalListButtonTexture = staticCompositionLocalOf { listButtonTexture }
+val LocalListButtonDrawable = staticCompositionLocalOf { listButtonDrawable }
 val LocalListButtonColors = staticCompositionLocalOf { listButtonColors }
-val LocalCheckButtonTexture = staticCompositionLocalOf { checkButtonTexture }
+val LocalCheckButtonDrawable = staticCompositionLocalOf { checkButtonDrawable }
 val LocalCheckButtonColors = staticCompositionLocalOf { checkButtonColors }
 
 @Composable
 fun TabButton(
     modifier: Modifier = Modifier,
-    textures: CheckButtonTextures = LocalTabButtonTexture.current,
+    drawableSet: CheckButtonDrawables = LocalTabButtonDrawable.current,
     colors: CheckButtonColors = LocalTabButtonColors.current,
     checked: Boolean = false,
     minSize: IntSize = IntSize(48, 20),
@@ -102,7 +102,7 @@ fun TabButton(
     content: @Composable BoxScope.() -> Unit
 ) = CheckButton(
     modifier = modifier,
-    textures = textures,
+    drawableSet = drawableSet,
     colors = colors,
     checked = checked,
     padding = padding,
@@ -116,7 +116,7 @@ fun TabButton(
 @Composable
 fun ListButton(
     modifier: Modifier = Modifier,
-    textures: CheckButtonTextures = LocalListButtonTexture.current,
+    drawableSet: CheckButtonDrawables = LocalListButtonDrawable.current,
     colors: CheckButtonColors = LocalListButtonColors.current,
     checked: Boolean = false,
     minSize: IntSize = IntSize(48, 20),
@@ -127,7 +127,7 @@ fun ListButton(
     content: @Composable BoxScope.() -> Unit
 ) = CheckButton(
     modifier = modifier,
-    textures = textures,
+    drawableSet = drawableSet,
     colors = colors,
     checked = checked,
     minSize = minSize,
@@ -141,7 +141,7 @@ fun ListButton(
 @Composable
 fun CheckButton(
     modifier: Modifier = Modifier,
-    textures: CheckButtonTextures = LocalCheckButtonTexture.current,
+    drawableSet: CheckButtonDrawables = LocalCheckButtonDrawable.current,
     colors: CheckButtonColors = LocalCheckButtonColors.current,
     checked: Boolean = false,
     minSize: IntSize = IntSize(48, 20),
@@ -152,10 +152,10 @@ fun CheckButton(
     content: @Composable BoxScope.() -> Unit
 ) = Button(
     modifier = modifier,
-    textureSet = if (checked) {
-        textures.checked
+    drawableSet = if (checked) {
+        drawableSet.checked
     } else {
-        textures.unchecked
+        drawableSet.unchecked
     },
     colorTheme = if (checked) {
         colors.checked

@@ -49,6 +49,17 @@ data class IntRect(
         val ZERO = IntRect(offset = IntOffset.ZERO, size = IntSize.ZERO)
     }
 
+    operator fun plus(padding: IntPadding) = IntRect(
+        offset = IntOffset(
+            x = offset.x + padding.left,
+            y = offset.y + padding.top,
+        ),
+        size = IntSize(
+            width = size.width - padding.width,
+            height = size.height - padding.height,
+        )
+    )
+
     fun toRect() = Rect(
         offset = offset.toOffset(),
         size = size.toSize()

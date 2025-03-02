@@ -226,6 +226,27 @@
 
   "touchcontroller.screen.license.title": "License",
 
+  "touchcontroller.widget.texture.type": "Texture type",
+  "touchcontroller.widget.texture.type.empty": "Empty",
+  "touchcontroller.widget.texture.type.fill": "Fill",
+  "touchcontroller.widget.texture.type.fixed": "Fixed size texture",
+  "touchcontroller.widget.texture.type.nine_patch": "Adaptive size texture",
+  "touchcontroller.widget.texture.extra_padding": "Padding",
+  "touchcontroller.widget.texture.extra_padding.left": "Left",
+  "touchcontroller.widget.texture.extra_padding.top": "Top",
+  "touchcontroller.widget.texture.extra_padding.right": "Right",
+  "touchcontroller.widget.texture.extra_padding.bottom": "Bottom",
+  "touchcontroller.widget.texture.fill.border_width": "Border width",
+  "touchcontroller.widget.texture.fill.border_color": "Border color",
+  "touchcontroller.widget.texture.fill.background_color": "Background color",
+  "touchcontroller.widget.texture.fixed.texture": "Texture",
+  "touchcontroller.widget.texture.fixed.scale": "Scale",
+  "touchcontroller.widget.texture.nine_patch.texture": "Texture",
+  "touchcontroller.widget.active_texture.type": "Texture type",
+  "touchcontroller.widget.active_texture.same": "Keep",
+  "touchcontroller.widget.active_texture.gray": "Darken",
+  "touchcontroller.widget.active_texture.texture": "Switch to new texture",
+
   "touchcontroller.widget.general.property.lock_moving": "Lock moving",
   "touchcontroller.widget.general.property.anchor.name": "Anchor",
   "touchcontroller.widget.general.property.anchor.top_left": "Top left",
@@ -375,5 +396,10 @@
   "touchcontroller.widget.player_list_button.property.style.classic": "Classic",
   "touchcontroller.widget.player_list_button.property.style.new": "New",
 
-  "touchcontroller.widget.custom_button.name": "Custom button"
+  "touchcontroller.widget.custom_button.name": "Custom button",
+  "touchcontroller.widget.custom_button.center_text": "Text",
+  "touchcontroller.widget.custom_button.text_color": "Text color",
+  "touchcontroller.widget.custom_button.normal_texture": "Normal texture",
+  "touchcontroller.widget.custom_button.active_texture": "Active texture",
+  "touchcontroller.widget.custom_button.swipe_trigger": "Swipe trigger"
 }

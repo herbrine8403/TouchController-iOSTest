@@ -9,32 +9,32 @@ import top.fifthlight.combine.layout.Alignment
 import top.fifthlight.combine.modifier.Modifier
 import top.fifthlight.combine.modifier.focus.focusable
 import top.fifthlight.combine.modifier.pointer.clickable
-import top.fifthlight.combine.ui.style.TextureSet
+import top.fifthlight.combine.ui.style.DrawableSet
 import top.fifthlight.combine.widget.base.layout.Box
 import top.fifthlight.touchcontroller.assets.Textures
 
-data class SwitchTextureSet(
-    val off: TextureSet,
-    val on: TextureSet,
-    val handle: TextureSet
+data class SwitchDrawableSet(
+    val off: DrawableSet,
+    val on: DrawableSet,
+    val handle: DrawableSet
 )
 
-val defaultSwitchTexture = SwitchTextureSet(
-    off = TextureSet(
+val defaultSwitchDrawable = SwitchDrawableSet(
+    off = DrawableSet(
         normal = Textures.WIDGET_SWITCH_SWITCH_OFF,
         focus = Textures.WIDGET_SWITCH_SWITCH_OFF_HOVER,
         hover = Textures.WIDGET_SWITCH_SWITCH_OFF_HOVER,
         active = Textures.WIDGET_SWITCH_SWITCH_OFF_ACTIVE,
         disabled = Textures.WIDGET_SWITCH_SWITCH_OFF_DISABLED,
     ),
-    on = TextureSet(
+    on = DrawableSet(
         normal = Textures.WIDGET_SWITCH_SWITCH_ON,
         focus = Textures.WIDGET_SWITCH_SWITCH_ON_HOVER,
         hover = Textures.WIDGET_SWITCH_SWITCH_ON_HOVER,
         active = Textures.WIDGET_SWITCH_SWITCH_ON_ACTIVE,
         disabled = Textures.WIDGET_SWITCH_SWITCH_ON_DISABLED,
     ),
-    handle = TextureSet(
+    handle = DrawableSet(
         normal = Textures.WIDGET_HANDLE_HANDLE,
         focus = Textures.WIDGET_HANDLE_HANDLE_HOVER,
         hover = Textures.WIDGET_HANDLE_HANDLE_HOVER,
@@ -43,24 +43,24 @@ val defaultSwitchTexture = SwitchTextureSet(
     ),
 )
 
-val LocalSwitchTexture = staticCompositionLocalOf<SwitchTextureSet> { defaultSwitchTexture }
+val LocalSwitchDrawable = staticCompositionLocalOf<SwitchDrawableSet> { defaultSwitchDrawable }
 
 @Composable
 fun Switch(
     modifier: Modifier = Modifier,
-    textureSet: SwitchTextureSet = LocalSwitchTexture.current,
+    drawableSet: SwitchDrawableSet = LocalSwitchDrawable.current,
     enabled: Boolean = true,
     value: Boolean,
     onValueChanged: ((Boolean) -> Unit)?,
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     val state by widgetState(interactionSource)
-    val texture = if (value) {
-        textureSet.on.getByState(state, enabled = enabled)
+    val drawable = if (value) {
+        drawableSet.on.getByState(state, enabled = enabled)
     } else {
-        textureSet.off.getByState(state, enabled = enabled)
+        drawableSet.off.getByState(state, enabled = enabled)
     }
-    val handleTexture = textureSet.handle.getByState(state, enabled = enabled)
+    val handleDrawable = drawableSet.handle.getByState(state, enabled = enabled)
 
     val modifier = if (onValueChanged == null || !enabled) {
         modifier
@@ -81,7 +81,7 @@ fun Switch(
             Alignment.CenterLeft
         }
     ) {
-        Icon(texture = texture)
-        Icon(texture = handleTexture)
+        Icon(drawable = drawable)
+        Icon(drawable = handleDrawable)
     }
 }

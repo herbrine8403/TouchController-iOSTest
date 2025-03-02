@@ -49,7 +49,7 @@ data class ChatButton(
             BooleanProperty(
                 getValue = { it.classic },
                 setValue = { config, value -> config.copy(classic = value) },
-                message = textFactory.of(Texts.WIDGET_CHAT_BUTTON_PROPERTY_CLASSIC),
+                name = textFactory.of(Texts.WIDGET_CHAT_BUTTON_PROPERTY_CLASSIC),
             )
         ) as PersistentList<Property<ControllerWidget, *>>
     }

@@ -1,14 +1,19 @@
 package top.fifthlight.touchcontroller.control
 
+import kotlinx.collections.immutable.PersistentList
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.plus
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
+import top.fifthlight.combine.data.TextFactory
 import top.fifthlight.combine.paint.Color
 import top.fifthlight.combine.paint.Colors
 import top.fifthlight.combine.paint.TextMeasurer
 import top.fifthlight.combine.paint.drawNinePatchTexture
 import top.fifthlight.data.IntOffset
+import top.fifthlight.data.IntPadding
 import top.fifthlight.data.IntRect
 import top.fifthlight.data.IntSize
 import top.fifthlight.touchcontroller.assets.Texts
@@ -19,9 +24,9 @@ import kotlin.uuid.Uuid
 @Serializable
 @SerialName("custom")
 data class CustomWidget(
-    val normalTexture: ButtonTexture,
-    val activeTexture: ButtonActiveTexture,
-    val centerText: String? = null,
+    val normalTexture: ButtonTexture = ButtonTexture.NinePatch(extraPadding = IntPadding(8)),
+    val activeTexture: ButtonActiveTexture = ButtonActiveTexture.Same,
+    val centerText: String? = "",
     val textColor: Color = Colors.BLACK,
     val swipeTrigger: Boolean = false,
     val action: ButtonTrigger = ButtonTrigger.Press(),
@@ -34,8 +39,51 @@ data class CustomWidget(
 ) : ControllerWidget(), KoinComponent {
     private val textMeasurer: TextMeasurer by inject()
 
+    companion object : KoinComponent {
+        private val textFactory: TextFactory by inject()
+
+        @Suppress("UNCHECKED_CAST")
+        private val _properties = properties + persistentListOf<Property<CustomWidget, *>>(
+            BooleanProperty(
+                getValue = { it.swipeTrigger },
+                setValue = { config, value ->
+                    config.copy(swipeTrigger = value)
+                },
+                name = textFactory.of(Texts.WIDGET_CUSTOM_BUTTON_SWIPE_TRIGGER),
+            ),
+            StringProperty(
+                getValue = { it.centerText ?: "" },
+                setValue = { config, value ->
+                    config.copy(centerText = value)
+                },
+                name = textFactory.of(Texts.WIDGET_CUSTOM_BUTTON_CENTER_TEXT),
+            ),
+            ColorProperty(
+                getValue = { it.textColor },
+                setValue = { config, value ->
+                    config.copy(textColor = value)
+                },
+                name = textFactory.of(Texts.WIDGET_CUSTOM_BUTTON_TEXT_COLOR),
+            ),
+            ButtonTextureProperty(
+                getValue = { it.normalTexture },
+                setValue = { config, value ->
+                    config.copy(normalTexture = value)
+                },
+                name = textFactory.of(Texts.WIDGET_CUSTOM_BUTTON_NORMAL_TEXTURE),
+            ),
+            ButtonActiveTextureProperty(
+                getValue = { it.activeTexture },
+                setValue = { config, value ->
+                    config.copy(activeTexture = value)
+                },
+                name = textFactory.of(Texts.WIDGET_CUSTOM_BUTTON_ACTIVE_TEXTURE),
+            )
+        ) as PersistentList<Property<ControllerWidget, *>>
+    }
+
     override val properties
-        get() = super.properties
+        get() = _properties
 
     private fun ButtonTexture.getSize(): Pair<IntSize, IntSize> {
         fun measureCenterText() = centerText?.takeIf { it.isNotEmpty() }?.let(textMeasurer::measure) ?: IntSize.ZERO
@@ -117,7 +165,7 @@ data class CustomWidget(
                     canvas.fillRect(
                         offset = IntOffset(buttonTexture.borderWidth),
                         size = textureSize - buttonTexture.borderWidth * 2,
-                        color = buttonTexture.borderColor,
+                        color = buttonTexture.backgroundColor,
                     )
                     renderText?.let { text ->
                         canvas.drawText(
@@ -132,12 +180,13 @@ data class CustomWidget(
             is ButtonTexture.Fixed -> {
                 val texture = buttonTexture.texture.texture
                 val renderText = centerText?.takeIf { it.isNotEmpty() }
+                val textureSize = (texture.size.toSize() * buttonTexture.scale).toIntSize()
                 val textSize = renderText?.let(textMeasurer::measure) ?: IntSize.ZERO
                 Texture(texture = texture, tint = tint)
                 renderText?.let { text ->
                     drawQueue.enqueue { canvas ->
                         canvas.drawText(
-                            offset = (texture.size - textSize) / 2,
+                            offset = (textureSize - textSize) / 2,
                             text = text,
                             color = textColor,
                         )

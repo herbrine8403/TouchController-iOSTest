@@ -68,7 +68,7 @@ data class BoatButton(
             BooleanProperty(
                 getValue = { it.classic },
                 setValue = { config, value -> config.copy(classic = value) },
-                message = textFactory.of(Texts.WIDGET_BOAT_BUTTON_PROPERTY_CLASSIC),
+                name = textFactory.of(Texts.WIDGET_BOAT_BUTTON_PROPERTY_CLASSIC),
             ),
         ) as PersistentList<Property<ControllerWidget, *>>
     }

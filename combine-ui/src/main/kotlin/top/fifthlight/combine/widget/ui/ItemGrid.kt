@@ -77,15 +77,13 @@ fun ItemGrid(
             for (x in 0 until size.width) {
                 val index = size.width * y + x
                 val (_, stack) = stacks.getOrNull(index) ?: break
-                with(canvas) {
-                    val offset = IntOffset(x, y) * 16
-                    hoverPosition?.let { position ->
-                        if (position.x == x && position.y == y) {
-                            fillRect(offset, IntSize(16), Colors.TRANSPARENT_WHITE)
-                        }
+                val offset = IntOffset(x, y) * 16
+                hoverPosition?.let { position ->
+                    if (position.x == x && position.y == y) {
+                        fillRect(offset, IntSize(16), Colors.TRANSPARENT_WHITE)
                     }
-                    drawItemStack(offset = offset, stack = stack)
                 }
+                drawItemStack(offset = offset, stack = stack)
             }
         }
     }

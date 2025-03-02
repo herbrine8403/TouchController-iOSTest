@@ -9,6 +9,7 @@ import com.mojang.blaze3d.vertex.VertexFormat
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.renderer.GameRenderer
+import net.minecraft.client.renderer.RenderType
 import net.minecraft.client.renderer.ShaderInstance
 import net.minecraft.network.chat.Component
 import net.minecraft.resources.ResourceLocation
@@ -78,6 +79,37 @@ class CanvasImpl(
         drawContext.fill(offset.x, offset.y, offset.x + size.width, offset.y + size.height, color.value)
     }
 
+    override fun fillGradientRect(
+        offset: Offset,
+        size: Size,
+        leftTopColor: Color,
+        leftBottomColor: Color,
+        rightTopColor: Color,
+        rightBottomColor: Color
+    ) {
+        val renderLayer = RenderType.gui()
+        val matrix = drawContext.pose().last().pose()
+        val vertexConsumer = drawContext.bufferSource().getBuffer(renderLayer)
+        val dstRect = Rect(offset, size)
+        vertexConsumer
+            .vertex(matrix, dstRect.left, dstRect.top, 0f)
+            .color(leftTopColor.value)
+            .endVertex()
+        vertexConsumer
+            .vertex(matrix, dstRect.left, dstRect.bottom, 0f)
+            .color(leftBottomColor.value)
+            .endVertex()
+        vertexConsumer
+            .vertex(matrix, dstRect.right, dstRect.bottom, 0f)
+            .color(rightBottomColor.value)
+            .endVertex()
+        vertexConsumer
+            .vertex(matrix, dstRect.right, dstRect.top, 0f)
+            .color(rightTopColor.value)
+            .endVertex()
+        drawContext.flush()
+    }
+
     override fun drawRect(offset: IntOffset, size: IntSize, color: Color) {
         drawContext.renderOutline(offset.x, offset.y, size.width, size.height, color.value)
     }
@@ -104,6 +136,7 @@ class CanvasImpl(
         uvRect: Rect,
         tint: Color = Colors.WHITE,
     ) {
+        drawContext.flush()
         if (blendEnabled) {
             enableBlend()
         } else {

@@ -9,8 +9,8 @@ import top.fifthlight.combine.layout.MeasureScope
 import top.fifthlight.combine.layout.Placeable
 import top.fifthlight.combine.modifier.*
 import top.fifthlight.combine.node.LayoutNode
+import top.fifthlight.combine.paint.Canvas
 import top.fifthlight.combine.paint.Color
-import top.fifthlight.combine.paint.RenderContext
 import top.fifthlight.data.IntOffset
 import top.fifthlight.data.IntRect
 import top.fifthlight.data.IntSize
@@ -110,35 +110,31 @@ private data class VerticalScrollNode(
         }
     }
 
-    override fun RenderContext.renderBefore(node: Placeable) {
-        with(canvas) {
-            pushClip(
-                IntRect(
-                    offset = IntOffset(node.absoluteX, node.absoluteY),
-                    size = IntSize(node.width, node.height)
-                ),
-                IntRect(
-                    offset = IntOffset(node.x, node.y),
-                    size = IntSize(node.width, node.height)
-                ),
-            )
-        }
+    override fun Canvas.renderBefore(node: Placeable) {
+        pushClip(
+            IntRect(
+                offset = IntOffset(node.absoluteX, node.absoluteY),
+                size = IntSize(node.width, node.height)
+            ),
+            IntRect(
+                offset = IntOffset(node.x, node.y),
+                size = IntSize(node.width, node.height)
+            ),
+        )
     }
 
-    override fun RenderContext.renderAfter(node: Placeable) {
-        with(canvas) {
-            if (scrollState.viewportHeight < scrollState.contentHeight) {
-                val progress =
-                    scrollState.progress.value.toFloat() / (scrollState.contentHeight - scrollState.viewportHeight).toFloat()
-                val barHeight = (node.height * scrollState.viewportHeight / scrollState.contentHeight).coerceAtLeast(12)
-                val barY = ((node.height - barHeight) * progress).roundToInt()
-                fillRect(
-                    offset = IntOffset(node.width - 3, barY),
-                    size = IntSize(3, barHeight),
-                    color = Color(0x66FFFFFFu),
-                )
-            }
-            popClip()
+    override fun Canvas.renderAfter(node: Placeable) {
+        if (scrollState.viewportHeight < scrollState.contentHeight) {
+            val progress =
+                scrollState.progress.value.toFloat() / (scrollState.contentHeight - scrollState.viewportHeight).toFloat()
+            val barHeight = (node.height * scrollState.viewportHeight / scrollState.contentHeight).coerceAtLeast(12)
+            val barY = ((node.height - barHeight) * progress).roundToInt()
+            fillRect(
+                offset = IntOffset(node.width - 3, barY),
+                size = IntSize(3, barHeight),
+                color = Color(0x66FFFFFFu),
+            )
         }
+        popClip()
     }
 }

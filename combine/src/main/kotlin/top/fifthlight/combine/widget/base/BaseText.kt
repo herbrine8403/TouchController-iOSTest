@@ -27,7 +27,7 @@ fun BaseText(
             layout(measureResult.width, measureResult.height) {}
         },
         renderer = { node ->
-            canvas.drawText(IntOffset.ZERO, node.width, text, color)
+            drawText(IntOffset.ZERO, node.width, text, color)
         }
     )
 }
@@ -50,7 +50,7 @@ fun BaseText(
             layout(measureResult.width, measureResult.height) {}
         },
         renderer = { node ->
-            canvas.drawText(IntOffset.ZERO, node.width, text, color)
+            drawText(IntOffset.ZERO, node.width, text, color)
         }
     )
 }

@@ -22,7 +22,6 @@ import top.fifthlight.combine.input.pointer.PointerEvent
 import top.fifthlight.combine.input.pointer.PointerEventType
 import top.fifthlight.combine.input.pointer.PointerType
 import top.fifthlight.combine.node.CombineOwner
-import top.fifthlight.combine.paint.RenderContext
 import top.fifthlight.combine.screen.LocalOnDismissRequestDispatcher
 import top.fifthlight.combine.screen.LocalScreenFactory
 import top.fifthlight.combine.screen.OnDismissRequestDispatcher
@@ -209,10 +208,8 @@ private class CombineScreen(
         }
 
         val canvas = CanvasImpl(drawContext)
-        val context = RenderContext(canvas)
-
         val size = IntSize(width, height)
-        owner.render(size, context)
+        owner.render(size, canvas)
         canvas.enableBlend()
     }
 

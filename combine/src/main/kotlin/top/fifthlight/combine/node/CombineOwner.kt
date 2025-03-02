@@ -12,7 +12,7 @@ import top.fifthlight.combine.input.pointer.PointerEvent
 import top.fifthlight.combine.input.pointer.PointerEventReceiver
 import top.fifthlight.combine.input.pointer.PointerEventType
 import top.fifthlight.combine.modifier.Constraints
-import top.fifthlight.combine.paint.RenderContext
+import top.fifthlight.combine.paint.Canvas
 import top.fifthlight.combine.paint.TextMeasurer
 import top.fifthlight.data.IntSize
 import kotlin.coroutines.CoroutineContext
@@ -143,7 +143,7 @@ class CombineOwner(
         focusedNode.onKeyEvent(event)
     }
 
-    fun render(size: IntSize, context: RenderContext) {
+    fun render(size: IntSize, canvas: Canvas) {
         clock.sendFrame(System.nanoTime())
         for (layer in layers) {
             layer.rootNode.measure(
@@ -152,7 +152,9 @@ class CombineOwner(
                     maxHeight = size.height
                 )
             )
-            layer.rootNode.render(context)
+            with(canvas) {
+                layer.rootNode.run { render() }
+            }
         }
     }
 

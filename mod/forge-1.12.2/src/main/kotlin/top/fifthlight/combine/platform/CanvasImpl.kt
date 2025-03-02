@@ -3,11 +3,13 @@ package top.fifthlight.combine.platform
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.Gui
 import net.minecraft.client.gui.ScaledResolution
+import net.minecraft.client.renderer.GLAllocation
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.RenderHelper
 import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.util.ResourceLocation
+import org.joml.Matrix4f
 import org.lwjgl.opengl.GL11
 import top.fifthlight.combine.data.BackgroundTexture
 import top.fifthlight.combine.data.ItemStack
@@ -15,6 +17,7 @@ import top.fifthlight.combine.data.Texture
 import top.fifthlight.combine.paint.*
 import top.fifthlight.data.*
 import top.fifthlight.touchcontroller.assets.Textures
+import top.fifthlight.touchcontroller.ext.color
 import top.fifthlight.combine.data.Text as CombineText
 
 class CanvasImpl : Canvas, Gui() {
@@ -32,33 +35,104 @@ class CanvasImpl : Canvas, Gui() {
     private val scaledResolution by lazy { ScaledResolution(client) }
     private val itemRenderer = client.renderItem
     override var blendEnabled = true
+    private val matrixBuffer = GLAllocation.createDirectFloatBuffer(16)
+    private val matrixStack = arrayListOf<Matrix4f>(run {
+        GL11.glGetFloat(GL11.GL_MODELVIEW_MATRIX, matrixBuffer)
+        Matrix4f().apply { set(matrixBuffer) }
+    })
+
+    private fun applyMatrix(matrix: Matrix4f) {
+        matrix.get(matrixBuffer)
+        GL11.glLoadMatrix(matrixBuffer)
+    }
 
     override fun pushState() {
-        GlStateManager.pushMatrix()
+        val matrix = Matrix4f(matrixStack.last())
+        matrixStack.add(matrix)
     }
 
     override fun popState() {
-        GlStateManager.popMatrix()
+        matrixStack.removeLast<Matrix4f>()
+        applyMatrix(matrixStack.last())
     }
 
     override fun translate(x: Int, y: Int) {
-        GlStateManager.translate(x.toDouble(), y.toDouble(), 0.0)
+        matrixStack.last().apply {
+            translate(x.toFloat(), y.toFloat(), 0f)
+            applyMatrix(this)
+        }
     }
 
     override fun translate(x: Float, y: Float) {
-        GlStateManager.translate(x.toDouble(), y.toDouble(), 0.0)
+        matrixStack.last().apply {
+            translate(x, y, 0f)
+            applyMatrix(this)
+        }
     }
 
     override fun rotate(degrees: Float) {
-        GlStateManager.rotate(degrees, 0f, 0f, 1f)
+        matrixStack.last().apply {
+            rotate(degrees, 0f, 0f, 1f)
+            applyMatrix(this)
+        }
     }
 
     override fun scale(x: Float, y: Float) {
-        GlStateManager.scale(x, y, 1f)
+        matrixStack.last().apply {
+            scale(x, y, 1f)
+            applyMatrix(this)
+        }
     }
 
     override fun fillRect(offset: IntOffset, size: IntSize, color: Color) {
         drawRect(offset.x, offset.y, offset.x + size.width, offset.y + size.height, color.value)
+        if (blendEnabled) {
+            enableBlend()
+        } else {
+            disableBlend()
+        }
+    }
+
+    override fun fillGradientRect(
+        offset: Offset,
+        size: Size,
+        leftTopColor: Color,
+        leftBottomColor: Color,
+        rightTopColor: Color,
+        rightBottomColor: Color
+    ) {
+        val tessellator = Tessellator.getInstance()
+        val bufferBuilder = tessellator.buffer
+        GlStateManager.disableTexture2D()
+        GlStateManager.disableAlpha()
+        GlStateManager.enableBlend()
+        GlStateManager.shadeModel(GL11.GL_SMOOTH)
+        bufferBuilder.begin(7, DefaultVertexFormats.POSITION_COLOR)
+        val dstRect = Rect(offset, size)
+        bufferBuilder
+            .pos(dstRect.left.toDouble(), dstRect.top.toDouble(), 0.0)
+            .color(leftTopColor)
+            .endVertex()
+        bufferBuilder
+            .pos(dstRect.left.toDouble(), dstRect.bottom.toDouble(), 0.0)
+            .color(leftBottomColor)
+            .endVertex()
+        bufferBuilder
+            .pos(dstRect.right.toDouble(), dstRect.bottom.toDouble(), 0.0)
+            .color(rightBottomColor)
+            .endVertex()
+        bufferBuilder
+            .pos(dstRect.right.toDouble(), dstRect.top.toDouble(), 0.0)
+            .color(rightTopColor)
+            .endVertex()
+        tessellator.draw()
+        GlStateManager.shadeModel(GL11.GL_FLAT)
+        GlStateManager.enableTexture2D()
+        if (blendEnabled) {
+            enableBlend()
+        } else {
+            disableBlend()
+        }
     }
 
     override fun drawRect(offset: IntOffset, size: IntSize, color: Color) {
@@ -193,13 +267,13 @@ class CanvasImpl : Canvas, Gui() {
     override fun drawItemStack(offset: IntOffset, size: IntSize, stack: ItemStack) {
         val minecraftStack = ((stack as? ItemStackImpl) ?: return).inner
         scale(size.width.toFloat() / 16f, size.height.toFloat() / 16f)
-        pushState()
+        GlStateManager.pushMatrix()
         GlStateManager.enableDepth()
         RenderHelper.enableGUIStandardItemLighting()
         itemRenderer.renderItemAndEffectIntoGUI(minecraftStack, offset.x, offset.y)
         RenderHelper.disableStandardItemLighting()
         GlStateManager.disableDepth()
-        popState()
+        GlStateManager.popMatrix()
         if (blendEnabled) {
             enableBlend()
         } else {

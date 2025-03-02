@@ -1,27 +1,21 @@
 package top.fifthlight.combine.widget.ui
 
 import androidx.compose.runtime.Composable
-import top.fifthlight.combine.data.Texture
 import top.fifthlight.combine.modifier.Modifier
 import top.fifthlight.combine.modifier.placement.size
+import top.fifthlight.combine.paint.Drawable
 import top.fifthlight.combine.widget.base.Canvas
+import top.fifthlight.data.IntOffset
+import top.fifthlight.data.IntRect
 import top.fifthlight.data.IntSize
-import top.fifthlight.data.Offset
-import top.fifthlight.data.Rect
 
 @Composable
 fun Icon(
-    texture: Texture,
+    drawable: Drawable,
     modifier: Modifier = Modifier,
-    size: IntSize = texture.size,
+    size: IntSize = drawable.size,
 ) {
     Canvas(modifier.size(size)) {
-        canvas.drawTexture(
-            texture = texture,
-            dstRect = Rect(
-                offset = Offset.ZERO,
-                size = size.toSize(),
-            )
-        )
+        drawable.run { draw(IntRect(offset = IntOffset.ZERO, size = size)) }
     }
 }

@@ -6,6 +6,7 @@ import androidx.compose.runtime.staticCompositionLocalOf
 import kotlinx.coroutines.CoroutineScope
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiScreen
+import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.util.ChatAllowedCharacters
 import org.koin.compose.KoinContext
 import org.koin.core.component.KoinComponent
@@ -23,7 +24,6 @@ import top.fifthlight.combine.input.pointer.PointerEvent
 import top.fifthlight.combine.input.pointer.PointerEventType
 import top.fifthlight.combine.input.pointer.PointerType
 import top.fifthlight.combine.node.CombineOwner
-import top.fifthlight.combine.paint.RenderContext
 import top.fifthlight.combine.screen.LocalOnDismissRequestDispatcher
 import top.fifthlight.combine.screen.LocalScreenFactory
 import top.fifthlight.combine.screen.OnDismissRequestDispatcher
@@ -207,11 +207,11 @@ private class CombineScreen(
             lastMouseY = mouseY
         }
 
+        GlStateManager.pushMatrix()
         val canvas = CanvasImpl()
-        val context = RenderContext(canvas)
-
         val size = IntSize(width, height)
-        owner.render(size, context)
+        owner.render(size, canvas)
+        GlStateManager.popMatrix()
         canvas.enableBlend()
     }
 

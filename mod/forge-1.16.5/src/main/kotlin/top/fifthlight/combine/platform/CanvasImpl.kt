@@ -74,6 +74,45 @@ class CanvasImpl(
         }
     }
 
+    @Suppress("DEPRECATION")
+    override fun fillGradientRect(
+        offset: Offset,
+        size: Size,
+        leftTopColor: Color,
+        leftBottomColor: Color,
+        rightTopColor: Color,
+        rightBottomColor: Color
+    ) {
+        RenderSystem.disableAlphaTest()
+        RenderSystem.disableTexture()
+        RenderSystem.shadeModel(GL11.GL_SMOOTH)
+        val matrix = matrices.last().pose()
+        val bufferBuilder = Tessellator.getInstance().builder
+        bufferBuilder.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR)
+        val dstRect = Rect(offset, size)
+        bufferBuilder
+            .vertex(matrix, dstRect.left, dstRect.top, 0f)
+            .color(leftTopColor)
+            .endVertex()
+        bufferBuilder
+            .vertex(matrix, dstRect.left, dstRect.bottom, 0f)
+            .color(leftBottomColor)
+            .endVertex()
+        bufferBuilder
+            .vertex(matrix, dstRect.right, dstRect.bottom, 0f)
+            .color(rightBottomColor)
+            .endVertex()
+        bufferBuilder
+            .vertex(matrix, dstRect.right, dstRect.top, 0f)
+            .color(rightTopColor)
+            .endVertex()
+        bufferBuilder.end()
+        WorldVertexBufferUploader.end(bufferBuilder)
+        RenderSystem.shadeModel(GL11.GL_FLAT)
+        RenderSystem.enableTexture()
+        RenderSystem.enableAlphaTest()
+    }
+
     override fun drawRect(offset: IntOffset, size: IntSize, color: Color) {
         //  1 -> 2  |
         //  |    |  |

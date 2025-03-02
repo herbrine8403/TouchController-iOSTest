@@ -70,7 +70,7 @@ sealed class ControllerWidget {
                 setValue = { config, value ->
                     config.cloneBase(lockMoving = value)
                 },
-                message = textFactory.of(Texts.WIDGET_GENERAL_PROPERTY_LOCK_MOVING),
+                name = textFactory.of(Texts.WIDGET_GENERAL_PROPERTY_LOCK_MOVING),
             ),
             AnchorProperty(),
             FloatProperty(

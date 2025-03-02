@@ -10,11 +10,12 @@ import top.fifthlight.combine.input.pointer.PointerEventReceiver
 import top.fifthlight.combine.input.pointer.PointerEventType
 import top.fifthlight.combine.layout.*
 import top.fifthlight.combine.modifier.*
+import top.fifthlight.combine.paint.Canvas
 import top.fifthlight.combine.paint.NodeRenderer
-import top.fifthlight.combine.paint.RenderContext
+import top.fifthlight.combine.paint.withState
 
 private fun interface Renderable {
-    fun render(context: RenderContext)
+    fun Canvas.render()
 }
 
 internal sealed class WrapperLayoutNode(
@@ -57,12 +58,14 @@ internal sealed class WrapperLayoutNode(
             this.y = y
         }
 
-        override fun render(context: RenderContext) {
-            context.withState {
-                context.canvas.translate(x, y)
-                node.renderer.renderInContext(context, this)
+        override fun Canvas.render() {
+            withState {
+                translate(x, y)
+                with(node.renderer) {
+                    render(this@Node)
+                }
                 node.children.forEach { child ->
-                    child.render(context)
+                    child.run { render() }
                 }
             }
         }
@@ -164,10 +167,10 @@ internal sealed class WrapperLayoutNode(
             return coerceConstraintBounds(constraints, this)
         }
 
-        override fun render(context: RenderContext) {
-            context.withState {
-                context.canvas.translate(x, y)
-                children.render(context)
+        override fun Canvas.render() {
+            withState {
+                translate(x, y)
+                children.run { render() }
             }
         }
     }
@@ -200,10 +203,10 @@ internal sealed class WrapperLayoutNode(
             return coerceConstraintBounds(constraints, this)
         }
 
-        override fun render(context: RenderContext) {
-            context.withState {
-                context.canvas.translate(x, y)
-                children.render(context)
+        override fun Canvas.render() {
+            withState {
+                translate(x, y)
+                children.run { render() }
             }
         }
     }
@@ -218,12 +221,12 @@ internal sealed class WrapperLayoutNode(
         TextInputReceiver by children,
         KeyEventReceiver by children {
 
-        override fun render(context: RenderContext) {
-            context.withState {
-                context.canvas.translate(x, y)
-                modifierNode.renderBeforeContext(context, this)
-                children.render(context)
-                modifierNode.renderAfterContext(context, this)
+        override fun Canvas.render() {
+            withState {
+                translate(x, y)
+                modifierNode.run { renderBefore(this@Draw) }
+                children.run { render() }
+                modifierNode.run { renderAfter(this@Draw) }
             }
         }
     }
@@ -392,7 +395,7 @@ class LayoutNode : Measurable, Placeable, Renderable, PointerEventReceiver,
 
     override fun placeAt(x: Int, y: Int) = wrappedNode.placeAt(x, y)
 
-    override fun render(context: RenderContext) = wrappedNode.render(context)
+    override fun Canvas.render() = wrappedNode.run { render() }
 
     override fun onPointerEvent(event: PointerEvent) = wrappedNode.onPointerEvent(event)
 

@@ -9,23 +9,23 @@ import top.fifthlight.combine.input.MutableInteractionSource
 import top.fifthlight.combine.modifier.Modifier
 import top.fifthlight.combine.modifier.focus.focusable
 import top.fifthlight.combine.modifier.pointer.clickable
-import top.fifthlight.combine.ui.style.TextureSet
+import top.fifthlight.combine.ui.style.DrawableSet
 import top.fifthlight.touchcontroller.assets.Textures
 
-data class CheckBoxTextureSet(
-    val unchecked: TextureSet,
-    val checked: TextureSet,
+data class CheckBoxDrawableSet(
+    val unchecked: DrawableSet,
+    val checked: DrawableSet,
 )
 
-val defaultCheckBoxTextureSet = CheckBoxTextureSet(
-    unchecked = TextureSet(
+val defaultCheckBoxDrawableSet = CheckBoxDrawableSet(
+    unchecked = DrawableSet(
         normal = Textures.WIDGET_CHECKBOX_CHECKBOX,
         focus = Textures.WIDGET_CHECKBOX_CHECKBOX_HOVER,
         hover = Textures.WIDGET_CHECKBOX_CHECKBOX_HOVER,
         active = Textures.WIDGET_CHECKBOX_CHECKBOX_ACTIVE,
         disabled = Textures.WIDGET_CHECKBOX_CHECKBOX,
     ),
-    checked = TextureSet(
+    checked = DrawableSet(
         normal = Textures.WIDGET_CHECKBOX_CHECKBOX_CHECKED,
         focus = Textures.WIDGET_CHECKBOX_CHECKBOX_CHECKED_HOVER,
         hover = Textures.WIDGET_CHECKBOX_CHECKBOX_CHECKED_HOVER,
@@ -34,33 +34,33 @@ val defaultCheckBoxTextureSet = CheckBoxTextureSet(
     )
 )
 
-val LocalCheckBoxTextureSet = staticCompositionLocalOf<CheckBoxTextureSet> { defaultCheckBoxTextureSet }
+val LocalCheckBoxDrawableSet = staticCompositionLocalOf<CheckBoxDrawableSet> { defaultCheckBoxDrawableSet }
 
 @Composable
 fun CheckBoxIcon(
     modifier: Modifier = Modifier,
     interactionSource: InteractionSource,
-    textureSet: CheckBoxTextureSet = LocalCheckBoxTextureSet.current,
+    DrawableSet: CheckBoxDrawableSet = LocalCheckBoxDrawableSet.current,
     value: Boolean,
 ) {
-    val currentTextureSet = if (value) {
-        textureSet.checked
+    val currentDrawableSet = if (value) {
+        DrawableSet.checked
     } else {
-        textureSet.unchecked
+        DrawableSet.unchecked
     }
     val state by widgetState(interactionSource)
-    val texture = currentTextureSet.getByState(state)
+    val drawable = currentDrawableSet.getByState(state)
 
     Icon(
         modifier = modifier,
-        texture = texture
+        drawable = drawable,
     )
 }
 
 @Composable
 fun CheckBox(
     modifier: Modifier = Modifier,
-    textureSet: CheckBoxTextureSet = LocalCheckBoxTextureSet.current,
+    DrawableSet: CheckBoxDrawableSet = LocalCheckBoxDrawableSet.current,
     value: Boolean,
     onValueChanged: ((Boolean) -> Unit)?,
 ) {
@@ -80,7 +80,7 @@ fun CheckBox(
     CheckBoxIcon(
         modifier = modifier,
         interactionSource = interactionSource,
-        textureSet = textureSet,
+        DrawableSet = DrawableSet,
         value = value,
     )
 }

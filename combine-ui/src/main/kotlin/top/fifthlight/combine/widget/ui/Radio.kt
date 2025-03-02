@@ -9,23 +9,23 @@ import top.fifthlight.combine.input.MutableInteractionSource
 import top.fifthlight.combine.modifier.Modifier
 import top.fifthlight.combine.modifier.focus.focusable
 import top.fifthlight.combine.modifier.pointer.clickable
-import top.fifthlight.combine.ui.style.TextureSet
+import top.fifthlight.combine.ui.style.DrawableSet
 import top.fifthlight.touchcontroller.assets.Textures
 
-data class RadioTextureSet(
-    val unchecked: TextureSet,
-    val checked: TextureSet,
+data class RadioDrawableSet(
+    val unchecked: DrawableSet,
+    val checked: DrawableSet,
 )
 
-val defaultRadioTextureSet = RadioTextureSet(
-    unchecked = TextureSet(
+val defaultRadioDrawableSet = RadioDrawableSet(
+    unchecked = DrawableSet(
         normal = Textures.WIDGET_RADIO_RADIO,
         focus = Textures.WIDGET_RADIO_RADIO_HOVER,
         hover = Textures.WIDGET_RADIO_RADIO_HOVER,
         active = Textures.WIDGET_RADIO_RADIO_ACTIVE,
         disabled = Textures.WIDGET_RADIO_RADIO,
     ),
-    checked = TextureSet(
+    checked = DrawableSet(
         normal = Textures.WIDGET_RADIO_RADIO_CHECKED,
         focus = Textures.WIDGET_RADIO_RADIO_CHECKED_HOVER,
         hover = Textures.WIDGET_RADIO_RADIO_CHECKED_HOVER,
@@ -34,33 +34,33 @@ val defaultRadioTextureSet = RadioTextureSet(
     )
 )
 
-val LocalRadioTextureSet = staticCompositionLocalOf<RadioTextureSet> { defaultRadioTextureSet }
+val LocalRadioDrawableSet = staticCompositionLocalOf<RadioDrawableSet> { defaultRadioDrawableSet }
 
 @Composable
 fun RadioIcon(
     modifier: Modifier = Modifier,
     interactionSource: InteractionSource,
-    textureSet: RadioTextureSet = LocalRadioTextureSet.current,
+    drawableSet: RadioDrawableSet = LocalRadioDrawableSet.current,
     value: Boolean,
 ) {
-    val currentTextureSet = if (value) {
-        textureSet.checked
+    val currentDrawableSet = if (value) {
+        drawableSet.checked
     } else {
-        textureSet.unchecked
+        drawableSet.unchecked
     }
     val state by widgetState(interactionSource)
-    val texture = currentTextureSet.getByState(state)
+    val drawable = currentDrawableSet.getByState(state)
 
     Icon(
         modifier = modifier,
-        texture = texture
+        drawable = drawable,
     )
 }
 
 @Composable
 fun Radio(
     modifier: Modifier = Modifier,
-    textureSet: RadioTextureSet = LocalRadioTextureSet.current,
+    drawableSet: RadioDrawableSet = LocalRadioDrawableSet.current,
     value: Boolean,
     onValueChanged: ((Boolean) -> Unit)?,
 ) {
@@ -80,7 +80,7 @@ fun Radio(
     RadioIcon(
         modifier = modifier,
         interactionSource = interactionSource,
-        textureSet = textureSet,
+        drawableSet = drawableSet,
         value = value,
     )
 }

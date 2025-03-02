@@ -62,12 +62,12 @@ data class Joystick(
             BooleanProperty(
                 getValue = { it.triggerSprint },
                 setValue = { config, value -> config.copy(triggerSprint = value) },
-                message = textFactory.of(Texts.WIDGET_JOYSTICK_PROPERTY_TRIGGER_SPRINT),
+                name = textFactory.of(Texts.WIDGET_JOYSTICK_PROPERTY_TRIGGER_SPRINT),
             ),
             BooleanProperty(
                 getValue = { it.increaseOpacityWhenActive },
                 setValue = { config, value -> config.copy(increaseOpacityWhenActive = value) },
-                message = textFactory.of(Texts.WIDGET_JOYSTICK_PROPERTY_INCREASE_OPACITY_WHEN_ACTIVE),
+                name = textFactory.of(Texts.WIDGET_JOYSTICK_PROPERTY_INCREASE_OPACITY_WHEN_ACTIVE),
             )
         ) as PersistentList<Property<ControllerWidget, *>>
     }

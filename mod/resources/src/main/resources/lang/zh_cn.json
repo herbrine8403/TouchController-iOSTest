@@ -226,6 +226,27 @@
 
   "touchcontroller.screen.license.title": "许可证",
 
+  "touchcontroller.widget.texture.type": "贴图类型",
+  "touchcontroller.widget.texture.type.empty": "无",
+  "touchcontroller.widget.texture.type.fill": "填充",
+  "touchcontroller.widget.texture.type.fixed": "固定贴图",
+  "touchcontroller.widget.texture.type.nine_patch": "自适应贴图",
+  "touchcontroller.widget.texture.extra_padding": "边距",
+  "touchcontroller.widget.texture.extra_padding.left": "左",
+  "touchcontroller.widget.texture.extra_padding.top": "上",
+  "touchcontroller.widget.texture.extra_padding.right": "右",
+  "touchcontroller.widget.texture.extra_padding.bottom": "下",
+  "touchcontroller.widget.texture.fill.border_width": "边框宽度",
+  "touchcontroller.widget.texture.fill.border_color": "边框颜色",
+  "touchcontroller.widget.texture.fill.background_color": "背景颜色",
+  "touchcontroller.widget.texture.fixed.texture": "贴图",
+  "touchcontroller.widget.texture.fixed.scale": "缩放",
+  "touchcontroller.widget.texture.nine_patch.texture": "贴图",
+  "touchcontroller.widget.active_texture.type": "贴图类型",
+  "touchcontroller.widget.active_texture.same": "不变",
+  "touchcontroller.widget.active_texture.gray": "变灰",
+  "touchcontroller.widget.active_texture.texture": "更换新贴图",
+
   "touchcontroller.widget.general.property.lock_moving": "移动锁定",
   "touchcontroller.widget.general.property.anchor.name": "锚点",
   "touchcontroller.widget.general.property.anchor.top_left": "左上角",
@@ -375,5 +396,10 @@
   "touchcontroller.widget.player_list_button.property.style.classic": "经典",
   "touchcontroller.widget.player_list_button.property.style.new": "新样式",
 
-  "touchcontroller.widget.custom_button.name": "自定义按钮"
+  "touchcontroller.widget.custom_button.name": "自定义按钮",
+  "touchcontroller.widget.custom_button.center_text": "文本",
+  "touchcontroller.widget.custom_button.text_color": "文本颜色",
+  "touchcontroller.widget.custom_button.normal_texture": "正常贴图",
+  "touchcontroller.widget.custom_button.active_texture": "激活贴图",
+  "touchcontroller.widget.custom_button.swipe_trigger": "滑动触发"
 }

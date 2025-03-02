@@ -22,7 +22,7 @@ fun Texture(
             ) {}
         },
         renderer = {
-            canvas.drawTexture(
+            drawTexture(
                 texture = texture,
                 dstRect = Rect(offset = Offset.ZERO, size = size.toSize()),
                 srcRect = srcRect,

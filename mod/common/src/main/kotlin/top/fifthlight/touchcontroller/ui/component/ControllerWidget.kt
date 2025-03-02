@@ -43,7 +43,7 @@ fun ControllerWidget(
             .size(widget.size())
             .then(modifier)
     ) {
-        canvas.withBlend {
+        withBlend {
             withBlendFunction(
                 BlendFunction(
                     srcFactor = BlendFactor.SRC_ALPHA,
@@ -52,7 +52,7 @@ fun ControllerWidget(
                     dstAlpha = BlendFactor.ZERO,
                 )
             ) {
-                drawQueue.execute(canvas)
+                drawQueue.execute(this)
             }
         }
     }
@@ -98,8 +98,8 @@ fun ScaledControllerWidget(
             .onPlaced { entrySize = it.size }
             .then(modifier),
     ) {
-        canvas.withTranslate(offset) {
-            canvas.withScale(componentScaleFactor) {
+        withTranslate(offset) {
+            withScale(componentScaleFactor) {
                 withBlend {
                     withBlendFunction(
                         BlendFunction(
@@ -109,7 +109,7 @@ fun ScaledControllerWidget(
                             dstAlpha = BlendFactor.ZERO,
                         )
                     ) {
-                        drawQueue.execute(canvas)
+                        drawQueue.execute(this)
                     }
                 }
             }
