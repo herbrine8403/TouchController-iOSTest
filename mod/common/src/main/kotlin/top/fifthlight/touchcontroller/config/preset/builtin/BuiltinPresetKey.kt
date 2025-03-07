@@ -5,6 +5,10 @@ import kotlinx.serialization.Serializable
 import top.fifthlight.combine.data.Identifier
 import top.fifthlight.touchcontroller.assets.Texts
 import top.fifthlight.touchcontroller.assets.TextureSet
+import top.fifthlight.touchcontroller.config.controllerLayoutOf
+import top.fifthlight.touchcontroller.config.preset.LayoutPreset
+import top.fifthlight.touchcontroller.config.preset.PresetControlInfo
+import top.fifthlight.touchcontroller.control.CustomWidget
 
 @Serializable
 data class BuiltinPresetKey(
@@ -61,10 +65,36 @@ data class BuiltinPresetKey(
         ) : MoveMethod()
     }
 
-    val preset = BuiltinPresets.default.mapWidgets { widget ->
-        widget.cloneBase(
-            opacity = opacity,
-        )
+    val preset by lazy {
+        val sprintButton = when (sprintButtonLocation) {
+            SprintButtonLocation.NONE -> null
+            SprintButtonLocation.RIGHT_TOP -> BuiltinLayers.sprintRightTopButton
+            SprintButtonLocation.RIGHT -> BuiltinLayers.sprintRightButton
+        }
+        LayoutPreset(
+            name = "TODO",
+            controlInfo = PresetControlInfo(
+                splitControls = controlStyle is ControlStyle.SplitControls,
+                disableTouchGesture = controlStyle is ControlStyle.SplitControls && controlStyle.buttonInteraction,
+            ),
+            layout = controllerLayoutOf(
+                BuiltinLayers.controlLayer,
+                BuiltinLayers.interactionLayer.takeIf { controlStyle is ControlStyle.SplitControls && controlStyle.buttonInteraction },
+                BuiltinLayers.normalLayer.getByKey(this) + sprintButton,
+                BuiltinLayers.swimmingLayer.getByKey(this),
+                BuiltinLayers.flyingLayer.getByKey(this),
+                BuiltinLayers.onBoatLayer.getByKey(this),
+                BuiltinLayers.onMinecartLayer.getByKey(this),
+                BuiltinLayers.ridingOnEntityLayer.getByKey(this),
+            )
+        ).mapWidgets { widget ->
+            val baseWidget = widget.cloneBase(opacity = opacity)
+            when (baseWidget) {
+                // TODO
+                is CustomWidget -> baseWidget
+                else -> baseWidget
+            }
+        }
     }
 
     companion object {

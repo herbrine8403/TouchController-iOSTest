@@ -59,7 +59,7 @@ class PresetsTabModel(
     }
 
     fun editPreset(state: PresetsTabState.Edit) {
-        screenModel.editPreset(state.uuid, state::edit)
+        screenModel.editPreset(state::edit)
         clearState()
     }
 

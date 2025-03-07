@@ -55,7 +55,7 @@ data class DPad(
     val size: Float = 2f,
     val padding: Int = if (classic) 4 else -1,
     val extraButton: DPadExtraButton = DPadExtraButton.SNEAK_DOUBLE_CLICK,
-    val extraButtonSize: Int = 18,
+    val extraButtonSize: Int = 22,
     val idForward: Uuid = fastRandomUuid(),
     val idBackward: Uuid = fastRandomUuid(),
     val idLeft: Uuid = fastRandomUuid(),

@@ -6,6 +6,7 @@ import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.serialization.Serializable
 import top.fifthlight.touchcontroller.config.ControllerLayout
+import top.fifthlight.touchcontroller.config.LayoutLayer
 import top.fifthlight.touchcontroller.control.ControllerWidget
 import top.fifthlight.touchcontroller.ext.LayoutPresetsSerializer
 
@@ -20,6 +21,10 @@ data class LayoutPreset(
         layout = ControllerLayout(layout.layers.map { layer ->
             layer.copy(widgets = layer.widgets.map(transform).toPersistentList())
         }.toPersistentList())
+    )
+
+    fun mapLayers(transform: (LayoutLayer) -> LayoutLayer) = copy(
+        layout = ControllerLayout(layers = layout.layers.map(transform).toPersistentList()),
     )
 
     companion object {

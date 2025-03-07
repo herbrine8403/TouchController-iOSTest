@@ -1,9 +1,6 @@
 package top.fifthlight.touchcontroller.config
 
-import kotlinx.collections.immutable.PersistentList
-import kotlinx.collections.immutable.PersistentMap
-import kotlinx.collections.immutable.persistentListOf
-import kotlinx.collections.immutable.persistentMapOf
+import kotlinx.collections.immutable.*
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import top.fifthlight.combine.data.Identifier
@@ -136,6 +133,10 @@ data class LayoutLayer(
     companion object {
         const val DEFAULT_LAYER_NAME = "Unnamed layer"
     }
+
+    operator fun plus(widget: ControllerWidget?) = widget?.let {
+        copy(widgets = widgets + widget.newId())
+    } ?: this
 }
 
 @JvmInline
@@ -144,4 +145,4 @@ value class ControllerLayout(
     val layers: PersistentList<LayoutLayer> = persistentListOf(),
 ) : PersistentList<LayoutLayer> by layers
 
-fun controllerLayoutOf(vararg layers: LayoutLayer) = ControllerLayout(persistentListOf(*layers))
+fun controllerLayoutOf(vararg layers: LayoutLayer?) = ControllerLayout(layers.mapNotNull { it }.toPersistentList())

@@ -5,7 +5,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.getAndUpdate
 import top.fifthlight.touchcontroller.config.ControllerLayout
 import top.fifthlight.touchcontroller.config.LayoutLayer
-import top.fifthlight.touchcontroller.ui.state.CustomControlLayoutTabState
 import top.fifthlight.touchcontroller.ui.state.LayersTabState
 
 class LayersTabModel(
@@ -33,10 +32,8 @@ class LayersTabModel(
     }
 
     fun createLayer(state: LayersTabState.Create) {
-        val currentPresetUuid = screenModel.uiState.value as? CustomControlLayoutTabState.Enabled ?: return
-        val presetUuid = currentPresetUuid.selectedPresetUuid ?: return
         val layer = state.toLayer()
-        screenModel.editPreset(presetUuid) {
+        screenModel.editPreset {
             copy(layout = ControllerLayout(layout.layers.add(layer)))
         }
         clearState()
@@ -64,17 +61,13 @@ class LayersTabModel(
     }
 
     fun copyLayer(layer: LayoutLayer) {
-        val uiState = screenModel.uiState.value as? CustomControlLayoutTabState.Enabled ?: return
-        val uuid = uiState.selectedPresetUuid ?: return
-        screenModel.editPreset(uuid) {
+        screenModel.editPreset {
             copy(layout = ControllerLayout(layout.layers.add(layer)))
         }
     }
 
     fun moveLayer(index: Int, offset: Int) {
-        val uiState = screenModel.uiState.value as? CustomControlLayoutTabState.Enabled ?: return
-        val uuid = uiState.selectedPresetUuid ?: return
-        screenModel.editPreset(uuid) {
+        screenModel.editPreset {
             val layer = layout.layers[index]
             val newIndex = (index + offset).coerceIn(layout.layers.indices)
             val newLayers = layout.layers.removeAt(index).add(newIndex, layer)

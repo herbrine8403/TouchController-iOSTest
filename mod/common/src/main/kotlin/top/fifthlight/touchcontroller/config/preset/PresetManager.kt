@@ -79,6 +79,7 @@ class PresetManager : KoinComponent {
 
     private fun getPresetFile(uuid: Uuid) = presetDir.resolve("$uuid.json")
 
+    @OptIn(ExperimentalSerializationApi::class)
     private fun saveOrder(order: ImmutableList<Uuid>) {
         logger.info("Saving TouchController preset order file")
         orderFile.outputStream().use { json.encodeToStream<List<Uuid>>(order, it) }
@@ -86,6 +87,7 @@ class PresetManager : KoinComponent {
 
     @OptIn(ExperimentalSerializationApi::class)
     fun savePreset(uuid: Uuid, preset: LayoutPreset) {
+        logger.info("Saving TouchController preset ${preset.name}($uuid)")
         presetDir.createDirectories()
         getPresetFile(uuid).outputStream().use { json.encodeToStream(preset, it) }
         var addedPresets = false

@@ -18,7 +18,6 @@ import top.fifthlight.combine.modifier.drawing.background
 import top.fifthlight.combine.modifier.drawing.border
 import top.fifthlight.combine.modifier.drawing.innerLine
 import top.fifthlight.combine.modifier.placement.*
-import top.fifthlight.combine.modifier.pointer.clickable
 import top.fifthlight.combine.modifier.pointer.consumePress
 import top.fifthlight.combine.modifier.pointer.draggable
 import top.fifthlight.combine.paint.Colors
@@ -59,7 +58,11 @@ private data class ControllerWidgetModifierNode(
     val offset: IntOffset,
     val size: IntSize,
 ) : ParentDataModifierNode, Modifier.Node<ControllerWidgetModifierNode> {
-    constructor(widget: ControllerWidget) : this(widget.align, widget.offset, widget.size())
+    constructor(widget: ControllerWidget, offset: IntOffset? = null) : this(
+        widget.align,
+        offset ?: widget.offset,
+        widget.size()
+    )
 
     override fun modifierParentData(parentData: Any?): ControllerWidgetParentData {
         return ControllerWidgetParentData(
@@ -109,77 +112,89 @@ private fun LayoutEditorPanel(
             }
         }
     ) {
+        fun clampOffset(align: Align, widgetSize: IntSize, widgetOffset: IntOffset) = IntOffset(
+            x = when (align) {
+                Align.LEFT_TOP, Align.LEFT_CENTER, Align.LEFT_BOTTOM ->
+                    widgetOffset.x.coerceIn(0, panelSize.width - widgetSize.width)
+
+                Align.CENTER_CENTER, Align.CENTER_BOTTOM, Align.CENTER_TOP ->
+                    widgetOffset.x.coerceIn(
+                        -panelSize.width / 2 + widgetSize.width / 2,
+                        panelSize.width / 2 - widgetSize.width / 2
+                    )
+
+                Align.RIGHT_TOP, Align.RIGHT_CENTER, Align.RIGHT_BOTTOM ->
+                    widgetOffset.x.coerceIn(0, panelSize.width - widgetSize.width)
+            },
+            y = when (align) {
+                Align.LEFT_TOP, Align.CENTER_TOP, Align.RIGHT_TOP ->
+                    widgetOffset.y.coerceIn(0, panelSize.height - widgetSize.height)
+
+                Align.LEFT_CENTER, Align.CENTER_CENTER, Align.RIGHT_CENTER ->
+                    widgetOffset.y.coerceIn(
+                        -panelSize.height / 2 + widgetSize.height / 2,
+                        panelSize.height / 2 - widgetSize.height / 2
+                    )
+
+                Align.LEFT_BOTTOM, Align.CENTER_BOTTOM, Align.RIGHT_BOTTOM ->
+                    widgetOffset.y.coerceIn(0, panelSize.height - widgetSize.height)
+            }
+        )
+
+        var dragTotalOffset by remember(selectedWidgetIndex) { mutableStateOf(Offset.ZERO) }
+        LaunchedEffect(selectedWidget) {
+            dragTotalOffset = Offset.ZERO
+        }
+
         for ((index, widget) in layer.widgets.withIndex()) {
-            if (selectedWidgetIndex == index) {
-                var dragTotalOffset by remember { mutableStateOf(Offset.ZERO) }
-                var widgetInitialOffset by remember { mutableStateOf(IntOffset.ZERO) }
-                LaunchedEffect(selectedWidgetIndex, layerIndex, selectedWidget?.align) {
-                    widgetInitialOffset = layer.widgets.getOrNull(selectedWidgetIndex)?.offset ?: IntOffset.ZERO
-                    dragTotalOffset = Offset.ZERO
-                }
-                val lockWidgetMoving = lockMoving || widget.lockMoving
-                val dragModifier = if (!lockWidgetMoving) {
-                    Modifier.innerLine(Colors.WHITE)
-                        .draggable { offset ->
-                            dragTotalOffset += offset
-                            val intOffset = dragTotalOffset.toIntOffset()
-                            val normalizedOffset = widget.align.normalizeOffset(intOffset)
-                            val widgetOffset = widgetInitialOffset + normalizedOffset
-                            val widgetSize = widget.size()
-                            val clampedOffset = IntOffset(
-                                x = when (widget.align) {
-                                    Align.LEFT_TOP, Align.LEFT_CENTER, Align.LEFT_BOTTOM ->
-                                        widgetOffset.x.coerceIn(0, panelSize.width - widgetSize.width)
-
-                                    Align.CENTER_CENTER, Align.CENTER_BOTTOM, Align.CENTER_TOP ->
-                                        widgetOffset.x.coerceIn(
-                                            -panelSize.width / 2 + widgetSize.width / 2,
-                                            panelSize.width / 2 - widgetSize.width / 2
-                                        )
-
-                                    Align.RIGHT_TOP, Align.RIGHT_CENTER, Align.RIGHT_BOTTOM ->
-                                        widgetOffset.x.coerceIn(0, panelSize.width - widgetSize.width)
-                                },
-                                y = when (widget.align) {
-                                    Align.LEFT_TOP, Align.CENTER_TOP, Align.RIGHT_TOP ->
-                                        widgetOffset.y.coerceIn(0, panelSize.height - widgetSize.height)
-
-                                    Align.LEFT_CENTER, Align.CENTER_CENTER, Align.RIGHT_CENTER ->
-                                        widgetOffset.y.coerceIn(
-                                            -panelSize.height / 2 + widgetSize.height / 2,
-                                            panelSize.height / 2 - widgetSize.height / 2
-                                        )
-
-                                    Align.LEFT_BOTTOM, Align.CENTER_BOTTOM, Align.RIGHT_BOTTOM ->
-                                        widgetOffset.y.coerceIn(0, panelSize.height - widgetSize.height)
-                                }
-                            )
-                            val newWidget = widget.cloneBase(
-                                offset = clampedOffset,
-                            )
-                            onWidgetChanged(index, newWidget)
-                        }
+            val lockWidgetMoving = lockMoving || widget.lockMoving
+            var modifier = if (index == selectedWidgetIndex) {
+                if (lockWidgetMoving) {
+                    Modifier.innerLine(Colors.RED)
                 } else {
-                    Modifier
-                        .innerLine(Colors.RED)
-                        .consumePress()
+                    Modifier.innerLine(Colors.WHITE)
                 }
-                ControllerWidget(
-                    modifier = Modifier
-                        .then(ControllerWidgetModifierNode(widget))
-                        .then(dragModifier),
-                    widget = widget
+            } else {
+                Modifier
+            }
+
+            val widgetOffset = if (index == selectedWidgetIndex) {
+                val dragIntOffset = dragTotalOffset.toIntOffset()
+                val normalizedOffset = widget.align.normalizeOffset(dragIntOffset)
+                val widgetSize = widget.size()
+                clampOffset(widget.align, widgetSize, normalizedOffset + widget.offset)
+            } else {
+                null
+            }
+
+            if (!lockWidgetMoving) {
+                modifier = modifier.draggable(
+                    onDrag = { relative, _ ->
+                        if (index != selectedWidgetIndex) {
+                            onSelectedWidgetChanged(index)
+                        }
+                        dragTotalOffset += relative
+                    },
+                    onRelease = { _, _ ->
+                        val widgetOffset = widgetOffset ?: return@draggable
+                        val newWidget = widget.cloneBase(offset = widgetOffset)
+                        dragTotalOffset = Offset.ZERO
+                        onWidgetChanged(index, newWidget)
+                    }
                 )
             } else {
-                ControllerWidget(
-                    modifier = Modifier
-                        .then(ControllerWidgetModifierNode(widget))
-                        .clickable {
-                            onSelectedWidgetChanged(index)
-                        },
-                    widget = widget
-                )
+                modifier = modifier.draggable {
+                    if (index != selectedWidgetIndex) {
+                        onSelectedWidgetChanged(index)
+                    }
+                }
             }
+            ControllerWidget(
+                modifier = Modifier
+                    .then(ControllerWidgetModifierNode(widget, widgetOffset))
+                    .then(modifier),
+                widget = widget
+            )
         }
     }
 }
@@ -257,6 +272,18 @@ object CustomControlLayoutTab : Tab(), KoinComponent {
                                 },
                             ) {
                                 Text(Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_SHOW_SIDE_BAR))
+                            }
+                            IconButton(
+                                enabled = uiState.pageState.editState?.undoStack?.haveUndoItem == true,
+                                onClick = { screenModel.undo() },
+                            ) {
+                                Icon(Textures.ICON_REVOKE)
+                            }
+                            IconButton(
+                                enabled = uiState.pageState.editState?.undoStack?.haveRedoItem == true,
+                                onClick = { screenModel.redo() },
+                            ) {
+                                Icon(Textures.ICON_REDO)
                             }
                         }
                     )

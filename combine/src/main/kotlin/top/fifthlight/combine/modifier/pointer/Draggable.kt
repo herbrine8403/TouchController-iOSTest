@@ -29,19 +29,48 @@ fun Modifier.draggable(
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     dragState: DragState = remember { DragState() },
     onDrag: (relative: Offset) -> Unit
-) = then(DraggableModifierNode(interactionSource, dragState, onDrag = { relative, _ -> onDrag(relative) }))
+) = then(
+    DraggableModifierNode(
+        interactionSource = interactionSource,
+        dragState = dragState,
+        onDrag = { relative, _ -> onDrag(relative) },
+        onRelease = { _, _ -> }
+    ))
 
 @Composable
 fun Modifier.draggable(
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     dragState: DragState = remember { DragState() },
     onDrag: Placeable.(relative: Offset, absolute: Offset) -> Unit
-) = then(DraggableModifierNode(interactionSource, dragState, onDrag = onDrag))
+) = then(
+    DraggableModifierNode(
+        interactionSource = interactionSource,
+        dragState = dragState,
+        onDrag = onDrag,
+        onRelease = { _, _ -> }
+    )
+)
+
+@Composable
+fun Modifier.draggable(
+    interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
+    dragState: DragState = remember { DragState() },
+    onDrag: Placeable.(relative: Offset, absolute: Offset) -> Unit,
+    onRelease: Placeable.(relative: Offset, absolute: Offset) -> Unit,
+) = then(
+    DraggableModifierNode(
+        interactionSource = interactionSource,
+        dragState = dragState,
+        onDrag = onDrag,
+        onRelease = onRelease,
+    )
+)
 
 private data class DraggableModifierNode(
     val interactionSource: MutableInteractionSource,
     val dragState: DragState,
     val onDrag: Placeable.(relative: Offset, absolute: Offset) -> Unit,
+    val onRelease: Placeable.(relative: Offset, absolute: Offset) -> Unit,
 ) : Modifier.Node<DraggableModifierNode>, PointerInputModifierNode {
 
     override fun onPointerEvent(
@@ -50,6 +79,7 @@ private data class DraggableModifierNode(
         layoutNode: LayoutNode,
         children: (PointerEvent) -> Boolean,
     ): Boolean {
+        val absolutePosition = event.position - node.absolutePosition
         when (event.type) {
             PointerEventType.Enter -> dragState.entered = true
 
@@ -58,14 +88,12 @@ private data class DraggableModifierNode(
             PointerEventType.Press -> {
                 dragState.pressed = true
                 dragState.lastPosition = event.position
-                val absolutePosition = event.position - node.absolutePosition
                 onDrag(node, Offset.ZERO, absolutePosition)
             }
 
             PointerEventType.Move -> {
                 if (dragState.pressed) {
                     val lastPosition = dragState.lastPosition
-                    val absolutePosition = event.position - node.absolutePosition
                     if (lastPosition != null) {
                         val diff = event.position - lastPosition
                         onDrag(node, diff, absolutePosition)
@@ -76,7 +104,12 @@ private data class DraggableModifierNode(
                 }
             }
 
-            PointerEventType.Release -> dragState.pressed = false
+            PointerEventType.Release -> {
+                if (dragState.pressed == true) {
+                    onRelease(node, Offset.ZERO, absolutePosition)
+                }
+                dragState.pressed = false
+            }
 
             else -> return false
         }
