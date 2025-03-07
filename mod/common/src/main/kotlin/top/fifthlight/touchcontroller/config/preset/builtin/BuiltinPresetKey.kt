@@ -27,9 +27,11 @@ data class BuiltinPresetKey(
 ) {
     @Serializable
     sealed class ControlStyle {
+        @Serializable
         @SerialName("touch_gesture")
         data object TouchGesture : ControlStyle()
 
+        @Serializable
         @SerialName("split_controls")
         data class SplitControls(
             val buttonInteraction: Boolean = true,
