@@ -1,5 +1,5 @@
 import com.gradleup.gr8.Gr8Task
-import top.fifthlight.touchcontoller.gradle.gr8.GR8BuildingService
+import top.fifthlight.touchcontoller.gradle.service.GR8BuildingService
 
 val gr8BuildingService = project.gradle.sharedServices.registerIfAbsent("gr8", GR8BuildingService::class.java) {
     maxParallelUsages = 2

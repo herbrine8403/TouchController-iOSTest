@@ -1,4 +1,4 @@
-package top.fifthlight.touchcontoller.gradle.gr8
+package top.fifthlight.touchcontoller.gradle.service
 
 import org.gradle.api.services.BuildService
 import org.gradle.api.services.BuildServiceParameters

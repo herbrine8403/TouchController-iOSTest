@@ -1,3 +1,6 @@
+import net.neoforged.nfrtgradle.CreateMinecraftArtifacts
+import top.fifthlight.touchcontoller.gradle.service.CreateMinecraftArtifactsService
+
 plugins {
     idea
     java
@@ -25,6 +28,15 @@ val minecraftVmArgs = localProperties["minecraft.vm-args"]?.toString()?.split(":
 
 version = "$modVersion+neoforge-$gameVersion"
 group = "top.fifthlight.touchcontroller"
+
+val createMinecraftArtifactsService =
+    project.gradle.sharedServices.registerIfAbsent("gr8", CreateMinecraftArtifactsService::class.java) {
+        maxParallelUsages = 1
+    }
+
+tasks.withType<CreateMinecraftArtifacts> {
+    usesService(createMinecraftArtifactsService)
+}
 
 neoForge {
     version = neoforgeVersion

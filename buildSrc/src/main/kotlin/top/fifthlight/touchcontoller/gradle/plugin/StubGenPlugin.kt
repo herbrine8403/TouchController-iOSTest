@@ -4,16 +4,11 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Property
-import org.gradle.api.services.BuildService
-import org.gradle.api.services.BuildServiceParameters
 import top.fifthlight.touchcontoller.gradle.ext.sha1sum
 import top.fifthlight.touchcontoller.gradle.ext.toHexString
+import top.fifthlight.touchcontoller.gradle.service.StubGenBuildService
 import top.fifthlight.touchcontoller.gradle.task.GenerateStubTask
 import java.net.URI
-
-abstract class StubGenBuildService : BuildService<BuildServiceParameters.None>, AutoCloseable {
-    override fun close() {}
-}
 
 abstract class MinecraftStubExtension {
     abstract val versions: ListProperty<String>
