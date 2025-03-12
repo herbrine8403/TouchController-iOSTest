@@ -27,9 +27,31 @@ include("mod:resources")
 include("mod:common")
 include("mod:common-fabric")
 include("mod:common-lwjgl3")
+
+// Legacy versions
+include("mod:1.12.2:forge-1.12.2")
+include("mod:1.16.5:fabric-1.16.5")
+include("mod:1.16.5:forge-1.16.5")
+
+include("mod:common-1.20.x")
+
+include("mod:common-1.20.1-1.20.4")
+include("mod:1.20.1:common-1.20.1")
+include("mod:1.20.1:fabric-1.20.1")
+include("mod:1.20.1:forge-1.20.1")
+include("mod:1.20.4:common-1.20.4")
+include("mod:1.20.4:fabric-1.20.4")
+include("mod:1.20.4:forge-1.20.4")
+include("mod:1.20.4:neoforge-1.20.4")
+
+include("mod:1.20.6:common-1.20.6")
+include("mod:1.20.6:fabric-1.20.6")
+include("mod:1.20.6:forge-1.20.6")
+include("mod:1.20.6:neoforge-1.20.6")
+
 include("mod:common-1.21.x")
+
 include("mod:common-1.21-1.21.1")
-include("mod:common-1.21.3-1.21.4")
 include("mod:1.21:common-1.21")
 include("mod:1.21:fabric-1.21")
 include("mod:1.21:forge-1.21")
@@ -38,6 +60,8 @@ include("mod:1.21.1:common-1.21.1")
 include("mod:1.21.1:fabric-1.21.1")
 include("mod:1.21.1:forge-1.21.1")
 include("mod:1.21.1:neoforge-1.21.1")
+
+include("mod:common-1.21.3-1.21.4")
 include("mod:1.21.3:common-1.21.3")
 include("mod:1.21.3:fabric-1.21.3")
 include("mod:1.21.3:forge-1.21.3")
@@ -46,13 +70,6 @@ include("mod:1.21.4:common-1.21.4")
 include("mod:1.21.4:fabric-1.21.4")
 include("mod:1.21.4:forge-1.21.4")
 include("mod:1.21.4:neoforge-1.21.4")
-
-// Legacy versions not ported to common & loader parts
-include("mod:forge-1.12.2")
-include("mod:forge-1.16.5")
-include("mod:forge-1.20.1")
-include("mod:fabric-1.16.5")
-include("mod:fabric-1.20.1")
 
 include("log4j-slf4j2-impl")
 include("proxy-server")

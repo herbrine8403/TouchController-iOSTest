@@ -24,12 +24,16 @@ subprojects {
         mavenCentral()
         google()
         maven {
+            name = "Fabric"
+            url = uri("https://maven.fabricmc.net/")
+        }
+        maven {
             name = "Terraformers"
             url = uri("https://maven.terraformersmc.com/")
         }
         maven {
-            name = "Fabric"
-            url = uri("https://maven.fabricmc.net/")
+            name = "Nucleoid"
+            url = uri("https://maven.nucleoid.xyz/")
         }
         maven {
             name = "Parchment"

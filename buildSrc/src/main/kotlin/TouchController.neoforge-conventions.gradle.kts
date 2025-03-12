@@ -1,4 +1,5 @@
 import net.neoforged.nfrtgradle.CreateMinecraftArtifacts
+import top.fifthlight.touchcontoller.gradle.MinecraftVersion
 import top.fifthlight.touchcontoller.gradle.service.CreateMinecraftArtifactsService
 
 plugins {
@@ -22,6 +23,7 @@ val modContributors: String by extra.properties
 val gameVersion: String by extra.properties
 val neoforgeVersion: String by extra.properties
 val majorLoaderVersion: String by extra.properties
+val minecraftVersion = MinecraftVersion(gameVersion)
 
 val localProperties: Map<String, String> by rootProject.ext
 val minecraftVmArgs = localProperties["minecraft.vm-args"]?.toString()?.split(":") ?: listOf()
@@ -46,7 +48,7 @@ neoForge {
     val parchmentVersion = properties["parchmentVersion"]?.toString()
     if (parchmentVersion != null) {
         parchment {
-            minecraftVersion = gameVersion
+            this.minecraftVersion = gameVersion
             mappingsVersion = parchmentVersion
         }
     }
@@ -124,6 +126,9 @@ tasks.processResources {
     from(rootProject.file("mod/common-neoforge/src/main/resources/META-INF/neoforge.mods.toml")) {
         into("META-INF")
         expand(properties)
+        if (minecraftVersion < MinecraftVersion(1, 20, 6)) {
+            rename { "mods.toml" }
+        }
     }
 
     from("pack.mcmeta") {
@@ -164,14 +169,15 @@ val copyJarTask = tasks.register<Jar>("copyJar") {
     val excludeWhitelist = listOf(
         "touchcontroller_at.cfg",
         "neoforge.mods.toml",
+        "mods.toml",
     )
     from(zipTree(jarFile)) {
         exclude { file ->
-            val path = file.path
-            if (path.startsWith("META-INF")) {
-                !excludeWhitelist.any { path.endsWith(it) }
+            val path = file.relativePath
+            if (path.segments.first() == "META-INF") {
+                excludeWhitelist.all { path.lastName != it }
             } else {
-                path == "module-info.class"
+                path.lastName == "module-info.class"
             }
         }
     }

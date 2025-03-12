@@ -18,6 +18,7 @@
     "HudRenderMixin",
     "InGameHudMixin",
     "KeyBindingMixin",
-    "KeyboardInputMixin"
+    "KeyboardInputMixin",
+    "ToggleKeyMappingMixin"
   ]
 }

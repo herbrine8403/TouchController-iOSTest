@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.jetbrains.kotlin.jvm)
     alias(libs.plugins.compose.compiler)
+    id("TouchController.toolchain-conventions")
     id("top.fifthlight.stubgen")
 }
 

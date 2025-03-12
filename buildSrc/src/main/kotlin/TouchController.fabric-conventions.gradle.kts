@@ -252,11 +252,11 @@ val copyJarTask = tasks.register<Jar>("copyJar") {
     val excludeWhitelist = listOf("org.slf4j.spi.SLF4JServiceProvider")
     from(zipTree(jarFile)) {
         exclude { file ->
-            val path = file.path
-            if (path.startsWith("META-INF")) {
-                !excludeWhitelist.any { path.endsWith(it) }
+            val path = file.relativePath
+            if (path.segments.first() == "META-INF") {
+                excludeWhitelist.all { path.lastName != it }
             } else {
-                path == "module-info.class"
+                path.lastName == "module-info.class"
             }
         }
     }

@@ -262,11 +262,11 @@ val gr8JarTask = tasks.register<Jar>("gr8Jar") {
     )
     from(zipTree(jarFile)) {
         exclude { file ->
-            val path = file.path
-            if (path.startsWith("META-INF")) {
-                !excludeWhitelist.any { path.endsWith(it) }
+            val path = file.relativePath
+            if (path.segments.first() == "META-INF") {
+                excludeWhitelist.all { path.lastName != it }
             } else {
-                path == "module-info.class"
+                path.lastName == "module-info.class"
             }
         }
     }
@@ -276,13 +276,24 @@ tasks.getByName("gr8Gr8ShadowedJar") {
     dependsOn("addMixinsToJar")
 }
 
+val mixinMappingFile =
+    layout.buildDirectory.file("mixinMapping/mappings.tsrg").takeIf { remapOutputBool && useMixinBool }
+tasks.compileJava {
+    inputs.properties("remapOutput" to remapOutputBool)
+    mixinMappingFile?.let {
+        outputs.files(mixinMappingFile)
+        doLast {
+            val mappingFile = mixinMappingFile.get().asFile.also { it.parentFile.mkdirs() }
+            layout.buildDirectory.file("tmp/compileJava/compileJava-mappings.tsrg").get().asFile.copyTo(mappingFile)
+        }
+    }
+}
+
 reobf {
     if (remapOutputBool) {
         create("gr8Jar") {
-            if (useMixinBool) {
-                // Use mapping from compileJava, to avoid problems of @Shadow
-                extraMappings.from("build/tmp/compileJava/compileJava-mappings.tsrg")
-            }
+            // Use mapping from compileJava, to avoid problems of @Shadow
+            mixinMappingFile?.let { extraMappings.from(it) }
         }
     }
 }
