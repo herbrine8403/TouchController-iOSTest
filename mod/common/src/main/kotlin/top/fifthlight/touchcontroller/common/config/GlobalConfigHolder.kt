@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory
 import top.fifthlight.touchcontroller.common.config.preset.PresetConfig
 import top.fifthlight.touchcontroller.common.config.preset.PresetManager
 import top.fifthlight.touchcontroller.common.config.preset.builtin.BuiltinPresetKey
+import top.fifthlight.touchcontroller.common.config.widget.WidgetPresetManager
 import top.fifthlight.touchcontroller.common.ext.combineStates
 import top.fifthlight.touchcontroller.common.gal.DefaultItemListProvider
 import java.io.IOException
@@ -20,6 +21,7 @@ class GlobalConfigHolder : KoinComponent {
     private val logger = LoggerFactory.getLogger(GlobalConfig::class.java)
     private val gameConfigEditor: GameConfigEditor by inject()
     private val presetManager: PresetManager by inject()
+    private val widgetPresetManager: WidgetPresetManager by inject()
     private val defaultItemListProvider: DefaultItemListProvider = get()
     private val configDirectoryProvider: ConfigDirectoryProvider = get()
     private val configDir = configDirectoryProvider.getConfigDirectory()
@@ -55,6 +57,7 @@ class GlobalConfigHolder : KoinComponent {
             }
         }
         presetManager.load()
+        widgetPresetManager.load()
     }
 
     private fun createConfigDirectory() {

@@ -15,7 +15,6 @@ import top.fifthlight.combine.modifier.placement.fillMaxWidth
 import top.fifthlight.combine.modifier.placement.padding
 import top.fifthlight.combine.modifier.placement.size
 import top.fifthlight.combine.modifier.scroll.verticalScroll
-import top.fifthlight.combine.widget.base.layout.Box
 import top.fifthlight.combine.widget.base.layout.Column
 import top.fifthlight.combine.widget.base.layout.Row
 import top.fifthlight.combine.widget.ui.*
@@ -125,7 +124,7 @@ object WidgetsTab : CustomTab() {
         val tabModel: WidgetsTabModel = koinScreenModel { parametersOf(screenModel) }
         val tabState by tabModel.uiState.collectAsState()
 
-        when (val dialogState = tabState.dialogState) {
+        when (val dialogState = tabState.tabState.dialogState) {
             is WidgetsTabState.DialogState.ChangeNewWidgetParams -> AlertDialog(
                 onDismissRequest = { tabModel.closeDialog() },
                 action = {
@@ -203,6 +202,15 @@ object WidgetsTab : CustomTab() {
             sideBarAtRight = sideBarAtRight,
             tabsButton = tabsButton,
             actions = {
+                uiState.selectedWidget?.let { selectedWidget ->
+                    IconButton(
+                        onClick = {
+                            screenModel.addWidgetPreset(selectedWidget)
+                        },
+                    ) {
+                        Icon(Textures.ICON_SAVE)
+                    }
+                }
                 IconButton(
                     onClick = {
                         tabModel.openNewWidgetParamsDialog()
@@ -220,7 +228,7 @@ object WidgetsTab : CustomTab() {
                 actions = {
                     CheckButton(
                         modifier = Modifier.weight(1f),
-                        checked = tabState.listState is WidgetsTabState.ListState.Builtin,
+                        checked = tabState.tabState.listState == WidgetsTabState.ListState.BUILTIN,
                         onClick = {
                             tabModel.selectBuiltinTab()
                         }
@@ -229,7 +237,7 @@ object WidgetsTab : CustomTab() {
                     }
                     CheckButton(
                         modifier = Modifier.weight(1f),
-                        checked = tabState.listState is WidgetsTabState.ListState.Custom,
+                        checked = tabState.tabState.listState == WidgetsTabState.ListState.CUSTOM,
                         onClick = {
                             tabModel.selectCustomTab()
                         }
@@ -238,79 +246,67 @@ object WidgetsTab : CustomTab() {
                     }
                 }
             ) {
-                when (val listState = tabState.listState) {
-                    is WidgetsTabState.ListState.Custom.Loading -> {
-                        Box(
-                            modifier = Modifier.fillMaxSize(),
-                            alignment = Alignment.Center,
+                Column(
+                    modifier = Modifier
+                        .padding(4)
+                        .verticalScroll()
+                        .fillMaxSize(),
+                    verticalArrangement = Arrangement.spacedBy(4),
+                ) {
+                    @Composable
+                    fun WidgetButton(
+                        modifier: Modifier = Modifier,
+                        widget: ControllerWidget,
+                        widgetIconSize: IntSize,
+                    ) {
+                        ListButton(
+                            modifier = modifier,
+                            padding = IntPadding(left = 4, right = 4),
+                            onClick = {
+                                val newWidget = widget.cloneBase(
+                                    opacity = tabState.tabState.newWidgetParams.opacity,
+                                )
+                                val index = screenModel.newWidget(newWidget)
+                                screenModel.selectWidget(index)
+                            },
                         ) {
-                            Text(Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_WIDGETS_LOADING))
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(4),
+                            ) {
+                                ScaledControllerWidget(
+                                    modifier = Modifier.size(widgetIconSize),
+                                    widget = widget,
+                                )
+                                Text(
+                                    modifier = Modifier.weight(1f),
+                                    text = widget.name.getString()
+                                )
+                            }
                         }
                     }
 
-                    else -> {
-                        Column(
-                            modifier = Modifier
-                                .padding(4)
-                                .verticalScroll()
-                                .fillMaxSize(),
-                            verticalArrangement = Arrangement.spacedBy(4),
-                        ) {
-                            @Composable
-                            fun WidgetButton(
-                                modifier: Modifier = Modifier,
-                                widget: ControllerWidget,
-                                widgetIconSize: IntSize,
-                            ) {
-                                ListButton(
-                                    modifier = modifier,
-                                    padding = IntPadding(left = 4, right = 4),
-                                    onClick = {
-                                        val newWidget = widget.cloneBase(
-                                            opacity = tabState.newWidgetParams.opacity,
-                                        )
-                                        val index = screenModel.newWidget(newWidget)
-                                        screenModel.selectWidget(index)
-                                    },
-                                ) {
-                                    Row(
-                                        verticalAlignment = Alignment.CenterVertically,
-                                        horizontalArrangement = Arrangement.spacedBy(4),
-                                    ) {
-                                        ScaledControllerWidget(
-                                            modifier = Modifier.size(widgetIconSize),
-                                            widget = widget,
-                                        )
-                                        Text(
-                                            modifier = Modifier.weight(1f),
-                                            text = widget.name.getString()
-                                        )
-                                    }
-                                }
+                    WidgetsLayout(Modifier.fillMaxWidth()) {
+                        val listContent = tabState.listContent
+                        listContent.heroes?.let { heroes ->
+                            for (widget in heroes) {
+                                WidgetButton(
+                                    modifier = Modifier.widgetType(ControllerWidgetType.HERO),
+                                    widget = widget,
+                                    widgetIconSize = IntSize(32)
+                                )
                             }
+                        }
 
-                            WidgetsLayout(Modifier.fillMaxWidth()) {
-                                listState.heroes?.let { heroes ->
-                                    for (widget in heroes) {
-                                        WidgetButton(
-                                            modifier = Modifier.widgetType(ControllerWidgetType.HERO),
-                                            widget = widget,
-                                            widgetIconSize = IntSize(32)
-                                        )
-                                    }
-                                }
-
-                                listState.widgets?.let { widgets ->
-                                    for (widget in widgets) {
-                                        WidgetButton(
-                                            modifier = Modifier
-                                                .widgetType(ControllerWidgetType.NORMAL)
-                                                .fillMaxWidth(),
-                                            widget = widget,
-                                            widgetIconSize = IntSize(16),
-                                        )
-                                    }
-                                }
+                        listContent.widgets?.let { widgets ->
+                            for (widget in widgets) {
+                                WidgetButton(
+                                    modifier = Modifier
+                                        .widgetType(ControllerWidgetType.NORMAL)
+                                        .fillMaxWidth(),
+                                    widget = widget,
+                                    widgetIconSize = IntSize(16),
+                                )
                             }
                         }
                     }

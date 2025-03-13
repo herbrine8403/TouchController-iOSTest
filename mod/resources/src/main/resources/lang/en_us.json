@@ -5,6 +5,9 @@
 
   "touchcontroller.back": "< %s",
 
+  "touchcontroller.screen.chat.title": "Chat and commands",
+  "touchcontroller.screen.chat.exit": "Exit",
+
   "touchcontroller.screen.config": "Touch Settings...",
   "touchcontroller.screen.config.title": "Touch Settings",
 

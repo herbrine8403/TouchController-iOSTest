@@ -245,7 +245,7 @@ object ScreenFactoryImpl : ScreenFactory {
         val screen = CombineScreen(
             title.toMinecraft(),
             renderBackground = renderBackground,
-            parent as Screen
+            parent?.let { it as Screen }
         )
         screen.setContent {
             content()

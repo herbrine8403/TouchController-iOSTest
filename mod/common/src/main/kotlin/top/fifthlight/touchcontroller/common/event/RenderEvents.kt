@@ -16,6 +16,7 @@ import top.fifthlight.touchcontroller.common.layout.Hud
 import top.fifthlight.touchcontroller.common.model.ControllerHudModel
 import top.fifthlight.touchcontroller.common.model.TouchStateModel
 import top.fifthlight.touchcontroller.common.platform.PlatformProvider
+import top.fifthlight.touchcontroller.common.ui.screen.openChatScreen
 import top.fifthlight.touchcontroller.proxy.message.AddPointerMessage
 import top.fifthlight.touchcontroller.proxy.message.ClearPointerMessage
 import top.fifthlight.touchcontroller.proxy.message.RemovePointerMessage
@@ -162,7 +163,7 @@ object RenderEvents : KoinComponent {
             player.isFlying = false
         }
         if (result.chat) {
-            gameAction.openChatScreen()
+            openChatScreen()
         }
         if (result.pause) {
             gameAction.openGameMenu()

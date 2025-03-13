@@ -1,5 +1,6 @@
 package top.fifthlight.touchcontroller.common.ui.model
 
+import kotlinx.collections.immutable.plus
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -10,6 +11,7 @@ import top.fifthlight.touchcontroller.common.config.preset.LayoutPreset
 import top.fifthlight.touchcontroller.common.config.preset.PresetConfig
 import top.fifthlight.touchcontroller.common.config.preset.PresetManager
 import top.fifthlight.touchcontroller.common.config.preset.builtin.BuiltinPresetKey
+import top.fifthlight.touchcontroller.common.config.widget.WidgetPresetManager
 import top.fifthlight.touchcontroller.common.control.ControllerWidget
 import top.fifthlight.touchcontroller.common.ext.combineStates
 import top.fifthlight.touchcontroller.common.ext.fastRandomUuid
@@ -20,6 +22,7 @@ class CustomControlLayoutTabModel(
     private val configScreenModel: ConfigScreenModel,
 ) : TouchControllerScreenModel() {
     private val presetManager: PresetManager by inject()
+    private val widgetPresetManager: WidgetPresetManager by inject()
     private val pageState = MutableStateFlow(CustomControlLayoutTabState.Enabled.PageState())
     val uiState =
         combineStates(configScreenModel.uiState, presetManager.presets, pageState) { uiState, presets, selectState ->
@@ -270,5 +273,9 @@ class CustomControlLayoutTabModel(
             )
         }
         editLayer { copy(widgets = widgets.removeAt(index)) }
+    }
+
+    fun addWidgetPreset(widget: ControllerWidget) {
+        widgetPresetManager.save(widgetPresetManager.presets.value + widget)
     }
 }

@@ -247,7 +247,10 @@ object ScreenFactoryImpl : ScreenFactory {
         title: CombineText,
         content: @Composable () -> Unit
     ): Any {
-        val screen = CombineScreen(parent as GuiScreen, renderBackground)
+        val screen = CombineScreen(
+            parent = parent?.let { it as GuiScreen },
+            renderBackground = renderBackground
+        )
         screen.setContent {
             content()
         }

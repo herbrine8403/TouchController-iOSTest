@@ -7,6 +7,7 @@ import top.fifthlight.touchcontroller.common.about.AboutInfoProvider
 import top.fifthlight.touchcontroller.common.about.ResourcesAboutInfoProvider
 import top.fifthlight.touchcontroller.common.config.GlobalConfigHolder
 import top.fifthlight.touchcontroller.common.config.preset.PresetManager
+import top.fifthlight.touchcontroller.common.config.widget.WidgetPresetManager
 import top.fifthlight.touchcontroller.common.model.ControllerHudModel
 import top.fifthlight.touchcontroller.common.model.TouchStateModel
 import top.fifthlight.touchcontroller.common.platform.PlatformProvider
@@ -26,6 +27,7 @@ val appModule = module {
     }
     single { GlobalConfigHolder() }
     single { PresetManager() }
+    single { WidgetPresetManager() }
     single { ControllerHudModel() }
     single { TouchStateModel() }
     single { PlatformProvider() }
@@ -40,4 +42,5 @@ val appModule = module {
     factory { params -> LayersTabModel(params[0]) }
     factory { params -> WidgetsTabModel(params[0]) }
     factory { ConfigScreenModel() }
+    factory { ChatScreenModel() }
 }

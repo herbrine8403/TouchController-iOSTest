@@ -1,48 +1,77 @@
 package top.fifthlight.touchcontroller.common.ui.model
 
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.getAndUpdate
-import kotlinx.coroutines.launch
+import org.koin.core.component.inject
+import top.fifthlight.touchcontroller.common.config.widget.WidgetPresetManager
+import top.fifthlight.touchcontroller.common.control.*
+import top.fifthlight.touchcontroller.common.ext.combineStates
 import top.fifthlight.touchcontroller.common.ui.state.WidgetsTabState
+import top.fifthlight.touchcontroller.common.ui.state.WidgetsTabState.ListContent
+
+private val builtInWidgets = ListContent(
+    heroes = persistentListOf<ControllerWidget>(
+        DPad(),
+        Joystick()
+    ),
+    widgets = persistentListOf<ControllerWidget>(
+        AscendButton(),
+        DescendButton(),
+        BoatButton(),
+        ChatButton(),
+        DescendButton(),
+        ForwardButton(),
+        HideHudButton(),
+        InventoryButton(),
+        JumpButton(),
+        PanoramaButton(),
+        PauseButton(),
+        PerspectiveSwitchButton(),
+        PlayerListButton(),
+        ScreenshotButton(),
+        SneakButton(),
+        SprintButton(),
+        UseButton(),
+        CustomWidget(),
+    )
+)
 
 class WidgetsTabModel(
     private val screenModel: CustomControlLayoutTabModel
 ) : TouchControllerScreenModel() {
-    private val _uiState = MutableStateFlow(WidgetsTabState())
-    val uiState = _uiState.asStateFlow()
-
-    init {
-        coroutineScope.launch {
-            _uiState.collectLatest {
-                if (it.listState is WidgetsTabState.ListState.Custom.Loading) {
-
-                }
-            }
-        }
+    private val widgetPresetManager: WidgetPresetManager by inject()
+    private val tabState = MutableStateFlow(WidgetsTabState.TabState())
+    val uiState = combineStates(tabState, widgetPresetManager.presets) { tabState, presets ->
+        WidgetsTabState(
+            listContent = when (tabState.listState) {
+                WidgetsTabState.ListState.BUILTIN -> builtInWidgets
+                WidgetsTabState.ListState.CUSTOM -> ListContent(widgets = presets)
+            },
+            tabState = tabState,
+        )
     }
 
     fun selectBuiltinTab() {
-        _uiState.getAndUpdate {
-            it.copy(listState = WidgetsTabState.ListState.Builtin)
+        tabState.getAndUpdate {
+            it.copy(listState = WidgetsTabState.ListState.BUILTIN)
         }
     }
 
     fun selectCustomTab() {
-        _uiState.getAndUpdate {
-            it.copy(listState = WidgetsTabState.ListState.Custom.Loading)
+        tabState.getAndUpdate {
+            it.copy(listState = WidgetsTabState.ListState.CUSTOM)
         }
     }
 
     fun openNewWidgetParamsDialog() {
-        _uiState.getAndUpdate {
+        tabState.getAndUpdate {
             it.copy(dialogState = WidgetsTabState.DialogState.ChangeNewWidgetParams(it.newWidgetParams))
         }
     }
 
     fun updateNewWidgetParamsDialog(editor: WidgetsTabState.DialogState.ChangeNewWidgetParams.() -> WidgetsTabState.DialogState.ChangeNewWidgetParams) {
-        _uiState.getAndUpdate {
+        tabState.getAndUpdate {
             var params = it.dialogState
             if (params is WidgetsTabState.DialogState.ChangeNewWidgetParams) {
                 params = editor(params)
@@ -52,13 +81,13 @@ class WidgetsTabModel(
     }
 
     fun closeDialog() {
-        _uiState.getAndUpdate {
+        tabState.getAndUpdate {
             it.copy(dialogState = WidgetsTabState.DialogState.Empty)
         }
     }
 
     fun updateNewWidgetParams(params: WidgetsTabState.NewWidgetParams) {
-        _uiState.getAndUpdate {
+        tabState.getAndUpdate {
             it.copy(newWidgetParams = params)
         }
     }

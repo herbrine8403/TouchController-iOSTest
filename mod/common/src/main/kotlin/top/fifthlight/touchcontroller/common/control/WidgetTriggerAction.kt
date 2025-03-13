@@ -8,6 +8,7 @@ import top.fifthlight.touchcontroller.common.gal.GameAction
 import top.fifthlight.touchcontroller.common.gal.KeyBindingHandler
 import top.fifthlight.touchcontroller.common.gal.KeyBindingType
 import top.fifthlight.touchcontroller.common.gal.PlayerHandle
+import top.fifthlight.touchcontroller.common.ui.screen.openChatScreen
 
 @Serializable
 sealed class WidgetTriggerAction {
@@ -81,10 +82,18 @@ sealed class WidgetTriggerAction {
         abstract fun trigger(gameAction: GameAction)
 
         @Serializable
-        @SerialName("chat_screen")
-        data object ChatMenu : Game() {
+        @SerialName("vanilla_chat")
+        data object VanillaChatScreen : Game() {
             override fun trigger(gameAction: GameAction) {
                 gameAction.openGameMenu()
+            }
+        }
+
+        @Serializable
+        @SerialName("chat")
+        data object ChatScreen : Game(), KoinComponent {
+            override fun trigger(gameAction: GameAction) {
+                openChatScreen()
             }
         }
 

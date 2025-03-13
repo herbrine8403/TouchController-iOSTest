@@ -45,7 +45,11 @@ object ScreenFactoryImpl : ScreenFactory {
         title: CombineText,
         content: @Composable () -> Unit
     ): Any {
-        val screen = CombineScreen(title.toMinecraft(), parent as Screen, renderBackground)
+        val screen = CombineScreen(
+            title = title.toMinecraft(),
+            parent = parent?.let { it as Screen },
+            renderBackground = renderBackground
+        )
         screen.setContent {
             content()
         }

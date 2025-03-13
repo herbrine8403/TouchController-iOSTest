@@ -5,6 +5,9 @@
 
   "touchcontroller.back": "< %s",
 
+  "touchcontroller.screen.chat.title": "聊天与命令",
+  "touchcontroller.screen.chat.exit": "退出",
+
   "touchcontroller.screen.config": "触摸设置…",
   "touchcontroller.screen.config.title": "触摸设置",
 
