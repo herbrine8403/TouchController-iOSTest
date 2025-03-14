@@ -9,16 +9,22 @@ import top.fifthlight.combine.data.Text
 import top.fifthlight.combine.input.MutableInteractionSource
 import top.fifthlight.combine.layout.Alignment
 import top.fifthlight.combine.layout.Arrangement
+import top.fifthlight.combine.layout.Layout
 import top.fifthlight.combine.modifier.Modifier
+import top.fifthlight.combine.modifier.ParentDataModifierNode
 import top.fifthlight.combine.modifier.drawing.background
 import top.fifthlight.combine.modifier.drawing.border
-import top.fifthlight.combine.modifier.placement.*
+import top.fifthlight.combine.modifier.placement.fillMaxHeight
+import top.fifthlight.combine.modifier.placement.fillMaxSize
+import top.fifthlight.combine.modifier.placement.fillMaxWidth
+import top.fifthlight.combine.modifier.placement.padding
 import top.fifthlight.combine.modifier.pointer.toggleable
 import top.fifthlight.combine.modifier.scroll.verticalScroll
 import top.fifthlight.combine.ui.style.ColorTheme
 import top.fifthlight.combine.ui.style.LocalColorTheme
 import top.fifthlight.combine.widget.base.layout.*
 import top.fifthlight.combine.widget.ui.*
+import top.fifthlight.data.IntSize
 import top.fifthlight.touchcontroller.assets.BackgroundTextures
 import top.fifthlight.touchcontroller.assets.Texts
 import top.fifthlight.touchcontroller.assets.TextureSet
@@ -27,6 +33,7 @@ import top.fifthlight.touchcontroller.common.config.ControllerLayout
 import top.fifthlight.touchcontroller.common.config.LayerConditionValue
 import top.fifthlight.touchcontroller.common.config.preset.PresetConfig
 import top.fifthlight.touchcontroller.common.config.preset.builtin.BuiltinPresetKey
+import top.fifthlight.touchcontroller.common.control.ControllerWidget
 import top.fifthlight.touchcontroller.common.ui.component.AppBar
 import top.fifthlight.touchcontroller.common.ui.component.BackButton
 import top.fifthlight.touchcontroller.common.ui.component.ControllerWidget
@@ -36,6 +43,7 @@ import top.fifthlight.touchcontroller.common.ui.model.ManageControlPresetsTabMod
 import top.fifthlight.touchcontroller.common.ui.tab.Tab
 import top.fifthlight.touchcontroller.common.ui.tab.TabGroup
 import top.fifthlight.touchcontroller.common.ui.tab.TabOptions
+import kotlin.math.min
 
 @Composable
 private fun RadioContainer(
@@ -81,22 +89,61 @@ private fun RadioBoxItem(
     }
 }
 
+private data class ControllerWidgetModifierNode(
+    val widget: ControllerWidget,
+) : ParentDataModifierNode, Modifier.Node<ControllerWidgetModifierNode> {
+    override fun modifierParentData(parentData: Any?): ControllerWidget = widget
+}
+
 @Composable
 private fun PresetPreview(
     modifier: Modifier = Modifier,
     preset: ControllerLayout = ControllerLayout(),
+    minimumLogicalSize: IntSize = IntSize(480, 270),
 ) {
-    Box(modifier = modifier) {
+    var scale by remember { mutableStateOf<Float?>(null) }
+    Layout(
+        modifier = modifier,
+        measurePolicy = { measurables, constraints ->
+            val size = IntSize(constraints.maxWidth, constraints.maxHeight)
+            val displayScale = min(
+                size.width.toFloat() / minimumLogicalSize.width.toFloat(),
+                size.height.toFloat() / minimumLogicalSize.height.toFloat(),
+            ).coerceAtMost(1f)
+            scale = displayScale
+            val logicalSize = (size.toSize() / displayScale).toIntSize()
+            val childConstraint = constraints.copy(
+                minWidth = 0,
+                minHeight = 0,
+            )
+            val placeables = measurables.map {
+                it.measure(childConstraint)
+            }
+            layout(size) {
+                for ((index, placeable) in placeables.withIndex()) {
+                    val measurable = measurables[index]
+                    val widget = (measurable.parentData as? ControllerWidget)
+                        ?: error("Bad parent data: ${measurable.parentData}")
+                    val offset =
+                        widget.align.alignOffset(logicalSize, widget.size(), widget.offset).toOffset() * displayScale
+                    placeable.placeAt(offset.toIntOffset())
+                }
+            }
+        }
+    ) {
+        val currentScale = scale
+        if (currentScale == null) {
+            return@Layout
+        }
         for (layer in preset.layers) {
             if (layer.condition.values.any { it != LayerConditionValue.NEVER }) {
                 continue
             }
             for (widget in layer.widgets) {
                 ControllerWidget(
-                    modifier = Modifier
-                        .alignment(widget.align.alignment)
-                        .offset(widget.align.normalizeOffset(widget.offset)),
+                    modifier = Modifier.then(ControllerWidgetModifierNode(widget)),
                     widget = widget,
+                    scale = currentScale,
                 )
             }
         }

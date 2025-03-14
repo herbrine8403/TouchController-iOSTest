@@ -56,11 +56,11 @@ private data class ControllerWidgetParentData(
     val size: IntSize,
 )
 
-private data class ControllerWidgetModifierNode(
+private data class WidgetDataModifierNode(
     val align: Align,
     val offset: IntOffset,
     val size: IntSize,
-) : ParentDataModifierNode, Modifier.Node<ControllerWidgetModifierNode> {
+) : ParentDataModifierNode, Modifier.Node<WidgetDataModifierNode> {
     constructor(widget: ControllerWidget, offset: IntOffset? = null) : this(
         widget.align,
         offset ?: widget.offset,
@@ -197,7 +197,7 @@ private fun LayoutEditorPanel(
             }
             top.fifthlight.touchcontroller.common.ui.component.ControllerWidget(
                 modifier = Modifier
-                    .then(ControllerWidgetModifierNode(widget, widgetOffset))
+                    .then(WidgetDataModifierNode(widget, widgetOffset))
                     .then(modifier),
                 widget = widget
             )

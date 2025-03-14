@@ -25,9 +25,9 @@ import top.fifthlight.touchcontroller.assets.Texts
 import top.fifthlight.touchcontroller.assets.TextureSet
 import top.fifthlight.touchcontroller.assets.Textures
 import top.fifthlight.touchcontroller.common.control.ControllerWidget
+import top.fifthlight.touchcontroller.common.ui.component.AutoScaleControllerWidget
 import top.fifthlight.touchcontroller.common.ui.component.CheckButton
 import top.fifthlight.touchcontroller.common.ui.component.ListButton
-import top.fifthlight.touchcontroller.common.ui.component.ScaledControllerWidget
 import top.fifthlight.touchcontroller.common.ui.model.WidgetsTabModel
 import top.fifthlight.touchcontroller.common.ui.state.WidgetsTabState
 import kotlin.math.max
@@ -164,7 +164,7 @@ private fun WidgetButton(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(4),
         ) {
-            ScaledControllerWidget(
+            AutoScaleControllerWidget(
                 modifier = Modifier.size(widgetIconSize),
                 widget = widget,
             )

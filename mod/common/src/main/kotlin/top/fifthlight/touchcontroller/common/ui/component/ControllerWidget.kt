@@ -20,15 +20,18 @@ import top.fifthlight.touchcontroller.common.layout.DrawQueue
 fun ControllerWidget(
     modifier: Modifier = Modifier,
     widget: ControllerWidget,
+    scale: Float = 1f,
 ) {
     val itemListProvider: DefaultItemListProvider = koinInject()
+    val widgetSize = widget.size()
+    val renderSize = (widgetSize.toSize() * scale).toIntSize()
     val drawQueue = remember(widget, itemListProvider) {
         val queue = DrawQueue()
         val context = Context(
             windowSize = IntSize.ZERO,
             windowScaledSize = IntSize.ZERO,
             drawQueue = queue,
-            size = widget.size(),
+            size = widgetSize,
             screenOffset = IntOffset.ZERO,
             pointers = mutableMapOf(),
             result = ContextResult(),
@@ -40,26 +43,28 @@ fun ControllerWidget(
     }
     Canvas(
         modifier = Modifier
-            .size(widget.size())
+            .size(renderSize)
             .then(modifier)
     ) {
-        withBlend {
-            withBlendFunction(
-                BlendFunction(
-                    srcFactor = BlendFactor.SRC_ALPHA,
-                    dstFactor = BlendFactor.ONE_MINUS_SRC_ALPHA,
-                    srcAlpha = BlendFactor.ONE,
-                    dstAlpha = BlendFactor.ZERO,
-                )
-            ) {
-                drawQueue.execute(this)
+        withScale(scale) {
+            withBlend {
+                withBlendFunction(
+                    BlendFunction(
+                        srcFactor = BlendFactor.SRC_ALPHA,
+                        dstFactor = BlendFactor.ONE_MINUS_SRC_ALPHA,
+                        srcAlpha = BlendFactor.ONE,
+                        dstAlpha = BlendFactor.ZERO,
+                    )
+                ) {
+                    drawQueue.execute(this)
+                }
             }
         }
     }
 }
 
 @Composable
-fun ScaledControllerWidget(
+fun AutoScaleControllerWidget(
     modifier: Modifier = Modifier,
     widget: ControllerWidget,
 ) {
