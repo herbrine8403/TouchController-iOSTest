@@ -14,7 +14,7 @@ object ChatMessageProviderImpl : ChatMessageProvider {
     override fun getMessages(): PersistentList<ChatMessage> =
         client.ingameGUI.chatGUI.chatLines
             .reversed()
-            .map { ChatMessage(message = TextImpl(it)) }
+            .map { ChatMessage(message = TextImpl(it.chatComponent)) }
             .toPersistentList()
 
     override fun sendMessage(message: String) {
