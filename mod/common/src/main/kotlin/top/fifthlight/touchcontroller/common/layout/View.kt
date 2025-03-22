@@ -2,11 +2,14 @@ package top.fifthlight.touchcontroller.common.layout
 
 import org.koin.core.component.get
 import top.fifthlight.data.Offset
+import top.fifthlight.touchcontroller.common.ext.fastRandomUuid
 import top.fifthlight.touchcontroller.common.gal.CrosshairTarget
 import top.fifthlight.touchcontroller.common.gal.DefaultKeyBindingType
 import top.fifthlight.touchcontroller.common.gal.PlayerHandleFactory
 import top.fifthlight.touchcontroller.common.gal.ViewActionProvider
 import top.fifthlight.touchcontroller.common.state.PointerState
+
+private val viewUuid = fastRandomUuid()
 
 fun Context.View() {
     val viewActionProvider: ViewActionProvider = get()
@@ -19,6 +22,9 @@ fun Context.View() {
     val attackKeyState = keyBindingHandler.getState(DefaultKeyBindingType.ATTACK)
     val useKeyState = keyBindingHandler.getState(DefaultKeyBindingType.USE)
 
+    attackKeyState.refreshLock(viewUuid, timer.renderTick)
+    useKeyState.refreshLock(viewUuid, timer.renderTick)
+
     var releasedView = false
     for (key in pointers.keys.toList()) {
         val state = pointers[key]!!.state
@@ -28,16 +34,16 @@ fun Context.View() {
                 when (previousState.viewState) {
                     PointerState.View.ViewPointerState.CONSUMED -> {}
                     PointerState.View.ViewPointerState.BREAKING -> {
-                        attackKeyState.locked = false
+                        attackKeyState.clearLock(viewUuid)
                     }
 
                     PointerState.View.ViewPointerState.USING -> {
-                        useKeyState.locked = false
+                        useKeyState.clearLock(viewUuid)
                     }
 
                     PointerState.View.ViewPointerState.INITIAL -> {
                         if (!releasedView) {
-                            val pressTime = timer.tick - previousState.pressTime
+                            val pressTime = timer.clientTick - previousState.pressTime
                             // Pressed less than time threshold and not moving, recognized as short click
                             if (pressTime < config.control.viewHoldDetectTicks && !previousState.moving) {
                                 val crosshairTarget = viewActionProvider.getCrosshairTarget() ?: break
@@ -109,7 +115,7 @@ fun Context.View() {
             return@let
         }
 
-        val pressTime = timer.tick - state.pressTime
+        val pressTime = timer.clientTick - state.pressTime
         var viewState = state.viewState
         val crosshairTarget = viewActionProvider.getCrosshairTarget()
         val itemUsable = player.hasItemsOnHand(config.item.usableItems)
@@ -118,13 +124,13 @@ fun Context.View() {
         if (viewState == PointerState.View.ViewPointerState.INITIAL && pressTime >= config.control.viewHoldDetectTicks && !moving) {
             viewState = if (itemUsable) {
                 // Trigger item long click
-                useKeyState.locked = true
+                useKeyState.addLock(viewUuid, timer.renderTick)
                 PointerState.View.ViewPointerState.USING
             } else {
                 when (crosshairTarget) {
                     CrosshairTarget.BLOCK -> {
                         // Trigger block breaking
-                        attackKeyState.locked = true
+                        attackKeyState.addLock(viewUuid, timer.renderTick)
                         PointerState.View.ViewPointerState.BREAKING
                     }
 
@@ -154,7 +160,7 @@ fun Context.View() {
                         it.state = PointerState.View(
                             initialPosition = it.position,
                             lastPosition = it.position,
-                            pressTime = timer.tick,
+                            pressTime = timer.clientTick,
                             viewState = PointerState.View.ViewPointerState.INITIAL
                         )
                         currentViewPointer = it

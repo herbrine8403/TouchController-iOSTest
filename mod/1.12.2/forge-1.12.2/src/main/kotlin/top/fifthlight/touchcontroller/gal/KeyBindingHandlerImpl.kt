@@ -11,21 +11,7 @@ import top.fifthlight.touchcontroller.common.gal.KeyBindingState
 
 private class KeyBindingStateImpl(
     private val keyBinding: KeyBinding,
-) : KeyBindingState {
-    private var passedClientTick = false
-
-    fun renderTick() {
-        if (passedClientTick) {
-            wasClicked = clicked || locked
-            clicked = false
-            passedClientTick = false
-        }
-    }
-
-    fun clientTick() {
-        passedClientTick = true
-    }
-
+) : KeyBindingState() {
     override val id: String
         get() = keyBinding.keyDescription
 
@@ -43,27 +29,9 @@ private class KeyBindingStateImpl(
     }
 
     override fun haveClickCount(): Boolean = keyBinding.pressTime > 0
-
-    private var wasClicked: Boolean = false
-
-    override var clicked: Boolean = false
-        set(value) {
-            if (!locked && !wasClicked && !field && value) {
-                click()
-            }
-            field = value
-        }
-
-    override var locked: Boolean = false
-        set(value) {
-            if (!clicked && !field && value) {
-                click()
-            }
-            field = value
-        }
 }
 
-object KeyBindingHandlerImpl : KeyBindingHandler {
+object KeyBindingHandlerImpl : KeyBindingHandler() {
     private val client = Minecraft.getMinecraft()
     private val options = client.gameSettings
     private val state = mutableMapOf<KeyBinding, KeyBindingStateImpl>()
@@ -77,24 +45,16 @@ object KeyBindingHandlerImpl : KeyBindingHandler {
         DefaultKeyBindingType.SPRINT -> options.keyBindSprint
         DefaultKeyBindingType.JUMP -> options.keyBindJump
         DefaultKeyBindingType.PLAYER_LIST -> options.keyBindPlayerList
+        DefaultKeyBindingType.LEFT -> options.keyBindLeft
+        DefaultKeyBindingType.RIGHT -> options.keyBindRight
+        DefaultKeyBindingType.UP -> options.keyBindForward
+        DefaultKeyBindingType.DOWN -> options.keyBindBack
     }
 
     fun isDown(key: KeyBinding) = state[key]?.let { it.clicked || it.locked } == true
 
     private fun getState(key: KeyBinding) = state.getOrPut(key) {
         KeyBindingStateImpl(key)
-    }
-
-    override fun renderTick() {
-        for (state in state.values) {
-            state.renderTick()
-        }
-    }
-
-    override fun clientTick() {
-        for (state in state.values) {
-            state.clientTick()
-        }
     }
 
     override fun getState(type: DefaultKeyBindingType): KeyBindingState {
@@ -105,4 +65,6 @@ object KeyBindingHandlerImpl : KeyBindingHandler {
 
     override fun getAllStates(): Map<String, KeyBindingState> =
         KeyBinding.KEYBIND_ARRAY.mapValues { (_, binding) -> getState(binding) }
+
+    override fun getExistingStates(): Collection<KeyBindingState> = state.values
 }

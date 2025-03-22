@@ -4,6 +4,7 @@ import androidx.compose.runtime.*
 import cafe.adriel.voyager.koin.koinScreenModel
 import kotlinx.collections.immutable.persistentListOf
 import org.koin.core.parameter.parametersOf
+import top.fifthlight.combine.animation.animateFloatAsState
 import top.fifthlight.combine.data.LocalTextFactory
 import top.fifthlight.combine.data.Text
 import top.fifthlight.combine.layout.Alignment
@@ -238,8 +239,10 @@ private fun CustomWidgetList(
                     Icon(Textures.ICON_MENU)
                 }
 
-                if (popupOpened) {
+                val expandProgress by animateFloatAsState(if (popupOpened) 1f else 0f)
+                if (expandProgress != 0f) {
                     DropDownMenu(
+                        expandProgress = expandProgress,
                         anchor = anchor,
                         onDismissRequest = {
                             popupOpened = false
@@ -275,108 +278,107 @@ object WidgetsTab : CustomTab() {
         val tabModel: WidgetsTabModel = koinScreenModel { parametersOf(screenModel) }
         val tabState by tabModel.uiState.collectAsState()
 
-        when (val dialogState = tabState.tabState.dialogState) {
-            is WidgetsTabState.DialogState.ChangeNewWidgetParams -> AlertDialog(
-                onDismissRequest = { tabModel.closeDialog() },
-                action = {
-                    GuideButton(
-                        onClick = {
-                            tabModel.closeDialog()
-                            tabModel.updateNewWidgetParams(dialogState.toParams())
-                        },
-                    ) {
-                        Text(Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_WIDGETS_NEW_WIDGET_SAVE))
-                    }
-                    Button(
-                        onClick = {
-                            tabModel.closeDialog()
-                        },
-                    ) {
-                        Text(Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_WIDGETS_NEW_WIDGET_CANCEL))
-                    }
-                }
-            ) {
-                Column(
-                    modifier = Modifier.fillMaxWidth(.5f),
-                    verticalArrangement = Arrangement.spacedBy(4),
+        AlertDialog(
+            value = tabState,
+            valueTransformer = { tabState.tabState.dialogState as? WidgetsTabState.DialogState.ChangeNewWidgetParams },
+            onDismissRequest = { tabModel.closeDialog() },
+            action = { dialogState ->
+                GuideButton(
+                    onClick = {
+                        tabModel.closeDialog()
+                        tabModel.updateNewWidgetParams(dialogState.toParams())
+                    },
                 ) {
-                    Text(
-                        Text.format(
-                            Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_WIDGETS_NEW_WIDGET_OPACITY,
-                            (dialogState.opacity * 100).toInt()
-                        )
-                    )
-                    Slider(
-                        modifier = Modifier.fillMaxWidth(),
-                        range = 0f..1f,
-                        value = dialogState.opacity,
-                        onValueChanged = {
-                            tabModel.updateNewWidgetParamsDialog { copy(opacity = it) }
-                        }
-                    )
-
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text(
-                            modifier = Modifier.weight(1f),
-                            text = Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_WIDGETS_NEW_WIDGET_TEXTURE_SET)
-                        )
-
-                        var expanded by remember { mutableStateOf(false) }
-                        Select(
-                            expanded = expanded,
-                            onExpandedChanged = { expanded = it },
-                            dropDownContent = {
-                                val textFactory = LocalTextFactory.current
-                                DropdownItemList(
-                                    modifier = Modifier.verticalScroll(),
-                                    items = TextureSet.TextureSetKey.entries,
-                                    textProvider = { textFactory.of(it.nameText) },
-                                    selectedIndex = TextureSet.TextureSetKey.entries.indexOf(dialogState.textureSet),
-                                    onItemSelected = { index ->
-                                        tabModel.updateNewWidgetParamsDialog { copy(textureSet = TextureSet.TextureSetKey.entries[index]) }
-                                        expanded = false
-                                    }
-                                )
-                            }
-                        ) {
-                            Text(Text.translatable(dialogState.textureSet.nameText))
-                            SelectIcon(expanded = expanded)
-                        }
-                    }
+                    Text(Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_WIDGETS_NEW_WIDGET_SAVE))
+                }
+                Button(
+                    onClick = {
+                        tabModel.closeDialog()
+                    },
+                ) {
+                    Text(Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_WIDGETS_NEW_WIDGET_CANCEL))
                 }
             }
-
-            is WidgetsTabState.DialogState.RenameWidgetPresetItem -> AlertDialog(
-                onDismissRequest = { tabModel.closeDialog() },
-                title = {
-                    Text(Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_WIDGETS_EDIT_WIDGET_PRESET_TITLE))
-                },
-                action = {
-                    GuideButton(
-                        onClick = {
-                            tabModel.renameWidgetPresetItem(dialogState.index, dialogState.name)
-                            tabModel.closeDialog()
-                        },
-                    ) {
-                        Text(Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_WIDGETS_EDIT_WIDGET_PRESET_SAVE))
-                    }
-                    Button(
-                        onClick = {
-                            tabModel.closeDialog()
-                        },
-                    ) {
-                        Text(Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_WIDGETS_EDIT_WIDGET_PRESET_CANCEL))
-                    }
-                }
+        ) { dialogState ->
+            Column(
+                modifier = Modifier.fillMaxWidth(.5f),
+                verticalArrangement = Arrangement.spacedBy(4),
             ) {
-                EditText(
-                    modifier = Modifier.fillMaxWidth(.5f),
-                    value = dialogState.name.asString(),
-                    onValueChanged = tabModel::updateRenameWidgetPresetItemDialog
+                Text(
+                    Text.format(
+                        Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_WIDGETS_NEW_WIDGET_OPACITY,
+                        (dialogState.opacity * 100).toInt()
+                    )
                 )
-            }
+                Slider(
+                    modifier = Modifier.fillMaxWidth(),
+                    range = 0f..1f,
+                    value = dialogState.opacity,
+                    onValueChanged = {
+                        tabModel.updateNewWidgetParamsDialog { copy(opacity = it) }
+                    }
+                )
 
-            WidgetsTabState.DialogState.Empty -> Unit
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        modifier = Modifier.weight(1f),
+                        text = Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_WIDGETS_NEW_WIDGET_TEXTURE_SET)
+                    )
+
+                    var expanded by remember { mutableStateOf(false) }
+                    Select(
+                        expanded = expanded,
+                        onExpandedChanged = { expanded = it },
+                        dropDownContent = {
+                            val textFactory = LocalTextFactory.current
+                            DropdownItemList(
+                                modifier = Modifier.verticalScroll(),
+                                items = TextureSet.TextureSetKey.entries,
+                                textProvider = { textFactory.of(it.nameText) },
+                                selectedIndex = TextureSet.TextureSetKey.entries.indexOf(dialogState.textureSet),
+                                onItemSelected = { index ->
+                                    tabModel.updateNewWidgetParamsDialog { copy(textureSet = TextureSet.TextureSetKey.entries[index]) }
+                                    expanded = false
+                                }
+                            )
+                        }
+                    ) {
+                        Text(Text.translatable(dialogState.textureSet.nameText))
+                        SelectIcon(expanded = expanded)
+                    }
+                }
+            }
+        }
+        AlertDialog(
+            value = tabState,
+            valueTransformer = { tabState.tabState.dialogState as? WidgetsTabState.DialogState.RenameWidgetPresetItem },
+            onDismissRequest = { tabModel.closeDialog() },
+            title = {
+                Text(Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_WIDGETS_EDIT_WIDGET_PRESET_TITLE))
+            },
+            action = { dialogState ->
+                GuideButton(
+                    onClick = {
+                        tabModel.renameWidgetPresetItem(dialogState.index, dialogState.name)
+                        tabModel.closeDialog()
+                    },
+                ) {
+                    Text(Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_WIDGETS_EDIT_WIDGET_PRESET_SAVE))
+                }
+                Button(
+                    onClick = {
+                        tabModel.closeDialog()
+                    },
+                ) {
+                    Text(Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_WIDGETS_EDIT_WIDGET_PRESET_CANCEL))
+                }
+            }
+        ) { dialogState ->
+            EditText(
+                modifier = Modifier.fillMaxWidth(.5f),
+                value = dialogState.name.asString(),
+                onValueChanged = tabModel::updateRenameWidgetPresetItemDialog
+            )
         }
 
         SideBarContainer(

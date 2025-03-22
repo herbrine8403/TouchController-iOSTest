@@ -15,7 +15,9 @@ import top.fifthlight.combine.modifier.placement.fillMaxSize
 import top.fifthlight.combine.modifier.placement.fillMaxWidth
 import top.fifthlight.combine.modifier.placement.padding
 import top.fifthlight.combine.modifier.scroll.verticalScroll
-import top.fifthlight.combine.widget.base.layout.*
+import top.fifthlight.combine.widget.base.layout.Box
+import top.fifthlight.combine.widget.base.layout.Column
+import top.fifthlight.combine.widget.base.layout.Row
 import top.fifthlight.combine.widget.ui.*
 import top.fifthlight.data.IntSize
 import top.fifthlight.touchcontroller.assets.BackgroundTextures
@@ -284,7 +286,7 @@ fun BuiltInPresetKeySelector(
                     text = Text.translatable(Texts.SCREEN_MANAGE_CONTROL_PRESET_SWAP_JUMP_AND_SNEAK),
                 )
                 Switch(
-                    enabled = value.moveMethod is BuiltInPresetKey.MoveMethod.Dpad,
+                    enabled = value.moveMethod is BuiltInPresetKey.MoveMethod.Dpad && (value.controlStyle as? BuiltInPresetKey.ControlStyle.SplitControls)?.buttonInteraction != true,
                     value = (value.moveMethod as? BuiltInPresetKey.MoveMethod.Dpad)?.swapJumpAndSneak == true,
                     onValueChanged = {
                         if (value.moveMethod is BuiltInPresetKey.MoveMethod.Dpad) {

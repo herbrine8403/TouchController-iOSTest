@@ -246,7 +246,7 @@ internal sealed class WrapperLayoutNode(
             return object : Placeable by result {
                 override fun placeAt(x: Int, y: Int) {
                     result.placeAt(x, y)
-                    modifierNode.onPlaced(this)
+                    modifierNode.onPlaced(node)
                 }
             }
         }

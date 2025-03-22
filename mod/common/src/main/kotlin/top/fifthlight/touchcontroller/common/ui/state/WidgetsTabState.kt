@@ -3,7 +3,10 @@ package top.fifthlight.touchcontroller.common.ui.state
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
 import top.fifthlight.touchcontroller.assets.TextureSet
-import top.fifthlight.touchcontroller.common.control.*
+import top.fifthlight.touchcontroller.common.control.BoatButton
+import top.fifthlight.touchcontroller.common.control.BuiltInWidgets
+import top.fifthlight.touchcontroller.common.control.ControllerWidget
+import top.fifthlight.touchcontroller.common.control.Joystick
 
 data class WidgetsTabState(
     val listContent: ListContent,
@@ -50,7 +53,7 @@ data class WidgetsTabState(
     sealed class ListContent {
         data class BuiltIn(private val builtIn: BuiltInWidgets) : ListContent() {
             val heroes: PersistentList<ControllerWidget> = persistentListOf<ControllerWidget>(
-                DPad(),
+                builtIn.dpad,
                 Joystick(),
             )
             val widgets: PersistentList<ControllerWidget> = persistentListOf<ControllerWidget>(
@@ -62,7 +65,6 @@ data class WidgetsTabState(
                 builtIn.attack,
                 builtIn.use,
                 BoatButton(),
-                ForwardButton(),
                 builtIn.inventory,
                 builtIn.pause,
                 builtIn.chat,

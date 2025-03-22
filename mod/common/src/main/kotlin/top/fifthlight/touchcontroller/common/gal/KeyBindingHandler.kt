@@ -6,6 +6,7 @@ import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import top.fifthlight.combine.data.Text
 import top.fifthlight.combine.data.TextFactory
+import kotlin.uuid.Uuid
 
 @Serializable
 enum class DefaultKeyBindingType {
@@ -32,27 +33,87 @@ enum class DefaultKeyBindingType {
 
     @SerialName("player_list")
     PLAYER_LIST,
+
+    @SerialName("left")
+    LEFT,
+
+    @SerialName("right")
+    RIGHT,
+
+    @SerialName("up")
+    UP,
+
+    @SerialName("down")
+    DOWN,
 }
 
-interface KeyBindingState {
-    val id: String
-    val name: Text
-    val categoryId: String
-    val categoryName: Text
+abstract class KeyBindingState {
+    abstract val id: String
+    abstract val name: Text
+    abstract val categoryId: String
+    abstract val categoryName: Text
 
     // Click for once. You probably don't want to use this as it only increases press count, without actually pressing
     // the button. If it causes problems, use clicked = true instead.
-    fun click()
+    abstract fun click()
 
-    fun haveClickCount(): Boolean
+    abstract fun haveClickCount(): Boolean
+
+    private var passedClientTick = false
+    private var wasClicked: Boolean = false
+
+    fun renderTick(renderTick: Int) {
+        lockedUuids.values.removeIf { it < renderTick - 1 }
+        if (passedClientTick) {
+            wasClicked = clicked || locked
+            clicked = false
+            passedClientTick = false
+        }
+    }
+
+    fun clientTick(clientTick: Int) {
+        passedClientTick = true
+    }
 
     // Click for one tick (client tick). It will be reset every tick.
-    var clicked: Boolean
+    var clicked: Boolean = false
+        set(value) {
+            if (!locked && !wasClicked && !field && value) {
+                click()
+            }
+            field = value
+        }
 
-    // Lock between ticks. You can read value from this field to query lock state.
-    var locked: Boolean
+    protected val lockedUuids = mutableMapOf<Uuid, Int>()
 
-    companion object Empty : KeyBindingState, KoinComponent {
+    val locked: Boolean
+        get() = lockedUuids.isNotEmpty()
+
+    fun addLock(uuid: Uuid, renderTick: Int) {
+        if (!clicked && !locked && !wasClicked) {
+            click()
+        }
+        lockedUuids[uuid] = renderTick
+    }
+
+    fun clearLock() {
+        lockedUuids.clear()
+    }
+
+    fun clearLock(uuid: Uuid) {
+        lockedUuids.remove(uuid)
+    }
+
+    fun getLock(uuid: Uuid) = lockedUuids[uuid] != null
+
+    fun refreshLock(uuid: Uuid, renderTick: Int) {
+        val lastTick = lockedUuids[uuid]
+        if (lastTick != null) {
+            lockedUuids[uuid] = renderTick
+        }
+    }
+
+    companion object Empty : KeyBindingState(), KoinComponent {
         private val textFactory: TextFactory by inject()
         override val id: String = "empty"
         override val name: Text
@@ -63,29 +124,33 @@ interface KeyBindingState {
 
         override fun click() {}
         override fun haveClickCount() = false
-        override var clicked: Boolean
-            get() = false
-            set(_) {}
-        override var locked: Boolean
-            get() = false
-            set(_) {}
     }
 }
 
-interface KeyBindingHandler {
-    fun renderTick()
-    fun clientTick()
-    fun getState(type: DefaultKeyBindingType): KeyBindingState
-    fun getState(id: String): KeyBindingState?
-    fun getAllStates(): Map<String, KeyBindingState>
+abstract class KeyBindingHandler {
+    fun renderTick(renderTick: Int) {
+        for (state in getExistingStates()) {
+            state.renderTick(renderTick)
+        }
+    }
+
+    fun clientTick(clientTick: Int) {
+        for (state in getExistingStates()) {
+            state.clientTick(clientTick)
+        }
+    }
+
+    abstract fun getState(type: DefaultKeyBindingType): KeyBindingState
+    abstract fun getState(id: String): KeyBindingState?
+    abstract fun getAllStates(): Map<String, KeyBindingState>
+    abstract fun getExistingStates(): Collection<KeyBindingState>
 
     fun mapDefaultType(type: DefaultKeyBindingType) = getState(type).id
 
-    companion object Empty : KeyBindingHandler {
-        override fun renderTick() {}
-        override fun clientTick() {}
+    companion object Empty : KeyBindingHandler() {
         override fun getState(type: DefaultKeyBindingType) = KeyBindingState.Empty
         override fun getState(id: String): KeyBindingState? = null
         override fun getAllStates(): Map<String, KeyBindingState> = mapOf()
+        override fun getExistingStates(): Collection<KeyBindingState> = listOf()
     }
 }

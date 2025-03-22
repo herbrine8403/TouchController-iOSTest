@@ -16,7 +16,6 @@ import top.fifthlight.touchcontroller.common.layout.Hud
 import top.fifthlight.touchcontroller.common.model.ControllerHudModel
 import top.fifthlight.touchcontroller.common.model.TouchStateModel
 import top.fifthlight.touchcontroller.common.platform.PlatformProvider
-import top.fifthlight.touchcontroller.common.ui.screen.openChatScreen
 import top.fifthlight.touchcontroller.proxy.message.AddPointerMessage
 import top.fifthlight.touchcontroller.proxy.message.ClearPointerMessage
 import top.fifthlight.touchcontroller.proxy.message.RemovePointerMessage
@@ -24,7 +23,6 @@ import top.fifthlight.touchcontroller.proxy.message.VibrateMessage
 
 object RenderEvents : KoinComponent {
     private val window: WindowHandle by inject()
-    private val gameAction: GameAction by inject()
     private val configHolder: GlobalConfigHolder by inject()
     private val controllerHudModel: ControllerHudModel by inject()
     private val touchStateModel: TouchStateModel by inject()
@@ -36,7 +34,8 @@ object RenderEvents : KoinComponent {
     private var prevHeight = 0
 
     fun onRenderStart() {
-        keyBindingHandler.renderTick()
+        controllerHudModel.timer.renderTick()
+        keyBindingHandler.renderTick(controllerHudModel.timer.renderTick)
 
         if (controllerHudModel.status.vibrate) {
             platformProvider.platform?.sendEvent(VibrateMessage(VibrateMessage.Kind.BLOCK_BROKEN))
@@ -96,7 +95,7 @@ object RenderEvents : KoinComponent {
 
         val player = playerHandleFactory.getPlayerHandle() ?: return
         if (player.isFlying || player.isSubmergedInWater) {
-            keyBindingHandler.getState(DefaultKeyBindingType.SNEAK).locked = false
+            keyBindingHandler.getState(DefaultKeyBindingType.SNEAK).clearLock()
         }
 
         val ridingType = player.ridingEntityType
@@ -150,38 +149,8 @@ object RenderEvents : KoinComponent {
         controllerHudModel.pendingDrawQueue = drawQueue
 
         val status = controllerHudModel.status
-        val sprintState = keyBindingHandler.getState(DefaultKeyBindingType.SPRINT)
-        if (sprintState.locked || sprintState.clicked) {
-            status.wasSprinting = true
-        } else {
-            if (status.wasSprinting) {
-                status.wasSprinting = false
-                player.isSprinting = false
-            }
-        }
-        status.doubleClickCounter.clean(controllerHudModel.timer.tick)
-        result.pendingAction.forEach { it.trigger(player) }
-        if (result.cancelFlying) {
-            player.isFlying = false
-        }
-        if (result.chat) {
-            openChatScreen()
-        }
-        if (result.pause) {
-            gameAction.openGameMenu()
-        }
-        if (result.takeScreenshot) {
-            gameAction.takeScreenshot()
-        }
-        if (result.takePanorama) {
-            gameAction.takePanorama()
-        }
-        if (result.nextPerspective) {
-            gameAction.nextPerspective()
-        }
-        if (result.hideHud) {
-            gameAction.hudHidden = !gameAction.hudHidden
-        }
+        status.doubleClickCounter.clean(controllerHudModel.timer.clientTick)
+        result.pendingAction.forEach { it.invoke(controllerHudModel.timer, player) }
         result.lookDirection?.let { (x, y) ->
             player.changeLookDirection(x.toDouble(), y.toDouble())
         }

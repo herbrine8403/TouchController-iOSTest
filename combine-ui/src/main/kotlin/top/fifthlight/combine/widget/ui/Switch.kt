@@ -6,44 +6,43 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.staticCompositionLocalOf
 import top.fifthlight.combine.animation.animateFloatAsState
 import top.fifthlight.combine.input.MutableInteractionSource
-import top.fifthlight.combine.layout.Alignment
 import top.fifthlight.combine.modifier.Modifier
 import top.fifthlight.combine.modifier.coerceIn
 import top.fifthlight.combine.modifier.focus.focusable
-import top.fifthlight.combine.modifier.pointer.clickable
 import top.fifthlight.combine.modifier.pointer.toggleable
-import top.fifthlight.combine.paint.Color
 import top.fifthlight.combine.sound.LocalSoundManager
 import top.fifthlight.combine.sound.SoundKind
 import top.fifthlight.combine.sound.SoundManager
 import top.fifthlight.combine.ui.style.DrawableSet
+import top.fifthlight.combine.ui.style.TextureSet
 import top.fifthlight.combine.widget.base.Canvas
-import top.fifthlight.combine.widget.base.layout.Box
 import top.fifthlight.data.IntOffset
 import top.fifthlight.data.IntRect
+import top.fifthlight.data.IntSize
 import top.fifthlight.touchcontroller.assets.Textures
+import kotlin.math.max
 import kotlin.math.roundToInt
 
 data class SwitchDrawableSet(
-    val off: DrawableSet,
-    val on: DrawableSet,
+    val frame: DrawableSet,
+    val background: TextureSet,
     val handle: DrawableSet
 )
 
 val defaultSwitchDrawable = SwitchDrawableSet(
-    off = DrawableSet(
-        normal = Textures.WIDGET_SWITCH_SWITCH_OFF,
-        focus = Textures.WIDGET_SWITCH_SWITCH_OFF_HOVER,
-        hover = Textures.WIDGET_SWITCH_SWITCH_OFF_HOVER,
-        active = Textures.WIDGET_SWITCH_SWITCH_OFF_ACTIVE,
-        disabled = Textures.WIDGET_SWITCH_SWITCH_OFF_DISABLED,
+    frame = DrawableSet(
+        normal = Textures.WIDGET_SWITCH_FRAME,
+        focus = Textures.WIDGET_SWITCH_FRAME_HOVER,
+        hover = Textures.WIDGET_SWITCH_FRAME_HOVER,
+        active = Textures.WIDGET_SWITCH_FRAME_ACTIVE,
+        disabled = Textures.WIDGET_SWITCH_FRAME_DISABLED,
     ),
-    on = DrawableSet(
-        normal = Textures.WIDGET_SWITCH_SWITCH_ON,
-        focus = Textures.WIDGET_SWITCH_SWITCH_ON_HOVER,
-        hover = Textures.WIDGET_SWITCH_SWITCH_ON_HOVER,
-        active = Textures.WIDGET_SWITCH_SWITCH_ON_ACTIVE,
-        disabled = Textures.WIDGET_SWITCH_SWITCH_ON_DISABLED,
+    background = TextureSet(
+        normal = Textures.WIDGET_SWITCH_SWITCH,
+        focus = Textures.WIDGET_SWITCH_SWITCH_HOVER,
+        hover = Textures.WIDGET_SWITCH_SWITCH_HOVER,
+        active = Textures.WIDGET_SWITCH_SWITCH_ACTIVE,
+        disabled = Textures.WIDGET_SWITCH_SWITCH_DISABLED,
     ),
     handle = DrawableSet(
         normal = Textures.WIDGET_HANDLE_HANDLE,
@@ -68,8 +67,8 @@ fun Switch(
     val soundManager: SoundManager = LocalSoundManager.current
     val interactionSource = remember { MutableInteractionSource() }
     val state by widgetState(interactionSource)
-    val onDrawable = drawableSet.on.getByState(state, enabled = enabled)
-    val offDrawable = drawableSet.off.getByState(state, enabled = enabled)
+    val frameDrawable = drawableSet.frame.getByState(state, enabled = enabled)
+    val backgroundTexture = drawableSet.background.getByState(state, enabled = enabled)
     val handleDrawable = drawableSet.handle.getByState(state, enabled = enabled)
 
     val modifier = if (onValueChanged == null || !enabled) {
@@ -89,24 +88,54 @@ fun Switch(
             .then(modifier)
     }
 
+    val size = IntSize(
+        width = frameDrawable.size.width,
+        height = max(frameDrawable.size.height, handleDrawable.size.height),
+    )
+
     val handleValue by animateFloatAsState(if (value) 1f else 0f)
 
     Canvas(
         modifier = modifier,
-        measurePolicy = { _, constraints -> layout(onDrawable.size.coerceIn(constraints)) {} },
+        measurePolicy = { _, constraints -> layout(size.coerceIn(constraints)) {} },
     ) { node ->
-        offDrawable.run { draw(IntRect(offset = IntOffset.ZERO, size = node.size)) }
-        onDrawable.run {
+        val frameRect = IntRect(
+            offset = IntOffset(
+                x = 0,
+                y = (node.size.height - handleDrawable.size.height) / 2,
+            ),
+            size = frameDrawable.size
+        )
+        val backgroundInitialOffsetX = (backgroundTexture.size.width - handleDrawable.size.width) / 2
+        val handleMoveWidth = frameDrawable.size.width - handleDrawable.size.width
+        val handleMoveOffsetX = (handleMoveWidth * handleValue).roundToInt()
+        drawTexture(
+            texture = backgroundTexture,
+            srcRect = IntRect(
+                offset = IntOffset(
+                    x = backgroundInitialOffsetX - handleMoveOffsetX,
+                    y = (node.size.height - backgroundTexture.size.height) / 2
+                ),
+                size = IntSize(
+                    width = frameRect.size.width,
+                    height = backgroundTexture.size.height,
+                )
+            ),
+            dstRect = frameRect.toRect(),
+        )
+        frameDrawable.run {
+            draw(rect = frameRect)
+        }
+        handleDrawable.run {
             draw(
-                rect = IntRect(offset = IntOffset.ZERO, size = node.size),
-                tint = Color(handleValue, 1f, 1f, 1f),
+                IntRect(
+                    offset = IntOffset(
+                        x = handleMoveOffsetX,
+                        y = (node.size.height - handleDrawable.size.height) / 2,
+                    ),
+                    size = handleDrawable.size,
+                )
             )
         }
-        val handleSize = handleDrawable.size
-        val handleOffset = IntOffset(
-            x = ((node.size.width - handleSize.width) * handleValue).roundToInt(),
-            y = (node.size.height - handleSize.height) / 2,
-        )
-        handleDrawable.run { draw(IntRect(offset = handleOffset, size = handleSize)) }
     }
 }

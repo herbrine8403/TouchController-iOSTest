@@ -1,6 +1,7 @@
 package top.fifthlight.combine.widget.ui
 
 import androidx.compose.runtime.*
+import top.fifthlight.combine.animation.animateFloatAsState
 import top.fifthlight.combine.data.NinePatchTexture
 import top.fifthlight.combine.input.MutableInteractionSource
 import top.fifthlight.combine.modifier.Modifier
@@ -79,20 +80,16 @@ fun Select(
     val state by widgetState(interactionSource)
     val menuTexture = drawableSet.menuBox.getByState(state)
 
-    var anchor by remember { mutableStateOf<IntRect?>(null) }
+    var anchor by remember { mutableStateOf<IntRect>(IntRect.ZERO) }
     val colorTheme = colorTheme ?: ColorTheme.light
 
     Row(
         modifier = Modifier
             .border(menuTexture)
-            .anchor {
-                anchor = it
-            }
-            .clickable(interactionSource) {
-                onExpandedChanged(!expanded)
-            }
+            .clickable(interactionSource) { onExpandedChanged(!expanded) }
             .focusable(interactionSource)
-            .then(modifier),
+            .then(modifier)
+            .anchor { anchor = it },
     ) {
         CompositionLocalProvider(
             LocalColorTheme provides colorTheme,
@@ -102,11 +99,12 @@ fun Select(
         }
     }
 
-    val currentAnchor = anchor
-    if (expanded && currentAnchor != null) {
+    val expandProgress by animateFloatAsState(if (expanded) 1f else 0f)
+    if (expandProgress != 0f) {
         DropDownMenu(
             border = drawableSet.floatPanel,
-            anchor = currentAnchor,
+            anchor = anchor,
+            expandProgress = expandProgress,
             onDismissRequest = { onExpandedChanged(false) }
         ) {
             CompositionLocalProvider(

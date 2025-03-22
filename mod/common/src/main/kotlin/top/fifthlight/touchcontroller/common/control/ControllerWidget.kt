@@ -57,9 +57,12 @@ sealed class ControllerWidget {
         fun asString() = getText().string
     }
 
-    interface Property<Config : ControllerWidget, Value> {
+    abstract class Property<Config : ControllerWidget, Value>(
+        val getValue: (Config) -> Value,
+        val setValue: (Config, Value) -> Config,
+    ) {
         @Composable
-        fun controller(
+        abstract fun controller(
             modifier: Modifier,
             config: ControllerWidget,
             onConfigChanged: (ControllerWidget) -> Unit

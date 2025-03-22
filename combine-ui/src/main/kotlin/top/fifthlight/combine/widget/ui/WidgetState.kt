@@ -7,6 +7,7 @@ import top.fifthlight.combine.modifier.pointer.ClickInteraction
 import top.fifthlight.combine.modifier.pointer.DragInteraction
 import top.fifthlight.combine.ui.style.ColorSet
 import top.fifthlight.combine.ui.style.DrawableSet
+import top.fifthlight.combine.ui.style.TextureSet
 
 val LocalWidgetState = staticCompositionLocalOf<WidgetState> { WidgetState.NORMAL }
 
@@ -24,6 +25,17 @@ enum class WidgetState(val priority: Int) : Comparable<WidgetState> {
 }
 
 fun DrawableSet.getByState(state: WidgetState, enabled: Boolean = true) = if (enabled) {
+    when (state) {
+        WidgetState.NORMAL -> normal
+        WidgetState.HOVER -> hover
+        WidgetState.ACTIVE -> active
+        WidgetState.FOCUS -> focus
+    }
+} else {
+    this.disabled
+}
+
+fun TextureSet.getByState(state: WidgetState, enabled: Boolean = true) = if (enabled) {
     when (state) {
         WidgetState.NORMAL -> normal
         WidgetState.HOVER -> hover

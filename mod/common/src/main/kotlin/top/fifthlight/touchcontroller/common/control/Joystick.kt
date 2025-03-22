@@ -8,15 +8,20 @@ import kotlinx.serialization.Serializable
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import top.fifthlight.combine.data.TextFactory
+import top.fifthlight.combine.paint.Color
 import top.fifthlight.data.IntOffset
 import top.fifthlight.data.IntSize
+import top.fifthlight.data.Offset
+import top.fifthlight.data.Rect
 import top.fifthlight.touchcontroller.assets.Texts
 import top.fifthlight.touchcontroller.assets.TextureSet
 import top.fifthlight.touchcontroller.common.ext.fastRandomUuid
+import top.fifthlight.touchcontroller.common.gal.DefaultKeyBindingType
 import top.fifthlight.touchcontroller.common.layout.Align
 import top.fifthlight.touchcontroller.common.layout.Context
-import top.fifthlight.touchcontroller.common.layout.Joystick
+import top.fifthlight.touchcontroller.common.state.PointerState
 import kotlin.math.round
+import kotlin.math.sqrt
 import kotlin.uuid.Uuid
 
 @Serializable
@@ -87,10 +92,6 @@ data class Joystick(
 
     fun stickSize() = IntSize((stickSize * 48).toInt())
 
-    override fun layout(context: Context) {
-        context.Joystick(this@Joystick)
-    }
-
     override fun cloneBase(
         id: Uuid,
         name: Name,
@@ -106,4 +107,92 @@ data class Joystick(
         opacity = opacity,
         lockMoving = lockMoving,
     )
+
+    override fun layout(context: Context): Unit = with(context) {
+        val layout = this@Joystick
+
+        var currentPointer = pointers.values.firstOrNull {
+            it.state is PointerState.Joystick
+        }
+        currentPointer?.let {
+            for (pointer in pointers.values) {
+                if (!pointer.inRect(size)) {
+                    continue
+                }
+                when (pointer.state) {
+                    PointerState.New -> pointer.state = PointerState.Invalid
+                    else -> {}
+                }
+            }
+        } ?: run {
+            for (pointer in pointers.values) {
+                when (pointer.state) {
+                    PointerState.New -> {
+                        if (!pointer.inRect(size)) {
+                            continue
+                        }
+                        if (currentPointer != null) {
+                            pointer.state = PointerState.Invalid
+                        } else {
+                            pointer.state = PointerState.Joystick
+                            currentPointer = pointer
+                        }
+                    }
+
+                    else -> {}
+                }
+            }
+        }
+
+        val rawOffset = currentPointer?.let { pointer ->
+            pointer.scaledOffset / size.width.toFloat() * 2f - 1f
+        }
+
+        val normalizedOffset = rawOffset?.let { offset ->
+            val squaredLength = offset.squaredLength
+            if (squaredLength > 1) {
+                val length = sqrt(squaredLength)
+                offset / length
+            } else {
+                offset
+            }
+        }
+
+        val opacityMultiplier = if (!layout.increaseOpacityWhenActive || currentPointer == null) {
+            1f
+        } else {
+            1.5f
+        }
+
+        withOpacity(opacityMultiplier) {
+            drawQueue.enqueue { canvas ->
+                val color = Color(((0xFF * opacity).toInt() shl 24) or 0xFFFFFF)
+                canvas.drawTexture(
+                    texture = layout.textureSet.textureSet.pad,
+                    dstRect = Rect(size = size.toSize()),
+                    tint = color
+                )
+                val drawOffset = normalizedOffset ?: Offset.ZERO
+                val stickSize = layout.stickSize()
+                val actualOffset = ((drawOffset + 1f) / 2f * size) - stickSize.toSize() / 2f
+                canvas.drawTexture(
+                    texture = layout.textureSet.textureSet.stick,
+                    dstRect = Rect(
+                        offset = actualOffset,
+                        size = stickSize.toSize()
+                    ),
+                    tint = color
+                )
+            }
+        }
+
+        normalizedOffset?.let { (right, backward) ->
+            val sprintButtonState = keyBindingHandler.getState(DefaultKeyBindingType.SPRINT)
+            if (layout.triggerSprint && rawOffset.y < -1.1f) {
+                sprintButtonState.clicked = true
+            }
+            result.left = -right
+            result.forward = -backward
+        }
+    }
 }

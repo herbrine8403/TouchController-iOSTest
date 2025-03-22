@@ -33,42 +33,52 @@ private fun LayerConditionPanel(
     FlowRow(
         modifier = modifier,
         maxColumns = 2,
+        horizontalSpacing = 4,
         expandColumnWidth = true,
     ) {
         for (key in LayerConditionKey.entries) {
             var expanded by remember { mutableStateOf(false) }
-            Select(
-                expanded = expanded,
-                onExpandedChanged = { expanded = it },
-                dropDownContent = {
-                    val selectedIndex = LayerConditionValue.allValues.indexOf(value[key])
-                    val textFactory = LocalTextFactory.current
-                    DropdownItemList(
-                        modifier = Modifier.verticalScroll(),
-                        items = LayerConditionValue.allValues,
-                        textProvider = { textFactory.of(it.text()) },
-                        selectedIndex = selectedIndex,
-                        onItemSelected = { index ->
-                            expanded = false
-                            onValueChanged(
-                                when (val conditionValue = LayerConditionValue.allValues[index]) {
-                                    null -> value.remove(key)
-                                    else -> value.put(key, conditionValue)
-                                }
-                            )
-                        }
-                    )
-                }
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
             ) {
-                Text(Text.translatable(key.text))
-                Spacer(modifier = Modifier.weight(1f))
-                SelectIcon(expanded = expanded)
+                Text(
+                    modifier = Modifier.weight(1f),
+                    text = Text.translatable(key.text),
+                )
+                Select(
+                    modifier = Modifier.weight(1f),
+                    expanded = expanded,
+                    onExpandedChanged = { expanded = it },
+                    dropDownContent = {
+                        val selectedIndex = LayerConditionValue.allValues.indexOf(value[key])
+                        val textFactory = LocalTextFactory.current
+                        DropdownItemList(
+                            modifier = Modifier.verticalScroll(),
+                            items = LayerConditionValue.allValues,
+                            textProvider = { textFactory.of(it.text()) },
+                            selectedIndex = selectedIndex,
+                            onItemSelected = { index ->
+                                expanded = false
+                                onValueChanged(
+                                    when (val conditionValue = LayerConditionValue.allValues[index]) {
+                                        null -> value.remove(key)
+                                        else -> value.put(key, conditionValue)
+                                    }
+                                )
+                            }
+                        )
+                    }
+                ) {
+                    Text(Text.translatable(value[key].text()))
+                    Spacer(Modifier.weight(1f))
+                    SelectIcon(expanded = expanded)
+                }
             }
         }
     }
 }
 
-object LayersTab: CustomTab() {
+object LayersTab : CustomTab() {
     @Composable
     override fun Icon() {
         Icon(Textures.ICON_LAYER)
@@ -79,178 +89,177 @@ object LayersTab: CustomTab() {
         val (screenModel, uiState, tabsButton, sideBarAtRight) = LocalCustomTabContext.current
         val tabModel: LayersTabModel = koinScreenModel { parametersOf(screenModel) }
         val tabState by tabModel.uiState.collectAsState()
-        when (val state = tabState) {
-            is LayersTabState.Create -> AlertDialog(
-                title = {
-                    Text(Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_LAYERS_CREATE_LAYER))
-                },
-                action = {
-                    GuideButton(
-                        onClick = {
-                            tabModel.createLayer(state)
-                        },
-                    ) {
-                        Text(Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_LAYERS_CREATE_LAYER_CREATE))
-                    }
-                    Button(
-                        onClick = {
-                            tabModel.clearState()
-                        },
-                    ) {
-                        Text(Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_LAYERS_CREATE_LAYER_CANCEL))
-                    }
+        AlertDialog(
+            value = tabState,
+            valueTransformer = { tabState as? LayersTabState.Create },
+            title = {
+                Text(Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_LAYERS_CREATE_LAYER))
+            },
+            action = { state ->
+                GuideButton(
+                    onClick = {
+                        tabModel.createLayer(state)
+                    },
+                ) {
+                    Text(Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_LAYERS_CREATE_LAYER_CREATE))
                 }
+                Button(
+                    onClick = {
+                        tabModel.clearState()
+                    },
+                ) {
+                    Text(Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_LAYERS_CREATE_LAYER_CANCEL))
+                }
+            }
+        ) { state ->
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth(.5f)
+                    .fillMaxHeight(.8f),
+                verticalArrangement = Arrangement.spacedBy(4),
             ) {
-                Column(
+                EditText(
+                    modifier = Modifier.fillMaxWidth(),
+                    value = state.name,
+                    onValueChanged = {
+                        tabModel.updateCreateLayerState { copy(name = it) }
+                    },
+                    placeholder = Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_LAYERS_NAME_PLACEHOLDER),
+                )
+
+                LayerConditionPanel(
                     modifier = Modifier
-                        .fillMaxWidth(.5f)
-                        .fillMaxHeight(.8f),
-                    verticalArrangement = Arrangement.spacedBy(4),
+                        .verticalScroll()
+                        .weight(1f)
+                        .fillMaxWidth(),
+                    value = state.condition,
+                    onValueChanged = {
+                        tabModel.updateCreateLayerState { copy(condition = it) }
+                    }
+                )
+            }
+        }
+        AlertDialog(
+            value = tabState,
+            valueTransformer = { tabState as? LayersTabState.Edit },
+            title = {
+                Text(Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_LAYERS_EDIT_LAYER))
+            },
+            action = { state ->
+                GuideButton(
+                    onClick = {
+                        tabModel.clearState()
+                        screenModel.editLayer(state::edit)
+                    },
                 ) {
-                    EditText(
-                        modifier = Modifier.fillMaxWidth(),
-                        value = state.name,
-                        onValueChanged = {
-                            tabModel.updateCreateLayerState { copy(name = it) }
-                        },
-                        placeholder = Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_LAYERS_NAME_PLACEHOLDER),
-                    )
-
-                    LayerConditionPanel(
-                        modifier = Modifier
-                            .verticalScroll()
-                            .weight(1f)
-                            .fillMaxWidth(),
-                        value = state.condition,
-                        onValueChanged = {
-                            tabModel.updateCreateLayerState { copy(condition = it) }
-                        }
-                    )
+                    Text(Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_LAYERS_EDIT_LAYER_OK))
+                }
+                Button(
+                    onClick = {
+                        tabModel.clearState()
+                    },
+                ) {
+                    Text(Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_LAYERS_EDIT_LAYER_CANCEL))
                 }
             }
-
-            is LayersTabState.Edit -> AlertDialog(
-                title = {
-                    Text(Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_LAYERS_EDIT_LAYER))
-                },
-                action = {
-                    GuideButton(
-                        onClick = {
-                            tabModel.clearState()
-                            screenModel.editLayer(state::edit)
-                        },
-                    ) {
-                        Text(Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_LAYERS_EDIT_LAYER_EDIT))
-                    }
-                    Button(
-                        onClick = {
-                            tabModel.clearState()
-                        },
-                    ) {
-                        Text(Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_LAYERS_EDIT_LAYER_CANCEL))
-                    }
-                }
+        ) { state ->
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth(.5f)
+                    .fillMaxHeight(.8f),
+                verticalArrangement = Arrangement.spacedBy(4),
             ) {
-                Column(
+                EditText(
+                    modifier = Modifier.fillMaxWidth(),
+                    value = state.name,
+                    onValueChanged = {
+                        tabModel.updateEditLayerState { copy(name = it) }
+                    },
+                    placeholder = Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_LAYERS_NAME_PLACEHOLDER),
+                )
+
+                LayerConditionPanel(
                     modifier = Modifier
-                        .fillMaxWidth(.5f)
-                        .fillMaxHeight(.8f),
-                    verticalArrangement = Arrangement.spacedBy(4),
+                        .verticalScroll()
+                        .weight(1f)
+                        .fillMaxWidth(),
+                    value = state.condition,
+                    onValueChanged = {
+                        tabModel.updateEditLayerState { copy(condition = it) }
+                    }
+                )
+            }
+        }
+        AlertDialog(
+            value = tabState,
+            valueTransformer = { tabState as? LayersTabState.Delete },
+            onDismissRequest = { tabModel.clearState() },
+            action = { state ->
+                WarningButton(
+                    onClick = {
+                        screenModel.deleteLayer(state.index)
+                        tabModel.clearState()
+                    },
                 ) {
-                    EditText(
-                        modifier = Modifier.fillMaxWidth(),
-                        value = state.name,
-                        onValueChanged = {
-                            tabModel.updateEditLayerState { copy(name = it) }
-                        },
-                        placeholder = Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_LAYERS_NAME_PLACEHOLDER),
-                    )
-
-                    LayerConditionPanel(
-                        modifier = Modifier
-                            .verticalScroll()
-                            .weight(1f)
-                            .fillMaxWidth(),
-                        value = state.condition,
-                        onValueChanged = {
-                            tabModel.updateEditLayerState { copy(condition = it) }
-                        }
-                    )
+                    Text(Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_LAYERS_DELETE_LAYER_DELETE))
+                }
+                Button(
+                    onClick = {
+                        tabModel.clearState()
+                    },
+                ) {
+                    Text(Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_LAYERS_DELETE_LAYER_CANCEL))
                 }
             }
-
-            is LayersTabState.Delete -> AlertDialog(
-                onDismissRequest = { tabModel.clearState() },
-                action = {
-                    WarningButton(
-                        onClick = {
-                            screenModel.deleteLayer(state.index)
-                            tabModel.clearState()
-                        },
-                    ) {
-                        Text(Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_LAYERS_DELETE_LAYER_DELETE))
-                    }
-                    Button(
-                        onClick = {
-                            tabModel.clearState()
-                        },
-                    ) {
-                        Text(Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_LAYERS_DELETE_LAYER_CANCEL))
-                    }
-                }
+        ) { state ->
+            Column(
+                verticalArrangement = Arrangement.spacedBy(4),
+                horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                Column(
-                    verticalArrangement = Arrangement.spacedBy(4),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                ) {
-                    Text(Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_LAYERS_DELETE_LAYER_1))
-                    Text(Text.format(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_LAYERS_DELETE_LAYER_2, state.layer.name))
-                }
+                Text(Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_LAYERS_DELETE_LAYER_1))
+                Text(Text.format(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_LAYERS_DELETE_LAYER_2, state.layer.name))
             }
-
-            LayersTabState.Empty -> Unit
         }
         SideBarContainer(
             sideBarAtRight = sideBarAtRight,
             tabsButton = tabsButton,
             actions = {
-                if (uiState.selectedPreset != null) {
-                    val currentLayer = uiState.selectedLayer
-                    IconButton(
-                        onClick = {
-                            tabModel.openCreateLayerDialog()
-                        },
-                    ) {
-                        Icon(Textures.ICON_ADD)
-                    }
-                    IconButton(
-                        onClick = {
-                            currentLayer?.let(tabModel::copyLayer)
-                        },
-                        enabled = currentLayer != null,
-                    ) {
-                        Icon(Textures.ICON_COPY)
-                    }
-                    IconButton(
-                        onClick = {
-                            val index = uiState.pageState.selectedLayerIndex
-                            val layer = currentLayer ?: return@IconButton
-                            tabModel.openEditLayerDialog(index, layer)
-                        },
-                        enabled = currentLayer != null,
-                    ) {
-                        Icon(Textures.ICON_CONFIG)
-                    }
-                    IconButton(
-                        onClick = {
-                            val index = uiState.pageState.selectedLayerIndex
-                            val layer = currentLayer ?: return@IconButton
-                            tabModel.openDeleteLayerDialog(index, layer)
-                        },
-                        enabled = currentLayer != null,
-                    ) {
-                        Icon(Textures.ICON_DELETE)
-                    }
+                val currentLayer = uiState.selectedLayer
+                IconButton(
+                    onClick = {
+                        tabModel.openCreateLayerDialog()
+                    },
+                    enabled = uiState.selectedPreset != null,
+                ) {
+                    Icon(Textures.ICON_ADD)
+                }
+                IconButton(
+                    onClick = {
+                        currentLayer?.let(tabModel::copyLayer)
+                    },
+                    enabled = currentLayer != null,
+                ) {
+                    Icon(Textures.ICON_COPY)
+                }
+                IconButton(
+                    onClick = {
+                        val index = uiState.pageState.selectedLayerIndex
+                        val layer = currentLayer ?: return@IconButton
+                        tabModel.openEditLayerDialog(index, layer)
+                    },
+                    enabled = currentLayer != null,
+                ) {
+                    Icon(Textures.ICON_CONFIG)
+                }
+                IconButton(
+                    onClick = {
+                        val index = uiState.pageState.selectedLayerIndex
+                        val layer = currentLayer ?: return@IconButton
+                        tabModel.openDeleteLayerDialog(index, layer)
+                    },
+                    enabled = currentLayer != null,
+                ) {
+                    Icon(Textures.ICON_DELETE)
                 }
             }
         ) { modifier ->

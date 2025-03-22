@@ -14,9 +14,9 @@ import top.fifthlight.data.Offset
 import top.fifthlight.touchcontroller.common.config.GlobalConfig
 import top.fifthlight.touchcontroller.common.config.LayerConditionKey
 import top.fifthlight.touchcontroller.common.config.preset.PresetControlInfo
-import top.fifthlight.touchcontroller.common.control.WidgetTriggerAction
 import top.fifthlight.touchcontroller.common.gal.CameraPerspective
 import top.fifthlight.touchcontroller.common.gal.KeyBindingHandler
+import top.fifthlight.touchcontroller.common.gal.PlayerHandle
 import top.fifthlight.touchcontroller.common.state.Pointer
 import kotlin.uuid.Uuid
 
@@ -123,20 +123,13 @@ data class ContextInput(
 data class ContextResult(
     var forward: Float = 0f,
     var left: Float = 0f,
-    var pause: Boolean = false,
-    var chat: Boolean = false,
-    var takeScreenshot: Boolean = false,
-    var takePanorama: Boolean = false,
     var lookDirection: Offset? = null,
     var crosshairStatus: CrosshairStatus? = null,
-    var cancelFlying: Boolean = false,
     val inventory: InventoryResult = InventoryResult(),
     var boatLeft: Boolean = false,
     var boatRight: Boolean = false,
     var showBlockOutline: Boolean = false,
-    var nextPerspective: Boolean = false,
-    var hideHud: Boolean = false,
-    val pendingAction: MutableList<WidgetTriggerAction> = mutableListOf(),
+    val pendingAction: MutableList<(ContextTimer, PlayerHandle) -> Unit> = mutableListOf(),
 )
 
 enum class DPadDirection {
@@ -159,15 +152,21 @@ data class ContextStatus(
     var vibrate: Boolean = false,
     val quickHandSwap: DoubleClickState = DoubleClickState(7),
     var lastDpadDirection: DPadDirection? = null,
-    var wasSprinting: Boolean = false,
     val doubleClickCounter: DoubleClickCounter = DoubleClickCounter(),
 )
 
-data class ContextCounter(
-    var tick: Int = 0,
-) {
-    fun tick() {
-        tick++
+class ContextTimer {
+    var clientTick: Int = 0
+        private set
+    var renderTick: Int = 0
+        private set
+
+    fun clientTick() {
+        clientTick++
+    }
+
+    fun renderTick() {
+        renderTick++
     }
 }
 
@@ -183,7 +182,7 @@ data class Context(
     val result: ContextResult = ContextResult(),
     val status: ContextStatus = ContextStatus(),
     val keyBindingHandler: KeyBindingHandler = KeyBindingHandler.Empty,
-    val timer: ContextCounter = ContextCounter(),
+    val timer: ContextTimer = ContextTimer(),
     val config: GlobalConfig,
     val presetControlInfo: PresetControlInfo = PresetControlInfo(),
 ) : KoinComponent {

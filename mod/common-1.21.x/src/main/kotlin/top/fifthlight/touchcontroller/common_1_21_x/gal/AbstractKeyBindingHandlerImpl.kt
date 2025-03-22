@@ -23,7 +23,7 @@ private fun KeyMapping.getClickCount(): Int {
 
 private class KeyBindingStateImpl(
     private val keyBinding: KeyMapping,
-) : KeyBindingState {
+) : KeyBindingState() {
     override val id: String = keyBinding.name
 
     override val name: Text = TextImpl(Component.translatable(keyBinding.name))
@@ -34,46 +34,14 @@ private class KeyBindingStateImpl(
     override val categoryName: Text
         get() = TextImpl(Component.translatable(keyBinding.category))
 
-    private var passedClientTick = false
-
-    fun renderTick() {
-        if (passedClientTick) {
-            wasClicked = clicked || locked
-            clicked = false
-            passedClientTick = false
-        }
-    }
-
-    fun clientTick() {
-        passedClientTick = true
-    }
-
     override fun click() {
         keyBinding.click()
     }
 
     override fun haveClickCount(): Boolean = keyBinding.getClickCount() > 0
-
-    private var wasClicked: Boolean = false
-
-    override var clicked: Boolean = false
-        set(value) {
-            if (!locked && !wasClicked && !field && value) {
-                click()
-            }
-            field = value
-        }
-
-    override var locked: Boolean = false
-        set(value) {
-            if (!clicked && !field && value) {
-                click()
-            }
-            field = value
-        }
 }
 
-abstract class AbstractKeyBindingHandlerImpl : KeyBindingHandler {
+abstract class AbstractKeyBindingHandlerImpl : KeyBindingHandler() {
     protected val client: Minecraft = Minecraft.getInstance()
     protected val options: Options = client.options
     private val state = mutableMapOf<KeyMapping, KeyBindingStateImpl>()
@@ -90,24 +58,16 @@ abstract class AbstractKeyBindingHandlerImpl : KeyBindingHandler {
         DefaultKeyBindingType.SPRINT -> options.keySprint
         DefaultKeyBindingType.JUMP -> options.keyJump
         DefaultKeyBindingType.PLAYER_LIST -> options.keyPlayerList
+        DefaultKeyBindingType.LEFT -> options.keyLeft
+        DefaultKeyBindingType.RIGHT -> options.keyRight
+        DefaultKeyBindingType.UP -> options.keyUp
+        DefaultKeyBindingType.DOWN -> options.keyDown
     }
 
     fun isDown(key: KeyMapping) = state[key]?.let { it.clicked || it.locked } == true
 
     private fun getState(key: KeyMapping) = state.getOrPut(key) {
         KeyBindingStateImpl(key)
-    }
-
-    override fun renderTick() {
-        for (state in state.values) {
-            state.renderTick()
-        }
-    }
-
-    override fun clientTick() {
-        for (state in state.values) {
-            state.clientTick()
-        }
     }
 
     override fun getState(type: DefaultKeyBindingType): KeyBindingState {
@@ -118,4 +78,6 @@ abstract class AbstractKeyBindingHandlerImpl : KeyBindingHandler {
 
     override fun getAllStates(): Map<String, KeyBindingState> =
         getAllKeyBinding().mapValues { (_, value) -> getState(value) }
+
+    override fun getExistingStates(): Collection<KeyBindingState> = state.values
 }

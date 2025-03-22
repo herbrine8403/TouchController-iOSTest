@@ -31,42 +31,42 @@ object PropertiesTab : CustomTab() {
             sideBarAtRight = sideBarAtRight,
             tabsButton = tabsButton,
             actions = {
-                if (uiState.selectedLayer != null) {
-                    val moveLocked = uiState.pageState.moveLocked
-                    IconButton(
-                        onClick = {
-                            screenModel.setMoveLocked(!moveLocked)
-                        },
-                        selected = moveLocked,
-                    ) {
-                        Icon(Textures.ICON_LOCK)
-                    }
+                val moveLocked = uiState.pageState.moveLocked
+                IconButton(
+                    onClick = {
+                        screenModel.setMoveLocked(!moveLocked)
+                    },
+                    selected = moveLocked,
+                    enabled = uiState.selectedPreset != null,
+                ) {
+                    Icon(Textures.ICON_LOCK)
+                }
 
-                    val highlight = uiState.pageState.highlight
-                    IconButton(
-                        onClick = {
-                            screenModel.setHighlight(!highlight)
-                        },
-                        selected = highlight,
-                    ) {
-                        Icon(Textures.ICON_LIGHT)
-                    }
+                val highlight = uiState.pageState.highlight
+                IconButton(
+                    onClick = {
+                        screenModel.setHighlight(!highlight)
+                    },
+                    selected = highlight,
+                    enabled = uiState.selectedPreset != null,
+                ) {
+                    Icon(Textures.ICON_LIGHT)
+                }
 
-                    IconButton(
-                        enabled = uiState.selectedWidget != null,
-                        onClick = {
-                            uiState.selectedWidget?.let(screenModel::addWidgetPreset)
-                        },
-                    ) {
-                        Icon(Textures.ICON_SAVE)
-                    }
+                IconButton(
+                    enabled = uiState.selectedWidget != null,
+                    onClick = {
+                        uiState.selectedWidget?.let(screenModel::addWidgetPreset)
+                    },
+                ) {
+                    Icon(Textures.ICON_SAVE)
+                }
 
-                    IconButton(
-                        enabled = uiState.selectedWidget != null,
-                        onClick = {}
-                    ) {
-                        Icon(Textures.ICON_FORMAT_PAINTER)
-                    }
+                IconButton(
+                    enabled = uiState.selectedWidget != null,
+                    onClick = {},
+                ) {
+                    Icon(Textures.ICON_FORMAT_PAINTER)
                 }
             }
         ) { modifier ->

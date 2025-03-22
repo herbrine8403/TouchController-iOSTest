@@ -17,14 +17,16 @@ data class BuiltInWidgets private constructor(
 ): KoinComponent {
     private val keyBindingHandler: KeyBindingHandler = get()
 
+    private fun coordinate(key: TextureSet.TextureKey) = TextureCoordinate(
+        textureSet = textureSet,
+        textureItem = key,
+    )
+
     private fun fixed(
         key: TextureSet.TextureKey,
         scale: Float = 2f
     ) = ButtonTexture.Fixed(
-        texture = TextureCoordinate(
-            textureSet = textureSet,
-            textureItem = key,
-        ),
+        texture = coordinate(key),
         scale = scale,
     )
 
@@ -55,6 +57,19 @@ data class BuiltInWidgets private constructor(
         offset = offset,
     )
 
+    private fun dpadButtonInfo(
+        texture: TextureCoordinate,
+        activeTexture: TextureCoordinate?,
+        grayOnClassic: Boolean,
+    ) = DPadExtraButton.ButtonInfo(
+        texture = texture,
+        activeTexture = if (grayOnClassic && classic) {
+            DPadExtraButton.ActiveTexture.Gray
+        } else {
+            activeTexture?.let(DPadExtraButton.ActiveTexture::Texture) ?: DPadExtraButton.ActiveTexture.Same
+        },
+    )
+
     val jump = customWidget(
         texture = fixed(TextureSet.TextureKey.Jump),
         activeTexture = fixed(TextureSet.TextureKey.JumpActive),
@@ -65,6 +80,15 @@ data class BuiltInWidgets private constructor(
         ),
         name = Texts.WIDGET_JUMP_BUTTON_NAME,
         align = Align.RIGHT_BOTTOM,
+    )
+
+    val dpadJumpButton = DPadExtraButton.SwipeLocking(
+        press = key(DefaultKeyBindingType.JUMP),
+        info = dpadButtonInfo(
+            texture = coordinate(TextureSet.TextureKey.Jump),
+            activeTexture = coordinate(TextureSet.TextureKey.SneakActive),
+            grayOnClassic = true,
+        ),
     )
 
     val jumpHorse = customWidget(
@@ -79,34 +103,73 @@ data class BuiltInWidgets private constructor(
         align = Align.RIGHT_BOTTOM,
     )
 
+    val dpadJumpButtonWithoutLocking = DPadExtraButton.Swipe(
+        trigger = ButtonTrigger(
+            press = key(DefaultKeyBindingType.JUMP),
+        ),
+        info = dpadButtonInfo(
+            texture = coordinate(TextureSet.TextureKey.Jump),
+            activeTexture = coordinate(TextureSet.TextureKey.SneakActive),
+            grayOnClassic = true,
+        ),
+    )
+
+    private val sneakTrigger = if (classic) {
+        ButtonTrigger(
+            doubleClick = ButtonTrigger.DoubleClickTrigger(
+                action = WidgetTriggerAction.Key.Lock(
+                    keyBinding = key(DefaultKeyBindingType.SNEAK),
+                )
+            )
+        )
+    } else {
+        ButtonTrigger(
+            down = WidgetTriggerAction.Key.Lock(
+                keyBinding = key(DefaultKeyBindingType.SNEAK),
+            )
+        )
+    }
+
+    val dpad = DPad.create(
+        textureSet = textureSet,
+        extraButton = DPadExtraButton.None,
+    )
+
     val sneak = customWidget(
         texture = fixed(TextureSet.TextureKey.Sneak),
         activeTexture = fixed(TextureSet.TextureKey.SneakActive),
         grayOnClassic = false,
         swipeTrigger = false,
-        action = if (classic) {
-            ButtonTrigger(
-                doubleClick = ButtonTrigger.DoubleClickTrigger(
-                    action = WidgetTriggerAction.Key.Lock(
-                        keyBinding = key(DefaultKeyBindingType.SNEAK),
-                    )
-                )
-            )
-        } else {
-            ButtonTrigger(
-                down = WidgetTriggerAction.Key.Lock(
-                    keyBinding = key(DefaultKeyBindingType.SNEAK),
-                )
-            )
-        },
+        action = sneakTrigger,
         name = Texts.WIDGET_SNEAK_BUTTON_NAME,
         align = Align.RIGHT_BOTTOM,
     )
 
-    val dismount= customWidget(
+    val dpadSneakButton = DPadExtraButton.Normal(
+        trigger = sneakTrigger,
+        info = dpadButtonInfo(
+            texture = coordinate(TextureSet.TextureKey.Sneak),
+            activeTexture = coordinate(TextureSet.TextureKey.SneakActive),
+            grayOnClassic = false,
+        ),
+    )
+
+    val forward = customWidget(
+        texture = fixed(TextureSet.TextureKey.Up),
+        activeTexture = fixed(TextureSet.TextureKey.UpActive),
+        grayOnClassic = true,
+        swipeTrigger = false,
+        action = ButtonTrigger(
+            press = key(DefaultKeyBindingType.UP),
+        ),
+        name = Texts.WIDGET_SNEAK_BUTTON_NAME,
+        align = Align.RIGHT_BOTTOM,
+    )
+
+    val dismount = customWidget(
         texture = fixed(TextureSet.TextureKey.SneakHorse),
         activeTexture = fixed(TextureSet.TextureKey.SneakHorseActive),
-        grayOnClassic = false,
+        grayOnClassic = true,
         swipeTrigger = false,
         action = if (classic) {
             ButtonTrigger(

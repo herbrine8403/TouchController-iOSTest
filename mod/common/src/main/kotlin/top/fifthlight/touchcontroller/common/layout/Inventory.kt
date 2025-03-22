@@ -2,8 +2,8 @@ package top.fifthlight.touchcontroller.common.layout
 
 import org.koin.core.component.get
 import top.fifthlight.data.IntSize
-import top.fifthlight.touchcontroller.common.gal.GameFeatures
 import top.fifthlight.touchcontroller.common.gal.DefaultKeyBindingType
+import top.fifthlight.touchcontroller.common.gal.GameFeatures
 import top.fifthlight.touchcontroller.common.gal.PlayerHandleFactory
 import top.fifthlight.touchcontroller.common.state.PointerState
 
@@ -19,12 +19,12 @@ private fun Context.InventorySlot(index: Int) {
     for (pointer in pointers) {
         when (val state = pointer.state) {
             PointerState.New -> {
-                pointer.state = PointerState.InventorySlot(index, timer.tick)
+                pointer.state = PointerState.InventorySlot(index, timer.clientTick)
             }
 
             is PointerState.InventorySlot -> {
                 if (state.index == index) {
-                    val time = timer.tick - state.startTick
+                    val time = timer.clientTick - state.startTick
                     slot.progress = time.toFloat() / INVENTORY_SLOT_HOLD_DROP_TIME
                     if (time == INVENTORY_SLOT_HOLD_DROP_TIME) {
                         slot.drop = true
@@ -39,7 +39,7 @@ private fun Context.InventorySlot(index: Int) {
                     slot.select = true
                     if (gameFeatures.dualWield || config.regular.quickHandSwap) {
                         if (player.currentSelectedSlot == index) {
-                            if (status.quickHandSwap.click(timer.tick)) {
+                            if (status.quickHandSwap.click(timer.clientTick)) {
                                 keyBindingHandler.getState(DefaultKeyBindingType.SWAP_HANDS).clicked = true
                             }
                         }

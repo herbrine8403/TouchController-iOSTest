@@ -5,9 +5,9 @@ import net.minecraft.client.Minecraft
 import net.minecraft.network.chat.Component
 import top.fifthlight.combine.data.Text
 import top.fifthlight.combine.platform_1_20_x.TextImpl
+import top.fifthlight.touchcontroller.common.gal.DefaultKeyBindingType
 import top.fifthlight.touchcontroller.common.gal.KeyBindingHandler
 import top.fifthlight.touchcontroller.common.gal.KeyBindingState
-import top.fifthlight.touchcontroller.common.gal.DefaultKeyBindingType
 import top.fifthlight.touchcontroller.helper.ClickableKeyBinding
 
 private fun KeyMapping.click() {
@@ -18,21 +18,7 @@ private fun KeyMapping.getClickCount() = (this as ClickableKeyBinding).`touchCon
 
 private class KeyBindingStateImpl(
     private val keyBinding: KeyMapping,
-) : KeyBindingState {
-    private var passedClientTick = false
-
-    fun renderTick() {
-        if (passedClientTick) {
-            wasClicked = clicked || locked
-            clicked = false
-            passedClientTick = false
-        }
-    }
-
-    fun clientTick() {
-        passedClientTick = true
-    }
-
+) : KeyBindingState() {
     override val id: String
         get() = keyBinding.name
 
@@ -50,27 +36,9 @@ private class KeyBindingStateImpl(
     }
 
     override fun haveClickCount(): Boolean = keyBinding.getClickCount() > 0
-
-    private var wasClicked: Boolean = false
-
-    override var clicked: Boolean = false
-        set(value) {
-            if (!locked && !wasClicked && !field && value) {
-                click()
-            }
-            field = value
-        }
-
-    override var locked: Boolean = false
-        set(value) {
-            if (!clicked && !field && value) {
-                click()
-            }
-            field = value
-        }
 }
 
-abstract class AbstractKeyBindingHandlerImpl : KeyBindingHandler {
+abstract class AbstractKeyBindingHandlerImpl : KeyBindingHandler() {
     private val client = Minecraft.getInstance()
     private val options = client.options
     private val state = mutableMapOf<KeyMapping, KeyBindingStateImpl>()
@@ -87,24 +55,16 @@ abstract class AbstractKeyBindingHandlerImpl : KeyBindingHandler {
         DefaultKeyBindingType.SPRINT -> options.keySprint
         DefaultKeyBindingType.JUMP -> options.keyJump
         DefaultKeyBindingType.PLAYER_LIST -> options.keyPlayerList
+        DefaultKeyBindingType.LEFT -> options.keyLeft
+        DefaultKeyBindingType.RIGHT -> options.keyRight
+        DefaultKeyBindingType.UP -> options.keyUp
+        DefaultKeyBindingType.DOWN -> options.keyDown
     }
 
     fun isDown(key: KeyMapping) = state[key]?.let { it.clicked || it.locked } == true
 
     private fun getState(key: KeyMapping) = state.getOrPut(key) {
         KeyBindingStateImpl(key)
-    }
-
-    override fun renderTick() {
-        for (state in state.values) {
-            state.renderTick()
-        }
-    }
-
-    override fun clientTick() {
-        for (state in state.values) {
-            state.clientTick()
-        }
     }
 
     override fun getState(type: DefaultKeyBindingType): KeyBindingState {
@@ -115,4 +75,6 @@ abstract class AbstractKeyBindingHandlerImpl : KeyBindingHandler {
 
     override fun getAllStates(): Map<String, KeyBindingState> =
         getAllKeyBinding().mapValues { (_, value) -> getState(value) }
+
+    override fun getExistingStates(): Collection<KeyBindingState> = state.values
 }

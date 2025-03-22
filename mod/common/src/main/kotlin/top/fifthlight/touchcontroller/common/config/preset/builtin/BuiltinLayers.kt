@@ -104,10 +104,10 @@ data class BuiltinLayers private constructor(
             LayerConditionKey.RIDING to LayerConditionValue.NEVER,
         ),
         dpadNormal = persistentListOf(
-            DPad(
+            DPad.create(
                 align = Align.LEFT_BOTTOM,
                 offset = IntOffset(12, 16),
-                extraButton = DPadExtraButton.SNEAK_DOUBLE_CLICK,
+                extraButton = widgets.dpadSneakButton,
             ),
             widgets.jump.copy(
                 align = Align.RIGHT_BOTTOM,
@@ -115,10 +115,10 @@ data class BuiltinLayers private constructor(
             ),
         ),
         dpadSwap = persistentListOf(
-            DPad(
+            DPad.create(
                 align = Align.LEFT_BOTTOM,
                 offset = IntOffset(12, 16),
-                extraButton = DPadExtraButton.JUMP,
+                extraButton = widgets.dpadJumpButton,
             ),
             widgets.sneak.copy(
                 align = Align.RIGHT_BOTTOM,
@@ -126,10 +126,9 @@ data class BuiltinLayers private constructor(
             ),
         ),
         dpadNormalButtonInteract = persistentListOf(
-            DPad(
+            DPad.create(
                 align = Align.LEFT_BOTTOM,
                 offset = IntOffset(12, 16),
-                extraButton = DPadExtraButton.SNEAK_DOUBLE_CLICK,
             ),
             widgets.jump.copy(
                 align = Align.RIGHT_BOTTOM,
@@ -141,10 +140,9 @@ data class BuiltinLayers private constructor(
             ),
         ),
         dpadSwapButtonInteract = persistentListOf(
-            DPad(
+            DPad.create(
                 align = Align.LEFT_BOTTOM,
                 offset = IntOffset(12, 16),
-                extraButton = DPadExtraButton.JUMP,
             ),
             widgets.jump.copy(
                 align = Align.RIGHT_BOTTOM,
@@ -180,10 +178,9 @@ data class BuiltinLayers private constructor(
             LayerConditionKey.UNDERWATER to LayerConditionValue.WANT,
         ),
         dpadNormal = persistentListOf(
-            DPad(
+            DPad.create(
                 align = Align.LEFT_BOTTOM,
                 offset = IntOffset(12, 16),
-                extraButton = DPadExtraButton.NONE,
             ),
             widgets.ascendSwimming.copy(
                 align = Align.RIGHT_BOTTOM,
@@ -194,23 +191,10 @@ data class BuiltinLayers private constructor(
                 offset = IntOffset(42, 18),
             )
         ),
-        dpadSwap = persistentListOf(
-            DPad(
-                align = Align.LEFT_BOTTOM,
-                offset = IntOffset(12, 16),
-                // TODO ascend button
-                extraButton = DPadExtraButton.JUMP,
-            ),
-            widgets.descendSwimming.copy(
-                align = Align.RIGHT_BOTTOM,
-                offset = IntOffset(42, 18),
-            )
-        ),
         dpadNormalButtonInteract = persistentListOf(
-            DPad(
+            DPad.create(
                 align = Align.LEFT_BOTTOM,
                 offset = IntOffset(12, 16),
-                extraButton = DPadExtraButton.NONE,
             ),
             widgets.ascendSwimming.copy(
                 align = Align.RIGHT_BOTTOM,
@@ -243,10 +227,9 @@ data class BuiltinLayers private constructor(
             LayerConditionKey.FLYING to LayerConditionValue.REQUIRE,
         ),
         dpadNormal = persistentListOf(
-            DPad(
+            DPad.create(
                 align = Align.LEFT_BOTTOM,
                 offset = IntOffset(12, 16),
-                extraButton = DPadExtraButton.NONE,
             ),
             widgets.ascendFlying.copy(
                 align = Align.RIGHT_BOTTOM,
@@ -257,23 +240,10 @@ data class BuiltinLayers private constructor(
                 offset = IntOffset(42, 18),
             )
         ),
-        dpadSwap = persistentListOf(
-            DPad(
-                align = Align.LEFT_BOTTOM,
-                offset = IntOffset(12, 16),
-                // TODO ascend button
-                extraButton = DPadExtraButton.JUMP,
-            ),
-            widgets.descendFlying.copy(
-                align = Align.RIGHT_BOTTOM,
-                offset = IntOffset(42, 18),
-            )
-        ),
         dpadNormalButtonInteract = persistentListOf(
-            DPad(
+            DPad.create(
                 align = Align.LEFT_BOTTOM,
                 offset = IntOffset(12, 16),
-                extraButton = DPadExtraButton.NONE,
             ),
             widgets.ascendFlying.copy(
                 align = Align.RIGHT_BOTTOM,
@@ -306,9 +276,9 @@ data class BuiltinLayers private constructor(
             LayerConditionKey.ON_MINECART to LayerConditionValue.REQUIRE,
         ),
         dpadNormal = persistentListOf(
-            ForwardButton(
+            widgets.forward.copy(
                 align = Align.LEFT_BOTTOM,
-                offset = IntOffset(59, 111)
+                offset = IntOffset(59, 111),
             ),
             widgets.dismount.copy(
                 align = Align.RIGHT_BOTTOM,
@@ -316,7 +286,7 @@ data class BuiltinLayers private constructor(
             ),
         ),
         dpadSwap = persistentListOf(
-            ForwardButton(
+            widgets.forward.copy(
                 align = Align.LEFT_BOTTOM,
                 offset = IntOffset(59, 111)
             ),
@@ -378,14 +348,10 @@ data class BuiltinLayers private constructor(
             LayerConditionKey.ON_MINECART to LayerConditionValue.NEVER,
         ),
         dpadNormal = persistentListOf(
-            DPad(
+            DPad.create(
                 align = Align.LEFT_BOTTOM,
                 offset = IntOffset(12, 16),
-                extraButton = DPadExtraButton.DISMOUNT_DOUBLE_CLICK,
-            ),
-            Joystick(
-                align = Align.LEFT_BOTTOM,
-                offset = IntOffset(29, 32),
+                extraButton = widgets.dpadJumpButtonWithoutLocking,
             ),
             widgets.jumpHorse.copy(
                 align = Align.RIGHT_BOTTOM,

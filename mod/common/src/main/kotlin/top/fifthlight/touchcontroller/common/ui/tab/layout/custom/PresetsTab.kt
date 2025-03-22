@@ -22,7 +22,7 @@ import top.fifthlight.touchcontroller.common.ui.component.TabButton
 import top.fifthlight.touchcontroller.common.ui.model.PresetsTabModel
 import top.fifthlight.touchcontroller.common.ui.state.PresetsTabState
 
-object PresetsTab: CustomTab() {
+object PresetsTab : CustomTab() {
     @Composable
     override fun Icon() {
         Icon(Textures.ICON_PRESET)
@@ -34,218 +34,218 @@ object PresetsTab: CustomTab() {
         val tabModel: PresetsTabModel = koinScreenModel { parametersOf(screenModel) }
         val tabState by tabModel.uiState.collectAsState()
         val navigator = LocalNavigator.current
-        when (val state = tabState) {
-            is PresetsTabState.CreateChoose -> AlertDialog(
-                onDismissRequest = { tabModel.clearState() },
-                title = {
-                    Text(Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_PRESETS_CREATE_PRESET_CHOOSE))
-                },
+        AlertDialog(
+            visible = tabState == PresetsTabState.CreateChoose,
+            onDismissRequest = { tabModel.clearState() },
+            title = {
+                Text(Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_PRESETS_CREATE_PRESET_CHOOSE))
+            },
+        ) {
+            Column(
+                modifier = Modifier.fillMaxWidth(.4f),
+                verticalArrangement = Arrangement.spacedBy(4),
             ) {
-                Column(
-                    modifier = Modifier.fillMaxWidth(.4f),
-                    verticalArrangement = Arrangement.spacedBy(4),
+                Button(
+                    modifier = Modifier.fillMaxWidth(),
+                    onClick = {
+                        navigator?.parent?.push(ImportPresetScreen { key ->
+                            screenModel.newPreset(key.preset)
+                        })
+                        tabModel.clearState()
+                    },
                 ) {
-                    Button(
-                        modifier = Modifier.fillMaxWidth(),
-                        onClick = {
-                            navigator?.parent?.push(ImportPresetScreen { key ->
-                                screenModel.newPreset(key.preset)
-                            })
-                            tabModel.clearState()
-                        },
-                    ) {
-                        Text(Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_PRESETS_CREATE_PRESET_CHOOSE_PRESET))
-                    }
-                    Button(
-                        modifier = Modifier.fillMaxWidth(),
-                        onClick = {
-                            tabModel.openCreateEmptyPresetDialog()
-                        },
-                    ) {
-                        Text(Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_PRESETS_CREATE_PRESET_CHOOSE_EMPTY))
-                    }
-                    Button(
-                        modifier = Modifier.fillMaxWidth(),
-                        onClick = {
-                            tabModel.clearState()
-                        },
-                    ) {
-                        Text(Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_PRESETS_CREATE_PRESET_CHOOSE_CANCEL))
-                    }
+                    Text(Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_PRESETS_CREATE_PRESET_CHOOSE_PRESET))
+                }
+                Button(
+                    modifier = Modifier.fillMaxWidth(),
+                    onClick = {
+                        tabModel.openCreateEmptyPresetDialog()
+                    },
+                ) {
+                    Text(Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_PRESETS_CREATE_PRESET_CHOOSE_EMPTY))
+                }
+                Button(
+                    modifier = Modifier.fillMaxWidth(),
+                    onClick = {
+                        tabModel.clearState()
+                    },
+                ) {
+                    Text(Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_PRESETS_CREATE_PRESET_CHOOSE_CANCEL))
                 }
             }
-
-            is PresetsTabState.CreateEmpty -> AlertDialog(
-                title = {
-                    Text(Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_PRESETS_CREATE_EMPTY_PRESET))
-                },
-                action = {
-                    GuideButton(
-                        onClick = {
-                            tabModel.createPreset(state)
-                        },
-                    ) {
-                        Text(Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_PRESETS_CREATE_EMPTY_PRESET_CREATE))
-                    }
-                    Button(
-                        onClick = {
-                            tabModel.clearState()
-                        },
-                    ) {
-                        Text(Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_PRESETS_CREATE_EMPTY_PRESET_CANCEL))
-                    }
-                }
-            ) {
-                Column(
-                    modifier = Modifier.fillMaxWidth(.5f),
-                    verticalArrangement = Arrangement.spacedBy(4),
+        }
+        AlertDialog(
+            value = tabState,
+            valueTransformer = { tabState as? PresetsTabState.CreateEmpty },
+            title = {
+                Text(Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_PRESETS_CREATE_EMPTY_PRESET))
+            },
+            action = { state ->
+                GuideButton(
+                    onClick = {
+                        tabModel.createPreset(state)
+                    },
                 ) {
-                    EditText(
-                        modifier = Modifier.fillMaxWidth(),
-                        value = state.name,
+                    Text(Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_PRESETS_CREATE_EMPTY_PRESET_CREATE))
+                }
+                Button(
+                    onClick = {
+                        tabModel.clearState()
+                    },
+                ) {
+                    Text(Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_PRESETS_CREATE_EMPTY_PRESET_CANCEL))
+                }
+            }
+        ) { state ->
+            Column(
+                modifier = Modifier.fillMaxWidth(.5f),
+                verticalArrangement = Arrangement.spacedBy(4),
+            ) {
+                EditText(
+                    modifier = Modifier.fillMaxWidth(),
+                    value = state.name,
+                    onValueChanged = {
+                        tabModel.updateCreatePresetState { copy(name = it) }
+                    },
+                    placeholder = Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_PRESETS_NAME_PLACEHOLDER),
+                )
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Text(Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_PRESETS_SPLIT_CONTROLS))
+
+                    Switch(
+                        value = state.controlInfo.splitControls,
                         onValueChanged = {
-                            tabModel.updateCreatePresetState { copy(name = it) }
-                        },
-                        placeholder = Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_PRESETS_NAME_PLACEHOLDER),
-                    )
-
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        Text(Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_PRESETS_SPLIT_CONTROLS))
-
-                        Switch(
-                            value = state.controlInfo.splitControls,
-                            onValueChanged = {
-                                tabModel.updateCreatePresetState {
-                                    copy(controlInfo = controlInfo.copy(splitControls = it))
-                                }
-                            },
-                        )
-                    }
-
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        Text(Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_PRESETS_DISABLE_TOUCH_GESTURES))
-
-                        Switch(
-                            value = state.controlInfo.disableTouchGesture,
-                            onValueChanged = {
-                                tabModel.updateCreatePresetState {
-                                    copy(controlInfo = controlInfo.copy(disableTouchGesture = it))
-                                }
+                            tabModel.updateCreatePresetState {
+                                copy(controlInfo = controlInfo.copy(splitControls = it))
                             }
-                        )
-                    }
+                        },
+                    )
                 }
-            }
 
-            is PresetsTabState.Edit -> AlertDialog(
-                title = {
-                    Text(Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_PRESETS_EDIT_PRESET))
-                },
-                action = {
-                    GuideButton(
-                        onClick = {
-                            tabModel.editPreset(state)
-                        },
-                    ) {
-                        Text(Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_PRESETS_EDIT_PRESET_OK))
-                    }
-                    Button(
-                        onClick = {
-                            tabModel.clearState()
-                        },
-                    ) {
-                        Text(Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_PRESETS_EDIT_PRESET_CANCEL))
-                    }
-                }
-            ) {
-                Column(
-                    modifier = Modifier.fillMaxWidth(.5f),
-                    verticalArrangement = Arrangement.spacedBy(4),
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    EditText(
-                        modifier = Modifier.fillMaxWidth(),
-                        value = state.name,
+                    Text(Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_PRESETS_DISABLE_TOUCH_GESTURES))
+
+                    Switch(
+                        value = state.controlInfo.disableTouchGesture,
                         onValueChanged = {
-                            tabModel.updateEditPresetState { copy(name = it) }
-                        },
-                        placeholder = Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_PRESETS_NAME_PLACEHOLDER),
-                    )
-
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        Text(Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_PRESETS_SPLIT_CONTROLS))
-
-                        Switch(
-                            value = state.controlInfo.splitControls,
-                            onValueChanged = {
-                                tabModel.updateEditPresetState {
-                                    copy(controlInfo = controlInfo.copy(splitControls = it))
-                                }
-                            },
-                        )
-                    }
-
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        Text(Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_PRESETS_DISABLE_TOUCH_GESTURES))
-
-                        Switch(
-                            value = state.controlInfo.disableTouchGesture,
-                            onValueChanged = {
-                                tabModel.updateEditPresetState {
-                                    copy(controlInfo = controlInfo.copy(disableTouchGesture = it))
-                                }
+                            tabModel.updateCreatePresetState {
+                                copy(controlInfo = controlInfo.copy(disableTouchGesture = it))
                             }
-                        )
-                    }
+                        }
+                    )
                 }
             }
-
-            is PresetsTabState.Delete -> AlertDialog(
-                onDismissRequest = { tabModel.clearState() },
-                action = {
-                    WarningButton(
-                        onClick = {
-                            screenModel.deletePreset(state.uuid)
-                            tabModel.clearState()
-                        },
-                    ) {
-                        Text(Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_PRESETS_DELETE_PRESET_DELETE))
-                    }
-                    Button(
-                        onClick = {
-                            tabModel.clearState()
-                        },
-                    ) {
-                        Text(Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_PRESETS_DELETE_PRESET_CANCEL))
-                    }
-                }
-            ) {
-                val presetName = uiState.allPresets[state.uuid]?.name ?: "ERROR"
-                Column(
-                    verticalArrangement = Arrangement.spacedBy(4),
-                    horizontalAlignment = Alignment.CenterHorizontally,
+        }
+        AlertDialog(
+            value = tabState,
+            valueTransformer = { tabState as? PresetsTabState.Edit },
+            title = {
+                Text(Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_PRESETS_EDIT_PRESET))
+            },
+            action = { state ->
+                GuideButton(
+                    onClick = {
+                        tabModel.editPreset(state)
+                    },
                 ) {
-                    Text(Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_PRESETS_DELETE_PRESET_1))
-                    Text(Text.format(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_PRESETS_DELETE_PRESET_2, presetName))
+                    Text(Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_PRESETS_EDIT_PRESET_OK))
+                }
+                Button(
+                    onClick = {
+                        tabModel.clearState()
+                    },
+                ) {
+                    Text(Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_PRESETS_EDIT_PRESET_CANCEL))
                 }
             }
+        ) { state ->
+            Column(
+                modifier = Modifier.fillMaxWidth(.5f),
+                verticalArrangement = Arrangement.spacedBy(4),
+            ) {
+                EditText(
+                    modifier = Modifier.fillMaxWidth(),
+                    value = state.name,
+                    onValueChanged = {
+                        tabModel.updateEditPresetState { copy(name = it) }
+                    },
+                    placeholder = Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_PRESETS_NAME_PLACEHOLDER),
+                )
 
-            PresetsTabState.Empty -> Unit
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Text(Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_PRESETS_SPLIT_CONTROLS))
+
+                    Switch(
+                        value = state.controlInfo.splitControls,
+                        onValueChanged = {
+                            tabModel.updateEditPresetState {
+                                copy(controlInfo = controlInfo.copy(splitControls = it))
+                            }
+                        },
+                    )
+                }
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Text(Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_PRESETS_DISABLE_TOUCH_GESTURES))
+
+                    Switch(
+                        value = state.controlInfo.disableTouchGesture,
+                        onValueChanged = {
+                            tabModel.updateEditPresetState {
+                                copy(controlInfo = controlInfo.copy(disableTouchGesture = it))
+                            }
+                        }
+                    )
+                }
+            }
+        }
+        AlertDialog(
+            value = tabState,
+            valueTransformer = { tabState as? PresetsTabState.Delete },
+            onDismissRequest = { tabModel.clearState() },
+            action = { state ->
+                WarningButton(
+                    onClick = {
+                        screenModel.deletePreset(state.uuid)
+                        tabModel.clearState()
+                    },
+                ) {
+                    Text(Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_PRESETS_DELETE_PRESET_DELETE))
+                }
+                Button(
+                    onClick = {
+                        tabModel.clearState()
+                    },
+                ) {
+                    Text(Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_PRESETS_DELETE_PRESET_CANCEL))
+                }
+            }
+        ) { state ->
+            val presetName = uiState.allPresets[state.uuid]?.name ?: "ERROR"
+            Column(
+                verticalArrangement = Arrangement.spacedBy(4),
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                Text(Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_PRESETS_DELETE_PRESET_1))
+                Text(Text.format(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_PRESETS_DELETE_PRESET_2, presetName))
+            }
         }
 
         SideBarContainer(

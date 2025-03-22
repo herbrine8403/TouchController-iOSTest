@@ -136,7 +136,7 @@ data class CustomWidget(
 
     private fun Context.ButtonContent(clicked: Boolean) {
         var grayTexture = false
-        val active = clicked // TODO handle locking
+        val active = clicked || action.hasLock(id)
         val buttonTexture = if (active) {
             when (val activeTexture = activeTexture) {
                 ButtonActiveTexture.Same -> normalTexture
@@ -233,8 +233,8 @@ data class CustomWidget(
     }
 
     override fun layout(context: Context) {
-        context.status.doubleClickCounter.update(context.timer.tick, id)
-        val (newPointer, clicked, release) = if (swipeTrigger) {
+        context.status.doubleClickCounter.update(context.timer.renderTick, id)
+        val buttonResult = if (swipeTrigger) {
             context.SwipeButton(id) { clicked ->
                 ButtonContent(clicked)
             }
@@ -243,22 +243,8 @@ data class CustomWidget(
                 ButtonContent(clicked)
             }
         }
-        if (newPointer) {
-            if (action.down != null) {
-                context.result.pendingAction.add(action.down)
-            }
-            if (action.doubleClick.action != null) {
-                if (context.status.doubleClickCounter.click(context.timer.tick, id, action.doubleClick.interval)) {
-                    context.result.pendingAction.add(action.doubleClick.action)
-                }
-            }
-        }
-        if (clicked && action.press != null) {
-            context.keyBindingHandler.getState(action.press)?.clicked = true
-        }
-        if (release && action.release != null) {
-            context.result.pendingAction.add(action.release)
-        }
+        action.refresh(context, id)
+        action.trigger(context, buttonResult, id)
     }
 
     override fun cloneBase(

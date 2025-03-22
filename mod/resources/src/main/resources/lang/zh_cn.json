@@ -135,7 +135,7 @@
   "touchcontroller.screen.custom_control_layout.layers.create_layer.create": "创建",
   "touchcontroller.screen.custom_control_layout.layers.create_layer.cancel": "取消",
   "touchcontroller.screen.custom_control_layout.layers.edit_layer": "编辑图层",
-  "touchcontroller.screen.custom_control_layout.layers.edit_layer.edit": "编辑",
+  "touchcontroller.screen.custom_control_layout.layers.edit_layer.ok": "确定",
   "touchcontroller.screen.custom_control_layout.layers.edit_layer.cancel": "取消",
   "touchcontroller.screen.custom_control_layout.layers.delete_layer.1": "你确定要删除这个图层吗？",
   "touchcontroller.screen.custom_control_layout.layers.delete_layer.2": "“%s”将会永久消失！（真的很久！）",

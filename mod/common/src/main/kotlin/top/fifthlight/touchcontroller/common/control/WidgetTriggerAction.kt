@@ -11,10 +11,13 @@ import top.fifthlight.touchcontroller.common.gal.GameAction
 import top.fifthlight.touchcontroller.common.gal.KeyBindingHandler
 import top.fifthlight.touchcontroller.common.gal.PlayerHandle
 import top.fifthlight.touchcontroller.common.ui.screen.openChatScreen
+import kotlin.uuid.Uuid
 
 @Serializable
 sealed class WidgetTriggerAction {
-    abstract fun trigger(player: PlayerHandle)
+    abstract fun trigger(uuid: Uuid, tick: Int, player: PlayerHandle)
+    open fun refresh(uuid: Uuid, tick: Int) = Unit
+    open fun hasLock(uuid: Uuid) = false
     abstract val actionType: Type
 
     enum class Type(val nameId: Identifier) {
@@ -45,7 +48,7 @@ sealed class WidgetTriggerAction {
             override val keyBinding: String? = null,
             val keepInClientTick: Boolean = true,
         ) : Key() {
-            override fun trigger(player: PlayerHandle) {
+            override fun trigger(uuid: Uuid, tick: Int, player: PlayerHandle) {
                 keyBindingState?.let { keyBindingState ->
                     if (keepInClientTick) {
                         keyBindingState.clicked = true
@@ -76,12 +79,30 @@ sealed class WidgetTriggerAction {
                 INVERT(Texts.WIDGET_TRIGGER_KEY_LOCK_TYPE_INVERT),
             }
 
-            override fun trigger(player: PlayerHandle) {
+            override fun refresh(uuid: Uuid, renderTick: Int) {
+                keyBindingState?.refreshLock(uuid, renderTick)
+            }
+
+            override fun hasLock(uuid: Uuid): Boolean = keyBindingState?.getLock(uuid) == true
+
+            override fun trigger(uuid: Uuid, tick: Int, player: PlayerHandle) {
                 keyBindingState?.let { keyBindingState ->
                     when (lockType) {
-                        LockActionType.START -> keyBindingState.locked = true
-                        LockActionType.STOP -> keyBindingState.locked = false
-                        LockActionType.INVERT -> keyBindingState.locked = !keyBindingState.locked
+                        LockActionType.START -> {
+                            keyBindingState.addLock(uuid, tick)
+                        }
+
+                        LockActionType.STOP -> {
+                            keyBindingState.clearLock(uuid)
+                        }
+
+                        LockActionType.INVERT -> {
+                            if (keyBindingState.getLock(uuid)) {
+                                keyBindingState.clearLock(uuid)
+                            } else {
+                                keyBindingState.addLock(uuid, tick)
+                            }
+                        }
                     }
                 }
             }
@@ -95,7 +116,7 @@ sealed class WidgetTriggerAction {
             get() = Type.GAME
 
         private val gameAction: GameAction by inject()
-        final override fun trigger(player: PlayerHandle) = trigger(gameAction)
+        final override fun trigger(uuid: Uuid, tick: Int, player: PlayerHandle) = trigger(gameAction)
         abstract fun trigger(gameAction: GameAction)
 
         abstract val nameId: Identifier
@@ -199,6 +220,9 @@ sealed class WidgetTriggerAction {
             get() = Type.PLAYER
 
         abstract val nameId: Identifier
+
+        final override fun trigger(uuid: Uuid, tick: Int, player: PlayerHandle) = trigger(player)
+        abstract fun trigger(player: PlayerHandle)
 
         @Serializable
         @SerialName("cancel_flying")

@@ -122,7 +122,6 @@ data class BuiltInPresetKey(
                     size = widget.size * scale,
                     textureSet = textureSet,
                     padding = if (textureSet == TextureSet.TextureSetKey.CLASSIC || textureSet == TextureSet.TextureSetKey.CLASSIC_EXTENSION) 4 else -1,
-                    extraButton = if (textureSet == TextureSet.TextureSetKey.CLASSIC || textureSet == TextureSet.TextureSetKey.CLASSIC_EXTENSION) DPadExtraButton.SNEAK_DOUBLE_CLICK else DPadExtraButton.SNEAK_SINGLE_CLICK,
                 )
 
                 is Joystick -> widget.copy(
@@ -132,11 +131,6 @@ data class BuiltInPresetKey(
                 )
 
                 is BoatButton -> widget.copy(
-                    size = widget.size * scale,
-                    textureSet = textureSet,
-                )
-
-                is ForwardButton -> widget.copy(
                     size = widget.size * scale,
                     textureSet = textureSet,
                 )

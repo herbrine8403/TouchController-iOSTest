@@ -11,7 +11,7 @@ object TickEvents : KoinComponent {
 
     // Client side tick, neither server tick nor client render tick
     fun clientTick() {
-        controllerHudModel.timer.tick()
-        keyBindingHandler.clientTick()
+        controllerHudModel.timer.clientTick()
+        keyBindingHandler.clientTick(controllerHudModel.timer.clientTick)
     }
 }

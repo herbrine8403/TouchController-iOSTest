@@ -40,22 +40,21 @@ private fun ConfigScreen() {
     }
 
     val uiState by screenModel.uiState.collectAsState()
-    if (uiState.developmentWarningDialog) {
-        AlertDialog(
-            onDismissRequest = {
-                screenModel.closeDevelopmentDialog()
-            },
-            title = {
-                Text(Text.translatable(Texts.WARNING_DEVELOPMENT_VERSION_TITLE))
-            },
-            action = {
-                GuideButton(onClick = { screenModel.closeDevelopmentDialog() }) {
-                    Text(Text.translatable(Texts.WARNING_DEVELOPMENT_VERSION_OK))
-                }
-            },
-        ) {
-            Text(Text.translatable(Texts.WARNING_DEVELOPMENT_VERSION_MESSAGE))
-        }
+    AlertDialog(
+        visible = uiState.developmentWarningDialog,
+        onDismissRequest = {
+            screenModel.closeDevelopmentDialog()
+        },
+        title = {
+            Text(Text.translatable(Texts.WARNING_DEVELOPMENT_VERSION_TITLE))
+        },
+        action = {
+            GuideButton(onClick = { screenModel.closeDevelopmentDialog() }) {
+                Text(Text.translatable(Texts.WARNING_DEVELOPMENT_VERSION_OK))
+            }
+        },
+    ) {
+        Text(Text.translatable(Texts.WARNING_DEVELOPMENT_VERSION_MESSAGE))
     }
 
     val tabGroups = remember {
@@ -70,65 +69,64 @@ private fun ConfigScreen() {
             val currentTab = (navigator.lastItem as? Tab)?.takeIf { !it.options.openAsScreen }
             currentTab?.let {
                 var onResetTab by remember { mutableStateOf<OnResetHandler?>(null) }
-                val currentOnResetTab = onResetTab
-                if (currentOnResetTab != null) {
-                    AlertDialog(
-                        modifier = Modifier
-                            .fillMaxWidth(.4f)
-                            .minWidth(230),
-                        onDismissRequest = {
-                            onResetTab = null
-                        },
-                        title = {
-                            Text(Text.translatable(Texts.SCREEN_CONFIG_RESET_TITLE))
-                        }
+                AlertDialog(
+                    value = onResetTab,
+                    valueTransformer = { it },
+                    modifier = Modifier
+                        .fillMaxWidth(.4f)
+                        .minWidth(230),
+                    onDismissRequest = {
+                        onResetTab = null
+                    },
+                    title = {
+                        Text(Text.translatable(Texts.SCREEN_CONFIG_RESET_TITLE))
+                    }
+                ) { currentOnResetTab ->
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalArrangement = Arrangement.spacedBy(4),
                     ) {
-                        Column(
-                            modifier = Modifier.fillMaxWidth(),
-                            verticalArrangement = Arrangement.spacedBy(4),
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(4),
+                            verticalAlignment = Alignment.CenterVertically,
                         ) {
-                            Row(
-                                horizontalArrangement = Arrangement.spacedBy(4),
-                                verticalAlignment = Alignment.CenterVertically,
-                            ) {
-                                Button(
-                                    modifier = Modifier.weight(1f),
-                                    onClick = {
-                                        screenModel.updateConfig(currentOnResetTab)
-                                        onResetTab = null
-                                    }
-                                ) {
-                                    Text(Text.translatable(Texts.SCREEN_CONFIG_RESET_CURRENT_TAB))
-                                }
-                                Button(
-                                    modifier = Modifier.weight(1f),
-                                    onClick = {
-                                        screenModel.updateConfig {
-                                            copy(preset = PresetConfig.BuiltIn())
-                                        }
-                                        onResetTab = null
-                                    }
-                                ) {
-                                    Text(Text.translatable(Texts.SCREEN_CONFIG_RESET_LAYOUT_SETTINGS))
-                                }
-                            }
-                            WarningButton(
-                                modifier = Modifier.fillMaxWidth(),
+                            Button(
+                                modifier = Modifier.weight(1f),
                                 onClick = {
-                                    screenModel.resetConfig()
+                                    screenModel.updateConfig(currentOnResetTab)
                                     onResetTab = null
                                 }
                             ) {
-                                Text(Text.translatable(Texts.SCREEN_CONFIG_RESET_ALL_SETTINGS))
+                                Text(Text.translatable(Texts.SCREEN_CONFIG_RESET_CURRENT_TAB))
                             }
-                            GuideButton(
-                                modifier = Modifier.fillMaxWidth(),
+                            Button(
+                                modifier = Modifier.weight(1f),
                                 onClick = {
+                                    screenModel.updateConfig {
+                                        copy(preset = PresetConfig.BuiltIn())
+                                    }
                                     onResetTab = null
                                 }
                             ) {
-                                Text(Text.translatable(Texts.SCREEN_CONFIG_RESET_CANCEL))
+                                Text(Text.translatable(Texts.SCREEN_CONFIG_RESET_LAYOUT_SETTINGS))
                             }
+                        }
+                        WarningButton(
+                            modifier = Modifier.fillMaxWidth(),
+                            onClick = {
+                                screenModel.resetConfig()
+                                onResetTab = null
+                            }
+                        ) {
+                            Text(Text.translatable(Texts.SCREEN_CONFIG_RESET_ALL_SETTINGS))
+                        }
+                        GuideButton(
+                            modifier = Modifier.fillMaxWidth(),
+                            onClick = {
+                                onResetTab = null
+                            }
+                        ) {
+                            Text(Text.translatable(Texts.SCREEN_CONFIG_RESET_CANCEL))
                         }
                     }
                 }

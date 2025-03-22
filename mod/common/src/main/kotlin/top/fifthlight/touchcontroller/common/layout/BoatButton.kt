@@ -1,16 +1,11 @@
 package top.fifthlight.touchcontroller.common.layout
 
 import top.fifthlight.combine.paint.Color
-import top.fifthlight.touchcontroller.assets.Textures
 import top.fifthlight.touchcontroller.common.control.BoatButton
 import top.fifthlight.touchcontroller.common.control.BoatButtonSide.LEFT
 import top.fifthlight.touchcontroller.common.control.BoatButtonSide.RIGHT
 
 fun Context.BoatButton(config: BoatButton) {
-    val id = when (config.side) {
-        LEFT -> "boat_left"
-        RIGHT -> "boat_right"
-    }
     val (_, clicked) = Button(config.id) { clicked ->
         if (config.classic) {
             if (clicked) {

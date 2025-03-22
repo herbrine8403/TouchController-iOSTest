@@ -10,6 +10,7 @@ import kotlin.math.max
 fun FlowRow(
     modifier: Modifier = Modifier,
     maxColumns: Int = Int.MAX_VALUE,
+    horizontalSpacing: Int = 0,
     expandColumnWidth: Boolean = false,
     content: @Composable () -> Unit = {},
 ) {
@@ -17,7 +18,7 @@ fun FlowRow(
         modifier = modifier,
         measurePolicy = { measurables, constraints ->
             val childConstraint = if (expandColumnWidth) {
-                val width = constraints.maxWidth / maxColumns
+                val width = (constraints.maxWidth - (maxColumns - 1) * horizontalSpacing) / maxColumns
                 constraints.copy(
                     minWidth = width,
                     maxWidth = width,
@@ -36,7 +37,12 @@ fun FlowRow(
 
             val placeables = measurables.mapIndexed { index, measurable ->
                 val placeable = measurable.measure(childConstraint)
-                if (placeable.width + cursorPosition.left > constraints.maxWidth || column >= maxColumns) {
+                val spacing = if (column < maxColumns - 1) {
+                    horizontalSpacing
+                } else {
+                    0
+                }
+                if (placeable.width + cursorPosition.left + spacing > constraints.maxWidth || column >= maxColumns) {
                     // Break line
                     cursorPosition = IntOffset(0, cursorPosition.y + rowMaxHeight)
                     rowMaxHeight = 0
@@ -45,7 +51,7 @@ fun FlowRow(
                 }
                 column++
                 childPositions[index] = cursorPosition
-                cursorPosition = IntOffset(cursorPosition.x + placeable.width, cursorPosition.y)
+                cursorPosition = IntOffset(cursorPosition.x + placeable.width + horizontalSpacing, cursorPosition.y)
                 maxWidth = max(maxWidth, cursorPosition.x)
                 rowMaxHeight = max(rowMaxHeight, placeable.height)
                 placeable

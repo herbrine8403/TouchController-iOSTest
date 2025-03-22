@@ -1,6 +1,8 @@
 package top.fifthlight.combine.widget.ui
 
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import kotlinx.collections.immutable.PersistentList
 import top.fifthlight.combine.data.Text
 import top.fifthlight.combine.input.MutableInteractionSource
@@ -8,13 +10,10 @@ import top.fifthlight.combine.layout.Layout
 import top.fifthlight.combine.modifier.Constraints
 import top.fifthlight.combine.modifier.Modifier
 import top.fifthlight.combine.modifier.drawing.border
+import top.fifthlight.combine.modifier.drawing.clip
 import top.fifthlight.combine.modifier.focus.focusable
 import top.fifthlight.combine.modifier.placement.fillMaxSize
-import top.fifthlight.combine.modifier.placement.maxHeight
-import top.fifthlight.combine.modifier.placement.minWidth
-import top.fifthlight.combine.modifier.placement.onPlaced
 import top.fifthlight.combine.modifier.pointer.clickable
-import top.fifthlight.combine.modifier.pointer.consumePress
 import top.fifthlight.combine.node.LocalTextMeasurer
 import top.fifthlight.combine.paint.Colors
 import top.fifthlight.combine.paint.Drawable
@@ -131,58 +130,47 @@ private data class DropdownMenuScopeImpl(
 fun DropDownMenu(
     anchor: IntRect,
     border: Drawable = LocalSelectDrawableSet.current.floatPanel,
+    expandProgress: Float = 1f,
     onDismissRequest: () -> Unit,
     content: @Composable DropdownMenuScope.() -> Unit,
 ) {
     Popup(onDismissRequest = onDismissRequest) {
-        var screenSize by remember { mutableStateOf<IntSize?>(null) }
-        var contentSize by remember { mutableStateOf(IntSize.ZERO) }
-        val currentScreenSize = screenSize ?: IntSize.ZERO
-        val anchorCenter = anchor.offset + anchor.size / 2
-        val topSide = anchorCenter.top > currentScreenSize.height / 2
-        val top = if (topSide) {
-            anchor.top - contentSize.height
-        } else {
-            anchor.bottom
-        }
-        val left = if (anchor.left + contentSize.width > currentScreenSize.width) {
-            currentScreenSize.width - contentSize.width
-        } else {
-            anchor.left
-        }
-
         Layout(
-            modifier = Modifier
-                .fillMaxSize()
-                .onPlaced { screenSize = it.size },
-            measurePolicy = { measurables, _ ->
-                val constraints = Constraints()
-                val placeables = measurables.map { it.measure(constraints) }
+            modifier = Modifier.fillMaxSize(),
+            measurePolicy = { measurables, constraints ->
+                val screenSize = IntSize(constraints.maxWidth, constraints.maxHeight)
+                val childConstraints = constraints.copy(
+                    minWidth = anchor.size.width,
+                    minHeight = 0,
+                    maxWidth = screenSize.width,
+                    maxHeight = screenSize.height,
+                )
+                val placeables = measurables.map { it.measure(childConstraints) }
                 val width = placeables.maxOfOrNull { it.width } ?: 0
-                val height = placeables.maxOfOrNull { it.height } ?: 0
-                layout(width, height) {
+                val height = (placeables.maxOfOrNull { it.height } ?: 0)
+                val realHeight = (height * expandProgress).toInt()
+                val left = if (anchor.left + width < screenSize.width) {
+                    anchor.left
+                } else {
+                    (anchor.right - width).coerceAtLeast(0)
+                }
+                val top = if (height + anchor.bottom < screenSize.height) {
+                    anchor.bottom
+                } else {
+                    (anchor.top - realHeight).coerceAtLeast(0)
+                }
+                layout(width, realHeight) {
                     placeables.forEach { it.placeAt(left, top) }
                 }
-            }
+            },
         ) {
             val scope = DropdownMenuScopeImpl(anchor, border)
-            screenSize?.let { screenSize ->
-                Box(
-                    modifier = Modifier
-                        .border(border)
-                        .minWidth(anchor.size.width - 2)
-                        .maxHeight(
-                            if (topSide) {
-                                anchor.top
-                            } else {
-                                screenSize.height - anchor.bottom
-                            }
-                        )
-                        .onPlaced { contentSize = it.size }
-                        .consumePress()
-                ) {
-                    content(scope)
-                }
+            Box(
+                modifier = Modifier
+                    .border(border)
+                    .clip(width = 1f, height = expandProgress, anchorOffset = anchor.offset)
+            ) {
+                content(scope)
             }
         }
     }
