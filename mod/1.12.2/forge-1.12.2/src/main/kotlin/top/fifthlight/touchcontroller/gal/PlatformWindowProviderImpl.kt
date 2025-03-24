@@ -51,11 +51,11 @@ object PlatformWindowProviderImpl : PlatformWindowProvider {
 
         fun plainForge(): Long? {
             val displayImpl = getPlainForgeDisplayImpl() ?: return null
-            return displayImpl.javaClass.declaredMethods.firstOrNull {
-                it.name == "getHwnd"
+            return displayImpl.javaClass.declaredFields.firstOrNull {
+                it.name == "hwnd" && it.type == Long::class.javaPrimitiveType
             }?.run {
                 isAccessible = true
-                invoke(displayImpl) as? Long
+                get(displayImpl) as Long
             }
         }
 
@@ -91,7 +91,7 @@ object PlatformWindowProviderImpl : PlatformWindowProvider {
                 ignoreCase = true
             ) -> GlfwPlatform.Win32(NativeWindow.Win32(getWin32Handle()))
 
-            systemName.startsWith("Windows", ignoreCase = true) -> GlfwPlatform.Cocoa
+            systemName.startsWith("Mac", ignoreCase = true) -> GlfwPlatform.Cocoa
             systemName.startsWith("Linux", ignoreCase = true) -> {
                 val waylandHandle = getWaylandHandle()
                 if (waylandHandle != null) {
