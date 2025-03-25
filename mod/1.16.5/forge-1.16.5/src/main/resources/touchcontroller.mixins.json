@@ -22,8 +22,5 @@
     "Matrix4fAccessor",
     "Matrix4fMixin",
     "ToggleKeyMappingMixin"
-  ],
-  "mixins": [
-    "KeyMappingGetterMixin"
   ]
 }

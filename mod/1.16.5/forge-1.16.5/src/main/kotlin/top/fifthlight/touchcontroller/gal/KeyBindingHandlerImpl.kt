@@ -9,7 +9,6 @@ import top.fifthlight.touchcontroller.common.gal.DefaultKeyBindingType
 import top.fifthlight.touchcontroller.common.gal.KeyBindingHandler
 import top.fifthlight.touchcontroller.common.gal.KeyBindingState
 import top.fifthlight.touchcontroller.helper.ClickableKeyBinding
-import top.fifthlight.touchcontroller.mixin.KeyMappingGetterMixin
 
 private fun KeyBinding.click() {
     (this as ClickableKeyBinding).`touchController$click`()
@@ -70,10 +69,10 @@ object KeyBindingHandlerImpl : KeyBindingHandler() {
     }
 
     override fun getState(id: String): KeyBindingState? =
-        KeyMappingGetterMixin.`touchcontroller$getAllKeyMappings`()[id]?.let { getState(it) }
+        KeyBinding.ALL[id]?.let { getState(it) }
 
     override fun getAllStates(): Map<String, KeyBindingState> =
-        KeyMappingGetterMixin.`touchcontroller$getAllKeyMappings`().mapValues { (_, key) -> getState(key) }
+        KeyBinding.ALL.mapValues { (_, key) -> getState(key) }
 
     override fun getExistingStates(): Collection<KeyBindingState> = state.values
 }

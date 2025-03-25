@@ -2,12 +2,9 @@ package top.fifthlight.touchcontroller.gal
 
 import net.minecraft.client.KeyMapping
 import top.fifthlight.touchcontroller.common_1_20_x.gal.AbstractKeyBindingHandlerImpl
-import top.fifthlight.touchcontroller.mixin.KeyMappingGetterMixin
 
 object KeyBindingHandlerImpl : AbstractKeyBindingHandlerImpl() {
-    override fun getKeyBinding(name: String): KeyMapping? =
-        KeyMappingGetterMixin.`touchcontroller$getAllKeyMappings`()[name]
+    override fun getKeyBinding(name: String): KeyMapping? = KeyMapping.ALL[name]
 
-    override fun getAllKeyBinding(): Map<String, KeyMapping> =
-        KeyMappingGetterMixin.`touchcontroller$getAllKeyMappings`()
+    override fun getAllKeyBinding(): Map<String, KeyMapping> = KeyMapping.ALL
 }

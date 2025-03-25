@@ -64,7 +64,7 @@ minecraft {
     }
 
     if (useAccessTransformerBool) {
-        accessTransformer(file("src/main/resources/META-INF/touchcontroller_at.cfg"))
+        accessTransformer(file("src/main/resources/META-INF/accesstransformer.cfg"))
     }
 
     runs {
@@ -192,9 +192,9 @@ tasks.withType<Jar> {
             attributes += ("FMLCorePluginContainsFMLMod" to "true")
         }
         if (useAccessTransformerBool) {
-            attributes += ("FMLAT" to "touchcontroller_at.cfg")
+            attributes += ("FMLAT" to "accesstransformer.cfg")
         }
-        if (useMixinBool && !remapOutputBool) {
+        if (useMixinBool) {
             attributes += ("MixinConfigs" to "touchcontroller.mixins.json")
         }
         attributes(attributes)
@@ -239,6 +239,11 @@ gr8 {
     }
 }
 
+val mixinMappingFile =
+    layout.buildDirectory.file("mixinMapping/mappings.tsrg").takeIf { remapOutputBool && useMixinBool }
+val mixinRefmapFile =
+    layout.buildDirectory.file("mixinMapping/mixins.$modId.refmap.json").takeIf { remapOutputBool && useMixinBool }
+
 // Create a Jar task to exclude some META-INF files and module-info.class from R8 output,
 // and make ForgeGradle reobf task happy (FG requires JarTask for it's reobf input)
 val gr8JarTask = tasks.register<Jar>("gr8Jar") {
@@ -254,7 +259,7 @@ val gr8JarTask = tasks.register<Jar>("gr8Jar") {
         tasks.getByName("gr8Gr8ShadowedJar").outputs.files.first { it.extension.equals("jar", ignoreCase = true) }
 
     val excludeWhitelist = listOf(
-        "touchcontroller_at.cfg",
+        "accesstransformer.cfg",
         "mods.toml",
         "org.slf4j.spi.SLF4JServiceProvider",
     )
@@ -275,24 +280,20 @@ tasks.getByName("gr8Gr8ShadowedJar") {
     dependsOn("addMixinsToJar")
 }
 
-val mixinMappingFile =
-    layout.buildDirectory.file("mixinMapping/mappings.tsrg").takeIf { remapOutputBool && useMixinBool }
-val mixinRefmapFile =
-    layout.buildDirectory.file("mixinMapping/mixins.$modId.refmap.json").takeIf { remapOutputBool && useMixinBool }
 tasks.compileJava {
     inputs.properties("remapOutput" to remapOutputBool)
     mixinMappingFile?.let {
         outputs.files(mixinMappingFile)
         doLast {
             val mappingFile = mixinMappingFile.get().asFile.also { it.parentFile.mkdirs() }
-            layout.buildDirectory.file("tmp/compileJava/compileJava-mappings.tsrg").get().asFile.copyTo(mappingFile)
+            layout.buildDirectory.file("tmp/compileJava/compileJava-mappings.tsrg").get().asFile.copyTo(mappingFile, overwrite = true)
         }
     }
     mixinRefmapFile?.let {
         outputs.files(mixinRefmapFile)
         doLast {
             val refmapFile = mixinRefmapFile.get().asFile.also { it.parentFile.mkdirs() }
-            layout.buildDirectory.file("tmp/compileJava/compileJava-refmap.json").get().asFile.copyTo(refmapFile)
+            layout.buildDirectory.file("tmp/compileJava/compileJava-refmap.json").get().asFile.copyTo(refmapFile, overwrite = true)
         }
     }
 }
