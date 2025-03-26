@@ -13,6 +13,7 @@ On different mod loaders, TouchController needs dependency mod as below:
 
 - Fabric: [Fabric API](https://github.com/FabricMC/fabric)
 - Forge: None
+- NeoForge: None
 
 ## Supported game version and platforms
 
@@ -21,9 +22,12 @@ Below are game versions and mod loaders TouchController supports:
 - 1.12.2 (Forge)
 - 1.16.5 (Forge, Fabric)
 - 1.20.1 (Forge, Fabric)
-- 1.21.1 (Fabric)
-- 1.21.3 (Fabric)
-- 1.21.4 (Fabric)
+- 1.20.4 (Forge, NeoForge, Fabric)
+- 1.20.6 (Forge, NeoForge, Fabric)
+- 1.21   (Forge, NeoForge, Fabric)
+- 1.21.1 (Forge, NeoForge, Fabric)
+- 1.21.3 (Forge, NeoForge, Fabric)
+- 1.21.4 (Forge, NeoForge, Fabric)
 
 Support for more game versions and mod loaders is in developing currently.
 
@@ -35,7 +39,7 @@ Below are platforms TouchController supports:
 - [Pojav Glow·Worm](https://github.com/Vera-Firefly/Pojav-Glow-Worm)
 - [My fork of PojavLauncher](https://github.com/TouchController/PojavLauncher)(No longer update)
 
-Support for touch screen for X11 and Wayland on Linux may be added in the future. iOS and macOS will not be supported
+Support for touch screen for X11 on Linux may be added in the future. iOS and macOS will not be supported
 because I don't have corresponding environment and devices, but pull requests for iOS and macOS supported will be
 accepted.
 
@@ -56,9 +60,6 @@ And then, you need to install Rust toolchains for targets below:
 - aarch64-linux-android
 - i686-linux-android
 - x86_64-linux-android
-- i686-pc-windows-gnullvm
-- x86_64-pc-windows-gnullvm
-- aarch64-pc-windows-gnullvm
 
 You can add these toolchain by `rustup target add <toolchain target>`.
 
@@ -75,9 +76,13 @@ to configure this file.
 You need to install the Android SDK, which is also able to install in Android Studio. After you installed the Android
 SDK, install the `cargo-ndk` tool by using `cargo install cargo-ndk`.
 
-You need to install LLVM MinGW toolchain which is avaliable
-at [mstorsjo/llvm-mingw](https://github.com/mstorsjo/llvm-mingw/releases), and add the `bin` directory into your PATH
-environment variable.
+You need to build two podman images: `touchcontroller-linux` and `llvm-mingw-jdk`. Make sure you installed podman, and
+run commands below:
+
+```shell
+podman -t touchcontroller-linux proxy-linux
+podman -t llvm-mingw-jdk proxy-windows
+```
 
 Finally, you can run `./gradlew build` to compile, and built file can bu found in `mod/build/libs`.
 
@@ -96,17 +101,21 @@ Finally, you can run `./gradlew build` to compile, and built file can bu found i
 
 - Fabric：[Fabric API](https://github.com/FabricMC/fabric)
 - Forge：无前置
+- NeoForge: 无前置
 
 ## 支持的游戏版本和平台
 
 目前 TouchController 支持的 Minecraft 版本和 mod 加载器有：
 
 - 1.12.2 (Forge)
-- 1.16.5 (Forge、Fabric)
-- 1.20.1 (Forge、Fabric)
-- 1.21.1 (Fabric)
-- 1.21.3 (Fabric)
-- 1.21.4 (Fabric)
+- 1.16.5 (Forge, Fabric)
+- 1.20.1 (Forge, Fabric)
+- 1.20.4 (Forge, NeoForge, Fabric)
+- 1.20.6 (Forge, NeoForge, Fabric)
+- 1.21   (Forge, NeoForge, Fabric)
+- 1.21.1 (Forge, NeoForge, Fabric)
+- 1.21.3 (Forge, NeoForge, Fabric)
+- 1.21.4 (Forge, NeoForge, Fabric)
 
 更多游戏版本、mod 加载器的支持正在开发中。
 
@@ -118,7 +127,8 @@ Finally, you can run `./gradlew build` to compile, and built file can bu found i
 - [官方版 Pojav Glow·Worm](https://github.com/Vera-Firefly/Pojav-Glow-Worm)
 - [我修改后的 PojavLauncher](https://github.com/TouchController/PojavLauncher)
 
-在未来可能会添加 Linux 上 X11 和 Wayland 触屏的支持。iOS 和 macOS 由于没有相应环境和设备，不会提供支持，但是接受 iOS 和 macOS 支持的 Pull
+在未来可能会添加 Linux 上 X11 触屏的支持。iOS 和 macOS 由于没有相应环境和设备，不会提供支持，但是接受 iOS 和 macOS 支持的
+Pull
 Request。
 
 ## 目前支持的功能
@@ -138,9 +148,6 @@ Request。
 - aarch64-linux-android
 - i686-linux-android
 - x86_64-linux-android
-- i686-pc-windows-gnullvm
-- x86_64-pc-windows-gnullvm
-- aarch64-pc-windows-gnullvm
 
 这些工具链可以用 `rustup target add <工具链目标>` 添加。
 
@@ -155,8 +162,12 @@ sdk.dir=<Android SDK 目录>
 接下来你还需要安装一份 Android NDK，同样也可以在 Android Studio 内安装，安装完后使用 `cargo install cargo-ndk` 安装
 `cargo-ndk` 工具。
 
-然后你还需要 LLVM MinGW 工具链，在 [mstorsjo/llvm-mingw](https://github.com/mstorsjo/llvm-mingw/releases) 获取工具链，并将其中的
-bin 目录加入 PATH 环境变量即可。
+你需要构建两个 podman 镜像：`touchcontroller-linux` and `llvm-mingw-jdk`。确保你已经安装了 podman，然后运行以下命令：
+
+```shell
+podman -t touchcontroller-linux proxy-linux
+podman -t llvm-mingw-jdk proxy-windows
+```
 
 最后运行 `./gradlew build` 就可以编译了，编译好的 mod 文件在 `mod/build/libs` 下。
 
