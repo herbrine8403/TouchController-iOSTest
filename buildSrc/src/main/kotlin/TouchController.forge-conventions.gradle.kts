@@ -286,14 +286,24 @@ tasks.compileJava {
         outputs.files(mixinMappingFile)
         doLast {
             val mappingFile = mixinMappingFile.get().asFile.also { it.parentFile.mkdirs() }
-            layout.buildDirectory.file("tmp/compileJava/compileJava-mappings.tsrg").get().asFile.copyTo(mappingFile, overwrite = true)
+            runCatching {
+                layout.buildDirectory.file("tmp/compileJava/compileJava-mappings.tsrg").get().asFile.copyTo(
+                    mappingFile,
+                    overwrite = true
+                )
+            }
         }
     }
     mixinRefmapFile?.let {
         outputs.files(mixinRefmapFile)
         doLast {
             val refmapFile = mixinRefmapFile.get().asFile.also { it.parentFile.mkdirs() }
-            layout.buildDirectory.file("tmp/compileJava/compileJava-refmap.json").get().asFile.copyTo(refmapFile, overwrite = true)
+            runCatching {
+                layout.buildDirectory.file("tmp/compileJava/compileJava-refmap.json").get().asFile.copyTo(
+                    refmapFile,
+                    overwrite = true
+                )
+            }
         }
     }
 }

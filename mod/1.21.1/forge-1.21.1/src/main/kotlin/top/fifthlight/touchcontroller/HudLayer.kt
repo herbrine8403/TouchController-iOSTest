@@ -15,6 +15,7 @@ object HudLayer: LayeredDraw.Layer {
             return
         }
         var canvas = CanvasImpl(guiGraphics)
+        RenderSystem.enableBlend()
         RenderEvents.onHudRender(canvas)
         RenderSystem.disableBlend()
     }

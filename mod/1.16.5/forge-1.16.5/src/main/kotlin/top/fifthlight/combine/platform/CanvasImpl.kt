@@ -163,6 +163,7 @@ class CanvasImpl(
 
     override fun drawText(offset: IntOffset, text: String, color: Color) {
         textRenderer.draw(matrices, text, offset.x.toFloat(), offset.y.toFloat(), color.value)
+        RenderSystem.enableBlend()
     }
 
     override fun drawText(offset: IntOffset, width: Int, text: String, color: Color) {
@@ -171,10 +172,12 @@ class CanvasImpl(
             textRenderer.draw(matrices, line, offset.x.toFloat(), y, color.value)
             y += textRenderer.lineHeight
         }
+        RenderSystem.enableBlend()
     }
 
     override fun drawText(offset: IntOffset, text: CombineText, color: Color) {
         textRenderer.draw(matrices, text.toMinecraft(), offset.x.toFloat(), offset.y.toFloat(), color.value)
+        RenderSystem.enableBlend()
     }
 
     override fun drawText(offset: IntOffset, width: Int, text: CombineText, color: Color) {
@@ -183,6 +186,7 @@ class CanvasImpl(
             textRenderer.draw(matrices, line, offset.x.toFloat(), y, color.value)
             y += textRenderer.lineHeight
         }
+        RenderSystem.enableBlend()
     }
 
     private fun drawTexture(

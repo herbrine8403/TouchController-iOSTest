@@ -48,6 +48,7 @@ class TouchController : ClientModInitializer, KoinComponent {
             val client = Minecraft.getInstance()
             if (!client.options.hideGui) {
                 val canvas = CanvasImpl(drawContext)
+                RenderSystem.enableBlend()
                 RenderEvents.onHudRender(canvas)
                 RenderSystem.disableBlend()
             }

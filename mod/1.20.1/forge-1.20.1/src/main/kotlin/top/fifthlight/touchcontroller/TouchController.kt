@@ -1,5 +1,6 @@
 package top.fifthlight.touchcontroller
 
+import com.mojang.blaze3d.systems.RenderSystem
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.screens.Screen
 import net.minecraftforge.client.ConfigScreenHandler.ConfigScreenFactory
@@ -82,6 +83,7 @@ class TouchController : KoinComponent {
             @SubscribeEvent
             fun hudRender(event: RenderGuiEvent.Post) {
                 val canvas = CanvasImpl(event.guiGraphics)
+                RenderSystem.enableBlend()
                 RenderEvents.onHudRender(canvas)
             }
 

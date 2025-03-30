@@ -1,5 +1,6 @@
 package top.fifthlight.touchcontroller
 
+import com.mojang.blaze3d.systems.RenderSystem
 import net.fabricmc.api.ClientModInitializer
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents
@@ -47,6 +48,7 @@ class TouchController : ClientModInitializer, KoinComponent {
             val client = MinecraftClient.getInstance()
             if (!client.options.hudHidden) {
                 val canvas = CanvasImpl(drawContext)
+                RenderSystem.enableBlend()
                 RenderEvents.onHudRender(canvas)
             }
         }

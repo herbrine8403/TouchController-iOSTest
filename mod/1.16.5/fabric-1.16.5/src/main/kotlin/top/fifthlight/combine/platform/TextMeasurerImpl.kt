@@ -4,31 +4,44 @@ import net.minecraft.client.MinecraftClient
 import top.fifthlight.combine.data.Text
 import top.fifthlight.combine.paint.TextMeasurer
 import top.fifthlight.data.IntSize
+import kotlin.math.max
+import kotlin.math.min
 
 object TextMeasurerImpl : TextMeasurer {
     private val client = MinecraftClient.getInstance()
     private val textRenderer = client.textRenderer
 
-    override fun measure(text: String) = IntSize(
-        width = textRenderer.getWidth(text),
-        height = 9
-    )
-
-    override fun measure(text: String, maxWidth: Int) = IntSize(
-        width = textRenderer.getWidth(text).coerceAtMost(maxWidth),
-        height = textRenderer.getWrappedLinesHeight(text, maxWidth)
-    )
-
-    override fun measure(text: Text) = IntSize(
-        width = textRenderer.getWidth(text.toMinecraft()),
-        height = 9
-    )
-
-    override fun measure(text: Text, maxWidth: Int): IntSize {
-        val inner = text.toMinecraft()
-        return IntSize(
-            width = textRenderer.getWidth(inner).coerceAtMost(maxWidth),
-            height = textRenderer.getWrappedLinesHeight(inner.string, maxWidth)
-        )
+    override fun measure(text: String): IntSize {
+        var width = 0
+        var height = 0
+        for (line in text.lineSequence()) {
+            val lineWidth = textRenderer.getWidth(line)
+            width = max(width, lineWidth)
+            height += textRenderer.fontHeight
+        }
+        return IntSize(width, height)
     }
+
+    override fun measure(text: String, maxWidth: Int): IntSize {
+        if (maxWidth < 16) {
+            return IntSize.ZERO
+        }
+        var width = 0
+        var height = 0
+        for (line in text.lineSequence()) {
+            val lineWidth = textRenderer.getWidth(line)
+            val lineHeight = if (lineWidth > maxWidth) {
+                textRenderer.getWrappedLinesHeight(line, maxWidth)
+            } else {
+                textRenderer.fontHeight
+            }
+            width = max(width, min(lineWidth, maxWidth))
+            height += lineHeight
+        }
+        return IntSize(width, height)
+    }
+
+    override fun measure(text: Text) = measure(text.toMinecraft().string)
+
+    override fun measure(text: Text, maxWidth: Int) = measure(text.toMinecraft().string, maxWidth)
 }

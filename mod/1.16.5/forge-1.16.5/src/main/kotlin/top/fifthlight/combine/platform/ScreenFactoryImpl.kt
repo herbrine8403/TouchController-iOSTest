@@ -210,6 +210,7 @@ private class CombineScreen(
 
         val canvas = CanvasImpl(martices)
         val size = IntSize(width, height)
+        RenderSystem.enableBlend()
         owner.render(size, canvas)
         RenderSystem.enableBlend()
     }

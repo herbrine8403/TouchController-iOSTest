@@ -20,7 +20,7 @@ fun generateLegacyText(languageDir: Path, legacyLanguageDir: Path) {
         val writeBuffer = StringWriter()
         Properties().apply {
             map.entries.forEach { (key, value) ->
-                put(key, value)
+                put(key, value.replace("%d", "%s"))
             }
         }.store(writeBuffer, "PARSE_ESCAPES")
         outputFile.writer().use { writer ->

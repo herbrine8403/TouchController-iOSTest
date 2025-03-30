@@ -56,6 +56,7 @@ class CanvasImpl(drawContext: GuiGraphics) : AbstractCanvasImpl(drawContext) {
                 .addVertex(matrix, dstRect.right, dstRect.top, 0f)
                 .setUv(uvRect.right, uvRect.top)
                 .setColor(tint.value)
+            RenderSystem.enableBlend()
             BufferUploader.drawWithShader(bufferBuilder.buildOrThrow());
         }
     }

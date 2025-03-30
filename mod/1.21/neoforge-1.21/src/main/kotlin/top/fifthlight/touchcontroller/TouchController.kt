@@ -75,6 +75,7 @@ class TouchController(modEventBus: IEventBus, private val container: ModContaine
             @SubscribeEvent
             fun hudRender(event: RenderGuiEvent.Post) {
                 val canvas = CanvasImpl(event.guiGraphics)
+                RenderSystem.enableBlend()
                 RenderEvents.onHudRender(canvas)
                 RenderSystem.disableBlend()
             }

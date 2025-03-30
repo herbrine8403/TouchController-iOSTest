@@ -207,12 +207,16 @@ private class CombineScreen(
             lastMouseY = mouseY
         }
 
-        GlStateManager.pushMatrix()
         val canvas = CanvasImpl()
         val size = IntSize(width, height)
-        owner.render(size, canvas)
-        GlStateManager.popMatrix()
+        GlStateManager.pushMatrix()
+        GlStateManager.disableLighting()
         GlStateManager.enableBlend()
+        GlStateManager.enableAlpha()
+        owner.render(size, canvas)
+        GlStateManager.enableBlend()
+        GlStateManager.enableAlpha()
+        GlStateManager.popMatrix()
     }
 
     fun close() {

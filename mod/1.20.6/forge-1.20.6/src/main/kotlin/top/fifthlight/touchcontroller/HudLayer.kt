@@ -9,12 +9,12 @@ import top.fifthlight.touchcontroller.common.event.RenderEvents
 
 object HudLayer: LayeredDraw.Layer {
     override fun render(guiGraphics: GuiGraphics, partialTick: Float) {
-        var minecraft = Minecraft.getInstance();
+        var minecraft = Minecraft.getInstance()
         if (minecraft.options.hideGui) {
             return;
         }
-        var canvas = CanvasImpl(guiGraphics);
-        RenderEvents.onHudRender(canvas);
-        RenderSystem.disableBlend();
+        var canvas = CanvasImpl(guiGraphics)
+        RenderSystem.enableBlend()
+        RenderEvents.onHudRender(canvas)
     }
 }

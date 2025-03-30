@@ -82,6 +82,7 @@ class CanvasImpl : Canvas, Gui() {
 
     override fun fillRect(offset: IntOffset, size: IntSize, color: Color) {
         drawRect(offset.x, offset.y, offset.x + size.width, offset.y + size.height, color.value)
+        GlStateManager.enableBlend()
     }
 
     override fun fillGradientRect(
@@ -118,6 +119,7 @@ class CanvasImpl : Canvas, Gui() {
             .endVertex()
         tessellator.draw()
         GlStateManager.shadeModel(GL11.GL_FLAT)
+        GlStateManager.enableAlpha()
         GlStateManager.enableTexture2D()
     }
 
@@ -179,18 +181,28 @@ class CanvasImpl : Canvas, Gui() {
     }
 
     override fun drawText(offset: IntOffset, text: String, color: Color) {
-        fontRenderer.drawString(text, offset.x, offset.y, color.value)
+        val x = offset.x
+        var y = offset.y
+        for (line in text.lineSequence()) {
+            fontRenderer.drawString(line, x, y, color.value)
+            y += fontRenderer.FONT_HEIGHT
+        }
     }
 
     override fun drawText(offset: IntOffset, width: Int, text: String, color: Color) {
-        fontRenderer.drawSplitString(text, offset.x, offset.y, width, color.value)
+        if (width >= 16) {
+            fontRenderer.drawSplitString(text, offset.x, offset.y, width, color.value)
+        }
     }
 
     override fun drawText(offset: IntOffset, text: CombineText, color: Color) =
         drawText(offset, text.toMinecraft().formattedText, color)
 
-    override fun drawText(offset: IntOffset, width: Int, text: CombineText, color: Color) =
-        drawText(offset, width, text.toMinecraft().formattedText, color)
+    override fun drawText(offset: IntOffset, width: Int, text: CombineText, color: Color) {
+        if (width > 0) {
+            drawText(offset, width, text.toMinecraft().formattedText, color)
+        }
+    }
 
     private fun drawTexture(
         identifier: ResourceLocation,
@@ -275,6 +287,7 @@ class CanvasImpl : Canvas, Gui() {
         GlStateManager.disableDepth()
         GlStateManager.popMatrix()
         GlStateManager.enableBlend()
+        GlStateManager.enableAlpha()
     }
 
     private val clipStack = ClipStack()

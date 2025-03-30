@@ -70,12 +70,14 @@ class TouchController : KoinComponent {
             fun hudRender(event: RenderGameOverlayEvent.Post) {
                 if (event.type == ElementType.ALL) {
                     val canvas = CanvasImpl()
-                    GlStateManager.disableAlpha()
-                    GlStateManager.disableBlend()
+                    GlStateManager.pushMatrix()
                     GlStateManager.disableLighting()
+                    GlStateManager.enableAlpha()
+                    GlStateManager.enableBlend()
                     RenderEvents.onHudRender(canvas)
                     GlStateManager.enableAlpha()
                     GlStateManager.enableBlend()
+                    GlStateManager.popMatrix()
                 }
             }
 

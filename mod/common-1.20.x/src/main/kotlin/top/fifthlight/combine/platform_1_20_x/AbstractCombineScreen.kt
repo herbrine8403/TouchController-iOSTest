@@ -208,6 +208,7 @@ abstract class AbstractCombineScreen(
     protected fun handleRender(drawContext: GuiGraphics) {
         val canvas = CanvasImpl(drawContext)
         val size = IntSize(width, height)
+        RenderSystem.enableBlend()
         owner.render(size, canvas)
         RenderSystem.enableBlend()
     }

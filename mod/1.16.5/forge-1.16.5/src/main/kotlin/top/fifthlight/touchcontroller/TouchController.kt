@@ -80,6 +80,7 @@ class TouchController : KoinComponent {
             @SubscribeEvent
             fun hudRender(event: RenderGameOverlayEvent.Post) {
                 val canvas = CanvasImpl(event.matrixStack)
+                RenderSystem.enableBlend()
                 RenderEvents.onHudRender(canvas)
                 RenderSystem.enableBlend()
             }

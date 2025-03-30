@@ -159,6 +159,7 @@ class CanvasImpl(
                 .uv(uvRect.right, uvRect.top)
                 .color(tint.value)
                 .endVertex()
+            RenderSystem.enableBlend()
             BufferUploader.drawWithShader(bufferBuilder.end())
         }
     }
