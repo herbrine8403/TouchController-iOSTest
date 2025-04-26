@@ -1,5 +1,12 @@
 # TouchController NEWS - User visible changes.
 
+## 0.2.1-beta04
+
+- Added option to open vanilla chat screen
+- Fixed speed when sprinting
+- Fixed render problem with touch ring and crosshair
+- Fixed problem that opening vanilla chat screen pauses the game
+
 ## 0.2.1-beta03
 
 - Added option of custom widget to widget list 
