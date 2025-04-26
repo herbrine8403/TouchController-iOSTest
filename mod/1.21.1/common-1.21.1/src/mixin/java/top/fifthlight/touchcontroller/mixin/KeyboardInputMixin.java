@@ -10,7 +10,11 @@ import top.fifthlight.touchcontroller.common_1_21_1_21_1.event.KeyboardInputEven
 @Mixin(KeyboardInput.class)
 public abstract class KeyboardInputMixin {
     @Inject(
-            at = @At("TAIL"),
+            at = @At(
+                    value = "FIELD",
+                    target = "Lnet/minecraft/client/player/KeyboardInput;shiftKeyDown:Z",
+                    shift = At.Shift.AFTER
+            ),
             method = "tick"
     )
     private void tick(CallbackInfo info) {
