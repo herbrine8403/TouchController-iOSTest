@@ -8,9 +8,7 @@ import kotlinx.collections.immutable.PersistentList
 import org.koin.core.component.KoinComponent
 import org.koin.core.parameter.parametersOf
 import top.fifthlight.combine.animation.animateFloatAsState
-import top.fifthlight.combine.animation.quintInOut
 import top.fifthlight.combine.data.Text
-import top.fifthlight.combine.input.focus.LocalFocusManager
 import top.fifthlight.combine.layout.Alignment
 import top.fifthlight.combine.layout.Arrangement
 import top.fifthlight.combine.layout.Layout
@@ -349,7 +347,6 @@ object CustomControlLayoutTab : Tab(), KoinComponent {
                             }
                         }
 
-                        val focusManager = LocalFocusManager.current
                         val sideBarProgress by animateFloatAsState(
                             targetValue = if (!uiState.pageState.showSideBar) {
                                 .5f
@@ -384,7 +381,7 @@ object CustomControlLayoutTab : Tab(), KoinComponent {
                                             -sideBarProgress * 2
                                         }
                                     )
-                                    .consumePress { focusManager.requestBlur() },
+                                    .consumePress(),
                             ) {
                                 CompositionLocalProvider(
                                     LocalCustomTabContext provides currentCustomTabContext,

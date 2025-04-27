@@ -79,7 +79,7 @@ val FocusInteraction.state
 
 @Composable
 fun widgetState(interactionSource: InteractionSource): State<WidgetState> {
-    var state = remember { mutableStateOf(WidgetState.NORMAL) }
+    val state = remember { mutableStateOf(WidgetState.NORMAL) }
     var lastClickInteraction by remember { mutableStateOf<ClickInteraction>(ClickInteraction.Empty) }
     var lastDragInteraction by remember { mutableStateOf<DragInteraction>(DragInteraction.Empty) }
     var lastFocusInteraction by remember { mutableStateOf<FocusInteraction>(FocusInteraction.Blur) }

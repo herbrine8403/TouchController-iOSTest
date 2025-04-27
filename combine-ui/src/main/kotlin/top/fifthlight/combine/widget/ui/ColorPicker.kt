@@ -4,6 +4,7 @@ import androidx.compose.runtime.*
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
 import top.fifthlight.combine.input.MutableInteractionSource
+import top.fifthlight.combine.input.focus.LocalFocusManager
 import top.fifthlight.combine.layout.Alignment
 import top.fifthlight.combine.layout.Arrangement
 import top.fifthlight.combine.modifier.Modifier
@@ -12,6 +13,7 @@ import top.fifthlight.combine.modifier.drawing.border
 import top.fifthlight.combine.modifier.focus.FocusInteraction
 import top.fifthlight.combine.modifier.placement.*
 import top.fifthlight.combine.modifier.pointer.clickable
+import top.fifthlight.combine.modifier.pointer.consumePress
 import top.fifthlight.combine.modifier.pointer.draggable
 import top.fifthlight.combine.paint.*
 import top.fifthlight.combine.ui.style.DrawableSet
@@ -31,9 +33,11 @@ private fun HsvPicker(
     value: HsvColor,
     onValueChanged: (HsvColor) -> Unit,
 ) {
+    val focusManager = LocalFocusManager.current
     Canvas(
         modifier = Modifier
             .draggable { _, absolute ->
+                focusManager.requestBlur()
                 val s = (absolute.x / size.width).coerceIn(0f..1f)
                 val v = 1 - (absolute.y / size.height).coerceIn(0f..1f)
                 onValueChanged(value.copy(s = s, v = v))
@@ -144,9 +148,10 @@ fun ColorPickerPanel(
     value: Color,
     onValueChanged: (Color) -> Unit,
 ) {
-    var prevColor = remember { value }
+    val prevColor = remember { value }
     Column(
         modifier = Modifier
+            .consumePress()
             .padding(4)
             .then(modifier),
         verticalArrangement = Arrangement.spacedBy(4),
