@@ -191,7 +191,7 @@ sealed class WidgetTriggerAction {
         @SerialName("hide_hud")
         data object HideHud : Game() {
             override val nameId: Identifier
-                get() = Texts.WIDGET_TRIGGER_GAME_ACTION_TAKE_PANORAMA
+                get() = Texts.WIDGET_TRIGGER_GAME_ACTION_HIDE_HUD
 
             override fun trigger(gameAction: GameAction) {
                 gameAction.hudHidden = !gameAction.hudHidden
