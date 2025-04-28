@@ -88,7 +88,7 @@ data class BuiltInWidgets private constructor(
         press = key(DefaultKeyBindingType.JUMP),
         info = dpadButtonInfo(
             texture = coordinate(TextureSet.TextureKey.Jump),
-            activeTexture = coordinate(TextureSet.TextureKey.SneakActive),
+            activeTexture = coordinate(TextureSet.TextureKey.JumpActive),
             grayOnClassic = true,
         ),
     )
@@ -111,7 +111,7 @@ data class BuiltInWidgets private constructor(
         ),
         info = dpadButtonInfo(
             texture = coordinate(TextureSet.TextureKey.Jump),
-            activeTexture = coordinate(TextureSet.TextureKey.SneakActive),
+            activeTexture = coordinate(TextureSet.TextureKey.JumpActive),
             grayOnClassic = true,
         ),
     )
