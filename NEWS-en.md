@@ -1,5 +1,14 @@
 # TouchController NEWS - User visible changes.
 
+## 0.2.1-beta05
+
+- Added tip when template control is empty
+- Fixed texture for backward-left direction of new style DPad
+- Fixed swimming texture in new style
+- Fixed active texture mismatch for DPad extra button in presets
+- Fixed text of game action "Hide HUD"
+- Fixed focus behavior in color picker
+
 ## 0.2.1-beta04
 
 - Added option to open vanilla chat screen
