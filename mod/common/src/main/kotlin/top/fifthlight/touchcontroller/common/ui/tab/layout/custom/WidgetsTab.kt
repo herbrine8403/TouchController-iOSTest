@@ -15,6 +15,7 @@ import top.fifthlight.combine.modifier.Modifier
 import top.fifthlight.combine.modifier.ParentDataModifierNode
 import top.fifthlight.combine.modifier.placement.*
 import top.fifthlight.combine.modifier.scroll.verticalScroll
+import top.fifthlight.combine.widget.base.layout.Box
 import top.fifthlight.combine.widget.base.layout.Column
 import top.fifthlight.combine.widget.base.layout.Row
 import top.fifthlight.combine.widget.ui.*
@@ -429,36 +430,54 @@ object WidgetsTab : CustomTab() {
                     }
                 }
             ) {
-                Column(
-                    modifier = Modifier
-                        .padding(4)
-                        .verticalScroll()
-                        .fillMaxSize(),
-                    verticalArrangement = Arrangement.spacedBy(4),
-                ) {
-                    fun addWidget(widget: ControllerWidget) {
-                        val newWidget = widget.cloneBase(
-                            opacity = tabState.tabState.newWidgetParams.opacity,
-                        )
-                        val index = screenModel.newWidget(newWidget)
-                        screenModel.selectWidget(index)
-                    }
+                fun addWidget(widget: ControllerWidget) {
+                    val newWidget = widget.cloneBase(
+                        opacity = tabState.tabState.newWidgetParams.opacity,
+                    )
+                    val index = screenModel.newWidget(newWidget)
+                    screenModel.selectWidget(index)
+                }
 
-                    when (val listContent = tabState.listContent) {
-                        is WidgetsTabState.ListContent.BuiltIn -> BuiltInWidgetList(
+                when (val listContent = tabState.listContent) {
+                    is WidgetsTabState.ListContent.BuiltIn -> Column(
+                        modifier = Modifier
+                            .padding(4)
+                            .verticalScroll()
+                            .fillMaxSize(),
+                        verticalArrangement = Arrangement.spacedBy(4),
+                    ) {
+                        BuiltInWidgetList(
                             modifier = Modifier.fillMaxWidth(),
                             listContent = listContent,
                             onWidgetSelected = ::addWidget,
                         )
-
-                        is WidgetsTabState.ListContent.Custom -> CustomWidgetList(
-                            modifier = Modifier.fillMaxWidth(),
-                            listContent = listContent,
-                            onWidgetSelected = ::addWidget,
-                            onWidgetRenamed = tabModel::openRenameWidgetPresetItemDialog,
-                            onWidgetDeleted = tabModel::deleteWidgetPresetItem,
-                        )
                     }
+
+                    is WidgetsTabState.ListContent.Custom ->
+                        if (listContent.widgets.isEmpty()) {
+                            Box(
+                                modifier = Modifier.fillMaxSize(),
+                                alignment = Alignment.Center,
+                            ) {
+                                Text(Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_WIDGETS_WIDGET_PRESET_EMPTY_TIP))
+                            }
+                        } else {
+                            Column(
+                                modifier = Modifier
+                                    .padding(4)
+                                    .verticalScroll()
+                                    .fillMaxSize(),
+                                verticalArrangement = Arrangement.spacedBy(4),
+                            ) {
+                                CustomWidgetList(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    listContent = listContent,
+                                    onWidgetSelected = ::addWidget,
+                                    onWidgetRenamed = tabModel::openRenameWidgetPresetItemDialog,
+                                    onWidgetDeleted = tabModel::deleteWidgetPresetItem,
+                                )
+                            }
+                        }
                 }
             }
         }
