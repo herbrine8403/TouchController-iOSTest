@@ -46,6 +46,7 @@ val compileNativeTasks = targets.mapValues { (arch, target) ->
             add(buildCommands)
         })
         inputs.apply {
+            dir("../proxy-common/src")
             property("image.llvm-mingw-jdk", imageName)
             files("CMakeLists.txt")
             dir("src")

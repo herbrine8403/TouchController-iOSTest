@@ -16,13 +16,16 @@ class FocusManager {
         if (!node.focusable) {
             return
         }
+        val oldFocusedNode = _focusedNode.value
         _focusedNode.getAndUpdate {
             if (it != node) {
                 it?.onFocusStateChanged(false)
             }
             node
         }
-        node.onFocusStateChanged(true)
+        if (oldFocusedNode != node) {
+            node.onFocusStateChanged(true)
+        }
     }
 
     fun requestBlur() {

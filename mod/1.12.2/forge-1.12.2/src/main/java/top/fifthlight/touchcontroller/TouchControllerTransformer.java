@@ -34,6 +34,9 @@ public class TouchControllerTransformer implements IClassTransformer {
             case "net.minecraft.client.multiplayer.PlayerControllerMP":
                 visitorFactory = PlayerControllerMPTransformer::new;
                 break;
+            case "net.minecraft.client.Minecraft":
+                visitorFactory = MinecraftTransformer::new;
+                break;
             default:
                 return basicClass;
         }

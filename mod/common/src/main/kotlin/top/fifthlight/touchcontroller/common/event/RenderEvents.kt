@@ -3,6 +3,7 @@ package top.fifthlight.touchcontroller.common.event
 import kotlinx.collections.immutable.toPersistentMap
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
+import org.slf4j.LoggerFactory
 import top.fifthlight.combine.paint.Canvas
 import top.fifthlight.data.IntOffset
 import top.fifthlight.data.Offset
@@ -16,12 +17,10 @@ import top.fifthlight.touchcontroller.common.layout.Hud
 import top.fifthlight.touchcontroller.common.model.ControllerHudModel
 import top.fifthlight.touchcontroller.common.model.TouchStateModel
 import top.fifthlight.touchcontroller.common.platform.PlatformProvider
-import top.fifthlight.touchcontroller.proxy.message.AddPointerMessage
-import top.fifthlight.touchcontroller.proxy.message.ClearPointerMessage
-import top.fifthlight.touchcontroller.proxy.message.RemovePointerMessage
-import top.fifthlight.touchcontroller.proxy.message.VibrateMessage
+import top.fifthlight.touchcontroller.proxy.message.*
 
 object RenderEvents : KoinComponent {
+    private val logger = LoggerFactory.getLogger(RenderEvents::class.java)
     private val window: WindowHandle by inject()
     private val configHolder: GlobalConfigHolder by inject()
     private val controllerHudModel: ControllerHudModel by inject()
@@ -34,6 +33,13 @@ object RenderEvents : KoinComponent {
     private var prevWidth = 0
     private var prevHeight = 0
 
+    data class PlatformCapabilities(
+        var textStatus: Boolean = false,
+        var keyboardShow: Boolean = false,
+    )
+    val platformCapabilities = PlatformCapabilities()
+
+    @JvmStatic
     fun onRenderStart() {
         controllerHudModel.timer.renderTick()
         keyBindingHandler.renderTick(controllerHudModel.timer.renderTick)
@@ -44,56 +50,63 @@ object RenderEvents : KoinComponent {
         }
 
         val gameState = gameStateProvider.currentState()
-        if (gameState.inGame && !gameState.inGui) {
-            val platform = platformProvider.platform
-            if (platform != null) {
-                while (true) {
-                    val width = WindowEvents.windowWidth
-                    val height = WindowEvents.windowHeight
-                    if (width != prevWidth || height != prevHeight) {
-                        prevWidth = width
-                        prevHeight = height
-                        platform.resize(width, height)
-                    }
-                    val message = platform.pollEvent() ?: break
-                    when (message) {
-                        is AddPointerMessage -> {
-                            touchStateModel.addPointer(
-                                index = message.index,
-                                position = Offset(
-                                    x = message.x,
-                                    y = message.y,
-                                )
+        val platform = platformProvider.platform
+        if (platform != null) {
+            while (true) {
+                val width = WindowEvents.windowWidth
+                val height = WindowEvents.windowHeight
+                if (width != prevWidth || height != prevHeight) {
+                    prevWidth = width
+                    prevHeight = height
+                    platform.resize(width, height)
+                }
+                val message = platform.pollEvent() ?: break
+                when (message) {
+                    is AddPointerMessage -> {
+                        touchStateModel.addPointer(
+                            index = message.index,
+                            position = Offset(
+                                x = message.x,
+                                y = message.y,
                             )
-                        }
-
-                        is RemovePointerMessage -> {
-                            touchStateModel.removePointer(message.index)
-                        }
-
-                        ClearPointerMessage -> touchStateModel.clearPointer()
-
-                        else -> {}
+                        )
                     }
-                }
-            }
 
-            val config = configHolder.config.value
-            if (config.debug.enableTouchEmulation) {
-                val mousePosition = window.mousePosition
-                if (window.mouseLeftPressed && mousePosition != null) {
-                    touchStateModel.addPointer(
-                        index = 0,
-                        position = mousePosition / window.size.toSize()
-                    )
-                } else {
-                    touchStateModel.clearPointer()
+                    is RemovePointerMessage -> {
+                        touchStateModel.removePointer(message.index)
+                    }
+
+                    ClearPointerMessage -> touchStateModel.clearPointer()
+
+                    is CapabilityMessage -> {
+                        when (message.capability) {
+                            "text_status" -> platformCapabilities.textStatus = true
+                            "keyboard_show" -> platformCapabilities.keyboardShow = true
+                            else -> logger.warn("Unknown capability: ${message.capability}")
+                        }
+                    }
+
+                    else -> {}
                 }
             }
-        } else {
-            touchStateModel.clearPointer()
         }
 
+        val config = configHolder.config.value
+        if (config.debug.enableTouchEmulation) {
+            val mousePosition = window.mousePosition
+            if (window.mouseLeftPressed && mousePosition != null) {
+                touchStateModel.addPointer(
+                    index = 0,
+                    position = mousePosition / window.size.toSize()
+                )
+            } else {
+                touchStateModel.clearPointer()
+            }
+        }
+
+        if (!gameState.inGame || gameState.inGui) {
+            return
+        }
         val player = playerHandleFactory.getPlayerHandle() ?: return
         if (player.isFlying || player.isSubmergedInWater) {
             keyBindingHandler.getState(DefaultKeyBindingType.SNEAK).clearLock()

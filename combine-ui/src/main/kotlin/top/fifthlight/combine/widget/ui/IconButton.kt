@@ -34,6 +34,7 @@ val LocalSelectedIconButtonDrawable = staticCompositionLocalOf { defaultSelected
 @Composable
 fun IconButton(
     modifier: Modifier = Modifier,
+    focusable: Boolean = true,
     selected: Boolean = false,
     drawableSet: DrawableSet = if (selected) {
         LocalSelectedIconButtonDrawable.current
@@ -49,6 +50,7 @@ fun IconButton(
     content: @Composable BoxScope.() -> Unit,
 ) = Button(
     modifier = modifier,
+    focusable = focusable,
     drawableSet = drawableSet,
     colorTheme = colorTheme,
     minSize = minSize,

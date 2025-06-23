@@ -98,11 +98,6 @@ class TouchController(context: FMLJavaModLoadingContext) : KoinComponent {
             }
 
             @SubscribeEvent
-            fun renderTick(event: TickEvent.RenderTickEvent.Post) {
-                RenderEvents.onRenderStart()
-            }
-
-            @SubscribeEvent
             fun clientTick(event: TickEvent.ClientTickEvent.Post) {
                 TickEvents.clientTick()
             }

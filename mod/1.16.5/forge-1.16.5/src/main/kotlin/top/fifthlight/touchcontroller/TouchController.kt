@@ -105,13 +105,6 @@ class TouchController : KoinComponent {
             }
 
             @SubscribeEvent
-            fun renderTick(event: TickEvent.RenderTickEvent) {
-                if (event.phase == TickEvent.Phase.START) {
-                    RenderEvents.onRenderStart()
-                }
-            }
-
-            @SubscribeEvent
             fun clientTick(event: TickEvent.ClientTickEvent) {
                 if (event.phase == TickEvent.Phase.END) {
                     TickEvents.clientTick()

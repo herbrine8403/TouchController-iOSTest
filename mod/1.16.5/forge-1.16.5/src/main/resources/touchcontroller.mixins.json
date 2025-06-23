@@ -12,6 +12,7 @@
     "ClientPlayerEntityMixin",
     "ClientPlayerInteractionManagerInvoker",
     "ClientPlayerInteractionManagerMixin",
+    "ClientRenderMixin",
     "ControlsOptionsScreenMixin",
     "CrosshairTargetMixin",
     "CursorLockMixin",

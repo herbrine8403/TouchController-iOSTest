@@ -24,6 +24,7 @@ import top.fifthlight.combine.input.pointer.PointerEvent
 import top.fifthlight.combine.input.pointer.PointerEventType
 import top.fifthlight.combine.input.pointer.PointerType
 import top.fifthlight.combine.node.CombineOwner
+import top.fifthlight.combine.node.LocalInputHandler
 import top.fifthlight.combine.screen.LocalOnDismissRequestDispatcher
 import top.fifthlight.combine.screen.LocalScreenFactory
 import top.fifthlight.combine.screen.OnDismissRequestDispatcher
@@ -34,6 +35,7 @@ import top.fifthlight.combine.util.LocalCloseHandler
 import top.fifthlight.data.IntSize
 import top.fifthlight.data.Offset
 import top.fifthlight.touchcontroller.common.gal.GameDispatcher
+import top.fifthlight.touchcontroller.common.input.InputManager
 import kotlin.coroutines.CoroutineContext
 import kotlin.math.sign
 import top.fifthlight.combine.data.Text as CombineText
@@ -74,6 +76,7 @@ private class CombineScreen(
                     LocalClipboard provides ClipboardHandlerImpl,
                     LocalScreenFactory provides ScreenFactoryImpl,
                     LocalOnDismissRequestDispatcher provides dismissDispatcher,
+                    LocalInputHandler provides InputManager,
                 ) {
                     content()
                 }

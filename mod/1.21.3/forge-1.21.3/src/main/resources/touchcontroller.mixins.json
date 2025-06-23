@@ -10,6 +10,7 @@
     "ClientOpenChatScreenMixin",
     "ClientPlayerEntityMixin",
     "ClientPlayerInteractionManagerMixin",
+    "ClientRenderMixin",
     "ControlsOptionsScreenMixin",
     "CrosshairTargetMixin",
     "CursorLockMixin",
@@ -19,8 +20,8 @@
     "HudRenderMixin",
     "InGameHudMixin",
     "KeyBindingMixin",
-    "KeyMappingGetterMixin",
     "KeyboardInputMixin",
+    "KeyMappingGetterMixin",
     "ToggleKeyMappingMixin"
   ]
 }

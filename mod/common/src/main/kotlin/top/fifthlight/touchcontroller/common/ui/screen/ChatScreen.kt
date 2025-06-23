@@ -5,9 +5,13 @@ import org.koin.compose.koinInject
 import org.koin.core.context.GlobalContext
 import top.fifthlight.combine.data.Text
 import top.fifthlight.combine.data.TextFactory
+import top.fifthlight.combine.input.MutableInteractionSource
 import top.fifthlight.combine.layout.Arrangement
 import top.fifthlight.combine.modifier.Modifier
 import top.fifthlight.combine.modifier.drawing.background
+import top.fifthlight.combine.modifier.focus.FocusInteraction
+import top.fifthlight.combine.modifier.focus.FocusRequester
+import top.fifthlight.combine.modifier.focus.focusRequester
 import top.fifthlight.combine.modifier.placement.fillMaxHeight
 import top.fifthlight.combine.modifier.placement.fillMaxWidth
 import top.fifthlight.combine.modifier.placement.height
@@ -84,11 +88,34 @@ private fun ChatScreen() {
                     .fillMaxWidth()
                     .height(bottomBarHeight),
             ) {
+                val focusRequester = remember { FocusRequester() }
+                val interactionSource = remember { MutableInteractionSource() }
+                var focused by remember { mutableStateOf(false) }
+                LaunchedEffect(interactionSource) {
+                    interactionSource.interactions.collect {
+                        when (it) {
+                            FocusInteraction.Blur -> {
+                                focused = false
+                            }
+
+                            FocusInteraction.Focus -> {
+                                focused = true
+                            }
+                        }
+                    }
+                }
                 IconButton(
                     modifier = Modifier
                         .fillMaxHeight()
                         .width(bottomBarHeight),
-                    onClick = {}
+                    focusable = false,
+                    onClick = {
+                        if (focused) {
+                            focusRequester.requestBlur()
+                        } else {
+                            focusRequester.requestFocus()
+                        }
+                    },
                 ) {
                     Icon(Textures.ICON_CHAT_KEYBOARD)
                 }
@@ -109,7 +136,9 @@ private fun ChatScreen() {
                     Icon(Textures.ICON_CHAT_SETTING)
                 }
                 EditText(
+                    interactionSource = interactionSource,
                     modifier = Modifier
+                        .focusRequester(focusRequester)
                         .weight(1f)
                         .fillMaxHeight(),
                     value = uiState.text,

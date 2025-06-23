@@ -62,9 +62,6 @@ class TouchController : ClientModInitializer, KoinComponent {
         WorldRenderEvents.BEFORE_BLOCK_OUTLINE.register { _, _ ->
             controllerHudModel.result.showBlockOutline
         }
-        WorldRenderEvents.START.register {
-            RenderEvents.onRenderStart()
-        }
         ClientTickEvents.END_CLIENT_TICK.register {
             TickEvents.clientTick()
         }

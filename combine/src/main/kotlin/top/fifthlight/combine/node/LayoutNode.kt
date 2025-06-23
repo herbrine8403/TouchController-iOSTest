@@ -356,7 +356,6 @@ class LayoutNode : Measurable, Placeable, Renderable, PointerEventReceiver,
                 currentWrapper = newWrapper
             }
             if (node is FocusStateListenerModifierNode) {
-                node.onAttachedToNode(this)
                 val newWrapper = WrapperLayoutNode.FocusState(this, currentWrapper, node)
                 currentWrapper.parent = newWrapper
                 currentWrapper = newWrapper
@@ -371,6 +370,9 @@ class LayoutNode : Measurable, Placeable, Renderable, PointerEventReceiver,
                 val newWrapper = WrapperLayoutNode.KeyInput(this, currentWrapper, node)
                 currentWrapper.parent = newWrapper
                 currentWrapper = newWrapper
+            }
+            if (node is AttachListenerModifierNode) {
+                node.onAttachedToNode(this)
             }
             if (node is ParentDataModifierNode) {
                 parentData = node.modifierParentData(parentData)

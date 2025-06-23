@@ -49,6 +49,7 @@ val LocalWarningButtonDrawable = staticCompositionLocalOf { warningButtonTexture
 @Composable
 fun GuideButton(
     modifier: Modifier = Modifier,
+    focusable: Boolean = true,
     drawableSet: DrawableSet = LocalGuideButtonDrawable.current,
     colorTheme: ColorTheme? = ColorTheme.dark,
     minSize: IntSize = IntSize(48, 20),
@@ -59,6 +60,7 @@ fun GuideButton(
 ) {
     Button(
         modifier = modifier,
+        focusable = focusable,
         drawableSet = drawableSet,
         colorTheme = colorTheme,
         minSize = minSize,
@@ -73,6 +75,7 @@ fun GuideButton(
 @Composable
 fun WarningButton(
     modifier: Modifier = Modifier,
+    focusable: Boolean = true,
     drawableSet: DrawableSet = LocalWarningButtonDrawable.current,
     colorTheme: ColorTheme? = ColorTheme.dark,
     minSize: IntSize = IntSize(48, 20),
@@ -83,6 +86,7 @@ fun WarningButton(
 ) {
     Button(
         modifier = modifier,
+        focusable = focusable,
         drawableSet = drawableSet,
         colorTheme = colorTheme,
         minSize = minSize,
@@ -96,6 +100,7 @@ fun WarningButton(
 @Composable
 fun Button(
     modifier: Modifier = Modifier,
+    focusable: Boolean = true,
     drawableSet: DrawableSet = LocalButtonDrawable.current,
     colorTheme: ColorTheme? = null,
     minSize: IntSize = IntSize(48, 20),
@@ -110,24 +115,27 @@ fun Button(
     val state by widgetState(interactionSource)
     val drawable = drawableSet.getByState(state, enabled = enabled)
 
+    val clickableModifier = Modifier.clickable(interactionSource) {
+        if (clickSound) {
+            soundManager.play(SoundKind.BUTTON_PRESS, 1f)
+        }
+        onClick()
+    }
+    val focusableModifier = Modifier.focusable(interactionSource)
+
+    fun Modifier.then(modifier: Modifier?) = if (modifier != null) {
+        then(modifier)
+    } else {
+        this
+    }
+
     Box(
         modifier = Modifier
             .padding(padding)
             .border(drawable)
             .minSize(minSize)
-            .then(
-                if (enabled) {
-                    Modifier
-                        .clickable(interactionSource) {
-                            if (clickSound) {
-                                soundManager.play(SoundKind.BUTTON_PRESS, 1f)
-                            }
-                            onClick()
-                        }
-                        .focusable(interactionSource)
-                } else {
-                    Modifier
-                })
+            .then(clickableModifier.takeIf { enabled })
+            .then(focusableModifier.takeIf { enabled && focusable })
             .then(modifier),
         alignment = Alignment.Center,
     ) {

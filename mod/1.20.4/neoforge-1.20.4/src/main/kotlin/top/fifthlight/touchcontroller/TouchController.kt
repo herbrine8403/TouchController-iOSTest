@@ -103,13 +103,6 @@ class TouchController(modEventBus: IEventBus, private val container: ModContaine
             }
 
             @SubscribeEvent
-            fun renderTick(event: TickEvent.RenderTickEvent) {
-                if (event.phase == TickEvent.Phase.START) {
-                    RenderEvents.onRenderStart()
-                }
-            }
-
-            @SubscribeEvent
             fun clientTick(event: ClientTickEvent) {
                 if (event.phase == TickEvent.Phase.END) {
                     TickEvents.clientTick()

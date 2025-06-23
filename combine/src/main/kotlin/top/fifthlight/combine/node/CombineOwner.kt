@@ -7,6 +7,7 @@ import kotlinx.coroutines.*
 import top.fifthlight.combine.animation.LocalTweenManager
 import top.fifthlight.combine.input.focus.FocusManager
 import top.fifthlight.combine.input.focus.LocalFocusManager
+import top.fifthlight.combine.input.input.InputHandler
 import top.fifthlight.combine.input.input.TextInputReceiver
 import top.fifthlight.combine.input.key.KeyEvent
 import top.fifthlight.combine.input.key.KeyEventReceiver
@@ -23,6 +24,8 @@ val LocalCombineOwner: ProvidableCompositionLocal<CombineOwner> =
     staticCompositionLocalOf { error("No CombineOwner in context") }
 val LocalTextMeasurer: ProvidableCompositionLocal<TextMeasurer> =
     staticCompositionLocalOf { error("No TextMeasurer in context") }
+val LocalInputHandler: ProvidableCompositionLocal<InputHandler> =
+    staticCompositionLocalOf { error("No InputHandler in context") }
 
 interface DisposableLayer {
     fun dispose()

@@ -9,6 +9,7 @@
     "ChatComponentMixin",
     "ClientOpenChatScreenMixin",
     "ClientPlayerEntityMixin",
+    "ClientRenderMixin",
     "ControlsOptionsScreenMixin",
     "CrosshairTargetMixin",
     "CursorLockMixin",

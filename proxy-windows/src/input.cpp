@@ -11,60 +11,10 @@
 std::mutex g_event_queue_mutex;
 std::deque<ProxyMessage> g_event_queue;
 
-#ifdef __MINGW32__
-typedef enum {
-    FEEDBACK_TOUCH_CONTACTVISUALIZATION = 1,
-    FEEDBACK_PEN_BARRELVISUALIZATION = 2,
-    FEEDBACK_PEN_TAP = 3,
-    FEEDBACK_PEN_DOUBLETAP = 4,
-    FEEDBACK_PEN_PRESSANDHOLD = 5,
-    FEEDBACK_PEN_RIGHTTAP = 6,
-    FEEDBACK_TOUCH_TAP = 7,
-    FEEDBACK_TOUCH_DOUBLETAP = 8,
-    FEEDBACK_TOUCH_PRESSANDHOLD = 9,
-    FEEDBACK_TOUCH_RIGHTTAP = 10,
-    FEEDBACK_GESTURE_PRESSANDTAP = 11,
-    FEEDBACK_MAX = 0xFFFFFFFF
-} FEEDBACK_TYPE;
-#endif
-
 namespace {
-HMODULE GetUser32Module() {
-    static HMODULE module = NULL;
-    if (module == NULL) {
-        module = GetModuleHandle(TEXT("USER32.dll"));
-    }
-    return module;
-}
-
-typedef BOOL(WINAPI* SetWindowFeedbackSetting)(HWND hwnd,
-                                               FEEDBACK_TYPE feedback,
-                                               DWORD dwFlags, UINT32 size,
-                                               CONST VOID* configuration);
-BOOL SetWindowFeedbackSettingCompat(HWND hwnd, FEEDBACK_TYPE feedback,
-                                    DWORD dwFlags, UINT32 size,
-                                    CONST VOID* configuration) {
-    static SetWindowFeedbackSetting SetWindowFeedbackSettingNative = NULL;
-    if (SetWindowFeedbackSettingNative == NULL) {
-        HMODULE module = GetUser32Module();
-        if (module != NULL) {
-            SetWindowFeedbackSettingNative =
-                (SetWindowFeedbackSetting)GetProcAddress(
-                    module, "SetWindowFeedbackSetting");
-        }
-    }
-    if (SetWindowFeedbackSettingNative != NULL) {
-        return SetWindowFeedbackSettingNative(hwnd, feedback, dwFlags, size,
-                                              configuration);
-    } else {
-        return TRUE;
-    }
-}
-
 void disable_feedback(HWND handle, FEEDBACK_TYPE feedback) {
     BOOL enabled = FALSE;
-    if (!SetWindowFeedbackSettingCompat(handle, feedback, 0, sizeof(BOOL),
-                                        &enabled)) {
+    if (!SetWindowFeedbackSetting(handle, feedback, 0, sizeof(BOOL), &enabled)) {
         throw InitializeError("SetWindowFeedbackSetting failed");
     }
 }
@@ -191,4 +141,7 @@ void init(HWND handle) {
     if (!SetWindowsHookEx(WH_CALLWNDPROC, event_hook, nullptr, thread_id)) {
         throw InitializeError("SetWindowsHookEx failed");
     }
+
+    touchcontroller::event::push_event(ProxyMessage{
+        ProxyMessage::Type::Capability, {.capability = {"keyboard_show"}}});
 }

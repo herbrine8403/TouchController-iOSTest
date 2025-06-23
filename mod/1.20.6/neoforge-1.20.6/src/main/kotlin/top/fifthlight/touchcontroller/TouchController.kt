@@ -9,7 +9,10 @@ import net.neoforged.fml.ModContainer
 import net.neoforged.fml.common.Mod
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent
 import net.neoforged.fml.event.lifecycle.InterModProcessEvent
-import net.neoforged.neoforge.client.event.*
+import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent
+import net.neoforged.neoforge.client.event.ClientTickEvent
+import net.neoforged.neoforge.client.event.RenderGuiEvent
+import net.neoforged.neoforge.client.event.RenderHighlightEvent
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory
 import net.neoforged.neoforge.common.NeoForge
 import net.neoforged.neoforge.event.level.BlockEvent
@@ -94,11 +97,6 @@ class TouchController(modEventBus: IEventBus, private val container: ModContaine
             @SubscribeEvent
             fun blockBroken(event: BlockEvent.BreakEvent) {
                 BlockBreakEvents.afterBlockBreak()
-            }
-
-            @SubscribeEvent
-            fun renderTick(event: RenderFrameEvent.Pre) {
-                RenderEvents.onRenderStart()
             }
 
             @SubscribeEvent

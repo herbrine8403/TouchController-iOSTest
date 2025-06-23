@@ -14,7 +14,7 @@ class Win32Platform(window: NativeWindow.Win32) : Platform {
         Interface.init(window.handle)
     }
 
-    private val readBuffer = ByteArray(128)
+    private val readBuffer = ByteArray(65536)
     override fun pollEvent(): ProxyMessage? {
         val length = Interface.pollEvent(readBuffer).takeIf { it != 0 } ?: return null
         val buffer = ByteBuffer.wrap(readBuffer)
@@ -31,7 +31,10 @@ class Win32Platform(window: NativeWindow.Win32) : Platform {
         }
     }
 
+    private val sendBuffer = ByteArray(65536)
     override fun sendEvent(message: ProxyMessage) {
-        // Win32 don't support vibration for now
+        val buffer = ByteBuffer.wrap(sendBuffer)
+        message.encode(buffer)
+        Interface.pushEvent(buffer.array(), buffer.position())
     }
 }

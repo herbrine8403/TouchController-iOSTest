@@ -186,7 +186,7 @@ abstract class GenerateStubTask : DefaultTask() {
             cacheDir = cacheDir.resolve(checksum)
         }
         cacheDir.createDirectories()
-        val cacheFile = cacheDir.resolve(outputName)
+        val cacheFile = cacheDir.resolve(outputName.replace(':', '_'))
 
         if (cacheFile.exists()) {
             return cacheFile

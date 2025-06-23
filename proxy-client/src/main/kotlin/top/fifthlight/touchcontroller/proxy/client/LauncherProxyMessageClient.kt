@@ -1,5 +1,6 @@
 package top.fifthlight.touchcontroller.proxy.client
 
+import top.fifthlight.touchcontroller.proxy.message.LargeMessage
 import top.fifthlight.touchcontroller.proxy.message.MessageDecodeException
 import top.fifthlight.touchcontroller.proxy.message.ProxyMessage
 import java.nio.ByteBuffer
@@ -35,16 +36,34 @@ class LauncherProxyMessageClient(private val transport: MessageTransport) : Auto
         }
         Thread {
             // Send thread
-            val buffer = ByteBuffer.allocate(256)
+            val encodeBuffer = ByteBuffer.allocate(65536)
+            val sendBuffer = ByteBuffer.allocate(256)
             while (true) {
                 when (val item = sendQueue.take()) {
                     is MessageItem.Close -> break
                     is MessageItem.Message -> {
                         val message = item.message
-                        buffer.clear()
-                        message.encode(buffer)
-                        buffer.flip()
-                        transport.send(buffer)
+                        encodeBuffer.clear()
+                        message.encode(encodeBuffer)
+                        encodeBuffer.flip()
+                        if (message.wrapInLargeMessage) {
+                            // Split message to multiple LargeMessage
+                            while (encodeBuffer.hasRemaining()) {
+                                val length = encodeBuffer.remaining().coerceAtMost(LargeMessage.MAX_PAYLOAD_LENGTH)
+                                val payload = ByteArray(length)
+                                encodeBuffer.get(payload)
+                                sendBuffer.clear()
+                                val wrappedMessage = LargeMessage(
+                                    payload = payload,
+                                    end = encodeBuffer.hasRemaining(),
+                                )
+                                wrappedMessage.encode(sendBuffer)
+                                sendBuffer.flip()
+                                transport.send(sendBuffer)
+                            }
+                        } else {
+                            transport.send(encodeBuffer)
+                        }
                     }
                 }
             }
@@ -52,24 +71,43 @@ class LauncherProxyMessageClient(private val transport: MessageTransport) : Auto
         }.start()
         Thread {
             // Receive thread
-            val buffer = ByteBuffer.allocate(256)
-            while (transport.receive(buffer)) {
-                buffer.flip()
+            val receiveBuffer = ByteBuffer.allocate(256)
+            val decodeBuffer = ByteBuffer.allocate(65536)
+            while (transport.receive(receiveBuffer)) {
+                receiveBuffer.flip()
 
-                if (buffer.remaining() < 4) {
+                if (receiveBuffer.remaining() < 4) {
                     // Message without type
-                    buffer.clear()
+                    receiveBuffer.clear()
                     continue
                 }
-                val type = buffer.getInt()
-                try {
-                    val message = ProxyMessage.decode(type, buffer)
-                    receiveQueue.offer(MessageItem.Message(message))
+                val type = receiveBuffer.getInt()
+                val message = try {
+                    ProxyMessage.decode(type, receiveBuffer)
                 } catch (ex: MessageDecodeException) {
                     // Ignore bad message
+                    null
+                }
+                if (message != null) {
+                    if (message is LargeMessage) {
+                        decodeBuffer.put(message.payload)
+                        if (message.end) {
+                            decodeBuffer.flip()
+                            try {
+                                val wrappedMessage = ProxyMessage.decode(type, decodeBuffer)
+                                receiveQueue.offer(MessageItem.Message(wrappedMessage))
+                            } catch (ex: MessageDecodeException) {
+                                // Ignore bad message
+                                null
+                            }
+                            decodeBuffer.clear()
+                        }
+                    } else {
+                        receiveQueue.offer(MessageItem.Message(message))
+                    }
                 }
 
-                buffer.clear()
+                receiveBuffer.clear()
             }
         }.start()
     }

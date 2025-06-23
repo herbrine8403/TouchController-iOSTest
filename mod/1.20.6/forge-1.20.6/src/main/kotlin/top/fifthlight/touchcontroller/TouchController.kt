@@ -19,7 +19,10 @@ import org.koin.logger.slf4jLogger
 import org.slf4j.LoggerFactory
 import top.fifthlight.touchcontroller.buildinfo.BuildInfo
 import top.fifthlight.touchcontroller.common.config.GlobalConfigHolder
-import top.fifthlight.touchcontroller.common.event.*
+import top.fifthlight.touchcontroller.common.event.BlockBreakEvents
+import top.fifthlight.touchcontroller.common.event.ConnectionEvents
+import top.fifthlight.touchcontroller.common.event.TickEvents
+import top.fifthlight.touchcontroller.common.event.WindowEvents
 import top.fifthlight.touchcontroller.common.model.ControllerHudModel
 import top.fifthlight.touchcontroller.common.ui.screen.getConfigScreen
 import top.fifthlight.touchcontroller.common_1_20_6.versionModule
@@ -85,11 +88,6 @@ class TouchController(context: FMLJavaModLoadingContext) : KoinComponent {
             @SubscribeEvent
             fun blockBroken(event: BlockEvent.BreakEvent) {
                 BlockBreakEvents.afterBlockBreak()
-            }
-
-            @SubscribeEvent
-            fun renderTick(event: TickEvent.RenderTickEvent.Post) {
-                RenderEvents.onRenderStart()
             }
 
             @SubscribeEvent

@@ -24,8 +24,8 @@ inline fun Layout(
         update = {
             set(measurePolicy) { this.measurePolicy = it }
             set(renderer) { this.renderer = it }
-            set(modifier) { this.modifier = it }
             set(localMap) { this.compositionLocalMap = it }
+            set(modifier) { this.modifier = it }
         },
         content = content,
     )

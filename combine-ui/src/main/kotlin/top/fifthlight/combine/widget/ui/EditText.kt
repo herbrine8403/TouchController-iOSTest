@@ -15,6 +15,7 @@ import top.fifthlight.combine.modifier.input.textInput
 import top.fifthlight.combine.modifier.key.onKeyEvent
 import top.fifthlight.combine.modifier.placement.minHeight
 import top.fifthlight.combine.modifier.pointer.clickable
+import top.fifthlight.combine.node.LocalInputHandler
 import top.fifthlight.combine.node.LocalTextMeasurer
 import top.fifthlight.combine.paint.Colors
 import top.fifthlight.combine.ui.style.DrawableSet
@@ -44,15 +45,29 @@ fun EditText(
 ) {
     val clipboard = LocalClipboard.current
     val textMeasurer = LocalTextMeasurer.current
+    val inputManager = LocalInputHandler.current
     var textInputState by remember { mutableStateOf(TextInputState(value)) }
 
     var focused by remember { mutableStateOf(false) }
     var cursorShow by remember { mutableStateOf(false) }
     LaunchedEffect(interactionSource) {
-        interactionSource.interactions.collect {
-            when (it) {
-                FocusInteraction.Blur -> focused = false
-                FocusInteraction.Focus -> focused = true
+        try {
+            interactionSource.interactions.collect {
+                when (it) {
+                    FocusInteraction.Blur -> {
+                        inputManager.tryHideKeyboard()
+                        focused = false
+                    }
+
+                    FocusInteraction.Focus -> {
+                        inputManager.tryShowKeyboard()
+                        focused = true
+                    }
+                }
+            }
+        } finally {
+            if (focused) {
+                inputManager.tryHideKeyboard()
             }
         }
     }
