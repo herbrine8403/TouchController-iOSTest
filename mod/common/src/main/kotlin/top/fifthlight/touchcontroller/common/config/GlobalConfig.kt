@@ -1,6 +1,8 @@
 package top.fifthlight.touchcontroller.common.config
 
 import kotlinx.serialization.Serializable
+import top.fifthlight.combine.paint.Color
+import top.fifthlight.combine.paint.Colors
 import top.fifthlight.touchcontroller.common.config.preset.PresetConfig
 import top.fifthlight.touchcontroller.common.gal.DefaultItemListProvider
 
@@ -51,6 +53,12 @@ data class ItemConfig(
 }
 
 @Serializable
+data class ChatConfig(
+    val lineSpacing: Int = 0,
+    val textColor: Color = Colors.WHITE,
+)
+
+@Serializable
 data class GlobalConfig(
     val regular: RegularConfig = RegularConfig(),
     val control: ControlConfig = ControlConfig(),
@@ -58,6 +66,7 @@ data class GlobalConfig(
     val debug: DebugConfig = DebugConfig(),
     val item: ItemConfig,
     val preset: PresetConfig = PresetConfig.BuiltIn(),
+    val chat: ChatConfig = ChatConfig(),
 ) {
     companion object {
         fun default(itemListProvider: DefaultItemListProvider) = GlobalConfig(

@@ -10,6 +10,10 @@
 
   "touchcontroller.screen.chat.title": "Chat and commands",
   "touchcontroller.screen.chat.exit": "Exit",
+  "touchcontroller.screen.chat.settings.ok": "Ok",
+  "touchcontroller.screen.chat.settings.reset": "Reset",
+  "touchcontroller.screen.chat.settings.line_spacing": "Line spacing",
+  "touchcontroller.screen.chat.settings.text_color": "Text color",
 
   "touchcontroller.screen.import_builtin_preset": "Import built-in presets",
   "touchcontroller.screen.import_builtin_preset.finish": "Finish",

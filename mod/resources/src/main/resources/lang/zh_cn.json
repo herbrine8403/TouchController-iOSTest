@@ -10,6 +10,10 @@
 
   "touchcontroller.screen.chat.title": "聊天与命令",
   "touchcontroller.screen.chat.exit": "退出",
+  "touchcontroller.screen.chat.settings.ok": "确定",
+  "touchcontroller.screen.chat.settings.reset": "重置",
+  "touchcontroller.screen.chat.settings.line_spacing": "行距",
+  "touchcontroller.screen.chat.settings.text_color": "文字颜色",
 
   "touchcontroller.screen.import_builtin_preset": "创建预设",
   "touchcontroller.screen.import_builtin_preset.finish": "确定",

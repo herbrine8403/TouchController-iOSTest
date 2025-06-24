@@ -7,11 +7,13 @@ import top.fifthlight.combine.layout.Arrangement
 import top.fifthlight.combine.modifier.Modifier
 import top.fifthlight.combine.modifier.placement.fillMaxWidth
 import top.fifthlight.combine.modifier.placement.minHeight
+import top.fifthlight.combine.paint.Color
 import top.fifthlight.combine.paint.Colors
 import top.fifthlight.combine.widget.base.layout.Column
 import top.fifthlight.combine.widget.base.layout.ColumnScope
 import top.fifthlight.combine.widget.base.layout.Row
 import top.fifthlight.combine.widget.base.layout.RowScope
+import top.fifthlight.combine.widget.ui.ColorPicker
 import top.fifthlight.combine.widget.ui.IntSlider
 import top.fifthlight.combine.widget.ui.Slider
 import top.fifthlight.combine.widget.ui.Switch
@@ -142,6 +144,26 @@ fun IntSliderPreferenceItem(
             range = range,
             value = value,
             onValueChanged = onValueChanged,
+        )
+    }
+}
+
+@Composable
+fun ColorPreferenceItem(
+    modifier: Modifier = Modifier,
+    title: Text,
+    description: Text? = null,
+    value: Color,
+    onValueChanged: (Color) -> Unit,
+) {
+    HorizontalPreferenceItem(
+        modifier = modifier,
+        title = title,
+        description = description,
+    ) {
+        ColorPicker(
+            value = value,
+            onValueChanged = { onValueChanged(it) },
         )
     }
 }
