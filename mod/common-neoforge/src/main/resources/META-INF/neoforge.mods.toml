@@ -3,6 +3,8 @@ loaderVersion = "[${major_loader_version},)"
 license = "${mod_license}, ${mod_license_link}"
 issueTrackerURL = "${mod_issue_tracker}"
 
+${access_transformer_entry}
+
 [[mods]]
 modId = "${mod_id}"
 version = "${mod_version_full}"

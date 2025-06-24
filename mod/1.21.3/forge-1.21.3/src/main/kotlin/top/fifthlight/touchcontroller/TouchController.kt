@@ -34,6 +34,10 @@ class TouchController(
     context: FMLJavaModLoadingContext,
 ) : KoinComponent {
     private val logger = LoggerFactory.getLogger(TouchController::class.java)
+    
+    companion object {
+        var loaded = false
+    }
 
     init {
         context.modEventBus.addListener(::onClientSetup)
@@ -63,6 +67,8 @@ class TouchController(
         client.execute {
             WindowEvents.onWindowCreated(PlatformWindowProviderImpl(client.window))
         }
+
+        loaded = true
     }
 
     @Suppress("UNUSED_PARAMETER")

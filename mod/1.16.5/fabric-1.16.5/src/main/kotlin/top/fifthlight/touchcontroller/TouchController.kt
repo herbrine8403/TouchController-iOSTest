@@ -25,6 +25,9 @@ import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback as FabricHu
 
 class TouchController : ClientModInitializer, KoinComponent {
     private val logger = LoggerFactory.getLogger(TouchController::class.java)
+    companion object {
+        var loaded = false
+    }
 
     override fun onInitializeClient() {
         logger.info("Loading TouchController…")
@@ -38,6 +41,8 @@ class TouchController : ClientModInitializer, KoinComponent {
         }
 
         initialize()
+
+        loaded = true
     }
 
     private fun initialize() {

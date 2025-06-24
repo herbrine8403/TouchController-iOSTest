@@ -5,7 +5,7 @@
 - Added options for D-Pad to show backwards-left/-right buttons
 - Added layer condition for selecting blocks
 - Added grab trigger for custom widgets
-- Added support for 1.21.6 Fabric
+- Added support for 1.21.6
 - Added overscroll bounce effect
 - Added basic support for Windows touch keyboard
 

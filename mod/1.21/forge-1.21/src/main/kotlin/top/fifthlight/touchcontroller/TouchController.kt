@@ -32,6 +32,10 @@ import top.fifthlight.touchcontroller.common_1_21_x.gal.PlatformWindowProviderIm
 @Mod(BuildInfo.MOD_ID)
 class TouchController : KoinComponent {
     private val logger = LoggerFactory.getLogger(TouchController::class.java)
+    
+    companion object {
+        var loaded = false
+    }
 
     init {
         FMLJavaModLoadingContext.get().modEventBus.apply {
@@ -63,6 +67,8 @@ class TouchController : KoinComponent {
         client.execute {
             WindowEvents.onWindowCreated(PlatformWindowProviderImpl(client.window))
         }
+
+        loaded = true
     }
 
     @Suppress("UNUSED_PARAMETER")

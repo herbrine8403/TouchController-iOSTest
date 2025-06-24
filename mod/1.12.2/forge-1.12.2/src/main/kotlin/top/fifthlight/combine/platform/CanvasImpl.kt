@@ -15,7 +15,10 @@ import top.fifthlight.combine.data.BackgroundTexture
 import top.fifthlight.combine.data.Identifier
 import top.fifthlight.combine.data.ItemStack
 import top.fifthlight.combine.data.Texture
-import top.fifthlight.combine.paint.*
+import top.fifthlight.combine.paint.Canvas
+import top.fifthlight.combine.paint.ClipStack
+import top.fifthlight.combine.paint.Color
+import top.fifthlight.combine.paint.Colors
 import top.fifthlight.data.*
 import top.fifthlight.touchcontroller.assets.Textures
 import top.fifthlight.touchcontroller.ext.color

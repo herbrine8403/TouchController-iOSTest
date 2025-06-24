@@ -35,6 +35,10 @@ import java.util.function.BiFunction
 @Mod(BuildInfo.MOD_ID)
 class TouchController : KoinComponent {
     private val logger = LoggerFactory.getLogger(TouchController::class.java)
+    
+    companion object {
+        var loaded = false
+    }
 
     init {
         FMLJavaModLoadingContext.get().modEventBus.apply {
@@ -66,6 +70,8 @@ class TouchController : KoinComponent {
         client.tell {
             WindowEvents.onWindowCreated(PlatformWindowProviderImpl(client.window))
         }
+
+        loaded = true
     }
 
     @Suppress("UNUSED_PARAMETER")

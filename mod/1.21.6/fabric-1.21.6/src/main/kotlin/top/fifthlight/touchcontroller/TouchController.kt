@@ -27,6 +27,10 @@ import top.fifthlight.touchcontroller.common_1_21_x.gal.PlatformWindowProviderIm
 
 class TouchController : ClientModInitializer, KoinComponent {
     private val logger = LoggerFactory.getLogger(TouchController::class.java)
+    
+    companion object {
+        var loaded = false
+    }
 
     override fun onInitializeClient() {
         logger.info("Loading TouchController…")
@@ -41,6 +45,8 @@ class TouchController : ClientModInitializer, KoinComponent {
         }
 
         initialize()
+
+        loaded = true
     }
 
     private fun initialize() {

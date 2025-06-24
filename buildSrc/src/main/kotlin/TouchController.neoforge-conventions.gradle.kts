@@ -24,6 +24,8 @@ val gameVersion: String by extra.properties
 val neoforgeVersion: String by extra.properties
 val majorLoaderVersion: String by extra.properties
 val minecraftVersion = MinecraftVersion(gameVersion)
+val useAccessTransformer: String by extra.properties
+val useAccessTransformerBool = useAccessTransformer.toBoolean()
 
 val localProperties: Map<String, String> by rootProject.ext
 val minecraftVmArgs = localProperties["minecraft.vm-args"]?.toString()?.split(":") ?: listOf()
@@ -44,6 +46,10 @@ neoForge {
     version = neoforgeVersion
 
     validateAccessTransformers = true
+
+    if (useAccessTransformerBool) {
+        accessTransformers.from("src/main/resources/META-INF/accesstransformer.cfg")
+    }
 
     val parchmentVersion = properties["parchmentVersion"]?.toString()
     if (parchmentVersion != null) {
@@ -103,7 +109,7 @@ tasks.processResources {
     val modAuthorsArray = modAuthorsList.joinToString(", ", transform = String::quote).drop(1).dropLast(1)
     val modContributorsArray = modContributorsList.joinToString(", ", transform = String::quote).drop(1).dropLast(1)
 
-    val properties = mapOf(
+    val properties = mutableMapOf(
         "mod_id" to modId,
         "mod_name" to modName,
         "mod_version_full" to version,
@@ -120,6 +126,15 @@ tasks.processResources {
         "game_version" to gameVersion,
         "major_loader_version" to majorLoaderVersion,
     )
+
+    properties += if (useAccessTransformerBool) {
+        "access_transformer_entry" to """
+            [[accessTransformers]]
+            file="META-INF/accesstransformer.cfg"
+            """.trimIndent()
+    } else {
+        "access_transformer_entry" to ""
+    }
 
     inputs.properties(properties)
 
@@ -167,7 +182,7 @@ val copyJarTask = tasks.register<Jar>("copyJar") {
     }
 
     val excludeWhitelist = listOf(
-        "touchcontroller_at.cfg",
+        "accesstransformer.cfg",
         "neoforge.mods.toml",
         "mods.toml",
     )

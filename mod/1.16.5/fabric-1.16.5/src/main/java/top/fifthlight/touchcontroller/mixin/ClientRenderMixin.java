@@ -5,12 +5,15 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import top.fifthlight.touchcontroller.TouchController;
 import top.fifthlight.touchcontroller.common.event.RenderEvents;
 
 @Mixin(MinecraftClient.class)
 public abstract class ClientRenderMixin {
     @Inject(method = "render", at = @At("HEAD"))
     public void onRenderStart(boolean tick, CallbackInfo ci) {
-        RenderEvents.onRenderStart();
+        if (TouchController.Companion.getLoaded()) {
+            RenderEvents.onRenderStart();
+        }
     }
 }
