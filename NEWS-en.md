@@ -8,6 +8,10 @@
 - Added support for 1.21.6
 - Added overscroll bounce effect
 - Added basic support for Windows touch keyboard
+- Fixed render overlap of new style DPad
+- Improved buttons in chat screen 
+- Fixed text position of touch debug display
+- Made background and content together in config screen when scrolling
 
 ## 0.2.1-beta05
 
