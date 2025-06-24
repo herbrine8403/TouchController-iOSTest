@@ -12,7 +12,12 @@ fun Context.Pointers() {
             canvas.withTranslate(pointer.scaledOffset) {
                 fillRect(IntOffset(-1, -1), IntSize(2, 2), Colors.WHITE)
                 drawRect(IntOffset(-4, -4), IntSize(8, 8), Colors.WHITE)
-                drawCenteredText(textMeasurer = textMeasurer, text = "$id", color = Colors.WHITE)
+                drawCenteredText(
+                    offset = IntOffset(0, 9),
+                    textMeasurer = textMeasurer,
+                    text = id.toString(),
+                    color = Colors.WHITE,
+                )
             }
         }
     }

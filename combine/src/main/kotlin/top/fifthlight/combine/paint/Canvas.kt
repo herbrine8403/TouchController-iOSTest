@@ -278,10 +278,10 @@ fun Canvas.drawCenteredText(
     color: Color
 ) {
     val size = textMeasurer.measure(text)
-    drawText(offset + size / 2, text, color)
+    drawText(offset - size / 2, text, color)
 }
 
 fun Canvas.drawCenteredText(textMeasurer: TextMeasurer, offset: IntOffset = IntOffset.ZERO, text: Text, color: Color) {
     val size = textMeasurer.measure(text)
-    drawText(offset + size / 2, text, color)
+    drawText(offset - size / 2, text, color)
 }
