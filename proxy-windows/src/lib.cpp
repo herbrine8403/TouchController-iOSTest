@@ -1,4 +1,7 @@
 #include "lib.hpp"
+#include "event.hpp"
+#include "input.hpp"
+#include "protocol.hpp"
 
 #include <cstring>
 #include <deque>
@@ -13,15 +16,65 @@
 #include <windows.ui.viewmanagement.h>
 using ABI::Windows::UI::ViewManagement::IInputPane2;
 
-#include "event.hpp"
-#include "input.hpp"
-#include "protocol.hpp"
-
 extern std::mutex g_event_queue_mutex;
 extern std::deque<ProxyMessage> g_event_queue;
 
-extern "C" {
+namespace {
+
 static HWND game_window_handle;
+
+static bool toggle_keyboard(boolean show) {
+    HSTRING class_name = nullptr;
+    HRESULT result = WindowsCreateString(
+        RuntimeClass_Windows_UI_ViewManagement_InputPane,
+        wcslen(RuntimeClass_Windows_UI_ViewManagement_InputPane), &class_name);
+
+    if (FAILED(result)) {
+        std::cerr << "WindowsCreateString failed: 0x" << std::hex << result
+                  << std::endl;
+        return false;
+    }
+
+    IInputPaneInterop* input_pane_interop = nullptr;
+    result =
+        RoGetActivationFactory(class_name, __uuidof(IInputPaneInterop),
+                               reinterpret_cast<void**>(&input_pane_interop));
+    WindowsDeleteString(class_name);
+    if (FAILED(result)) {
+        std::cerr << "RoGetActivationFactory failed: 0x" << std::hex << result
+                  << std::endl;
+        return false;
+    }
+
+    IInputPane2* input_pane = nullptr;
+    result = input_pane_interop->GetForWindow(
+        game_window_handle, __uuidof(IInputPane2),
+        reinterpret_cast<void**>(&input_pane));
+    input_pane_interop->Release();
+    if (FAILED(result)) {
+        std::cerr << "GetForWindow failed: 0x" << std::hex << result
+                  << std::endl;
+        return false;
+    }
+
+    boolean toggle_result;
+    if (show) {
+        result = input_pane->TryShow(&toggle_result);
+    } else {
+        result = input_pane->TryHide(&toggle_result);
+    }
+    input_pane->Release();
+    if (FAILED(result)) {
+        std::cerr << "TryShow/TryHide failed: 0x" << std::hex << result
+                  << std::endl;
+        return false;
+    }
+    return true;
+}
+
+}
+
+extern "C" {
 
 JNIEXPORT void JNICALL
 Java_top_fifthlight_touchcontroller_common_platform_win32_Interface_init(
@@ -55,53 +108,6 @@ Java_top_fifthlight_touchcontroller_common_platform_win32_Interface_pollEvent(
     env->SetByteArrayRegion(buffer, 0, static_cast<jsize>(msg_buffer.size()),
                             reinterpret_cast<const jbyte*>(msg_buffer.data()));
     return static_cast<jint>(msg_buffer.size());
-}
-
-static bool toggle_keyboard(boolean show) {
-    HSTRING class_name = nullptr;
-    HRESULT result = WindowsCreateString(
-        RuntimeClass_Windows_UI_ViewManagement_InputPane,
-        wcslen(RuntimeClass_Windows_UI_ViewManagement_InputPane), &class_name);
-
-    if (FAILED(result)) {
-        std::cerr << "WindowsCreateString failed: 0x" << std::hex << result
-                  << std::endl;
-        return false;
-    }
-
-    IInputPaneInterop* input_pane_interop = nullptr;
-    result = RoGetActivationFactory(class_name, __uuidof(IInputPaneInterop),
-                                reinterpret_cast<void**>(&input_pane_interop));
-    WindowsDeleteString(class_name);
-    if (FAILED(result)) {
-        std::cerr << "RoGetActivationFactory failed: 0x" << std::hex << result
-                  << std::endl;
-        return false;
-    }
-
-    IInputPane2* input_pane = nullptr;
-    result = input_pane_interop->GetForWindow(game_window_handle,
-                                         __uuidof(IInputPane2),
-                                         reinterpret_cast<void**>(&input_pane));
-    input_pane_interop->Release();
-    if (FAILED(result)) {
-        std::cerr << "GetForWindow failed: 0x" << std::hex << result << std::endl;
-        return false;
-    }
-
-    boolean toggle_result;
-    if (show) {
-        result = input_pane->TryShow(&toggle_result);
-    } else {
-        result = input_pane->TryHide(&toggle_result);
-    }
-    input_pane->Release();
-    if (FAILED(result)) {
-        std::cerr << "TryShow/TryHide failed: 0x" << std::hex << result
-                  << std::endl;
-        return false;
-    }
-    return true;
 }
 
 JNIEXPORT void JNICALL
