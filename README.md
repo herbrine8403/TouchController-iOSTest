@@ -36,8 +36,8 @@ Below are platforms TouchController supports:
 - Windows (Minimum supported version is Windows 7, supports x86, x86_64 and ARM64 architecture)
 - [Fold Craft Launcher](https://github.com/FCL-Team/FoldCraftLauncher)
 - [Zalith Launcher](https://github.com/ZalithLauncher/ZalithLauncher)
+- [Zalith Launcher 2](https://github.com/ZalithLauncher/ZalithLauncher2)
 - [Pojav Glow·Worm](https://github.com/Vera-Firefly/Pojav-Glow-Worm)
-- [My fork of PojavLauncher](https://github.com/TouchController/PojavLauncher)(No longer update)
 
 Support for touch screen for X11 on Linux may be added in the future. iOS and macOS will not be supported
 because I don't have corresponding environment and devices, but pull requests for iOS and macOS supported will be
@@ -122,10 +122,10 @@ Finally, you can run `./gradlew build` to compile, and built file can bu found i
 目前支持的平台有：
 
 - Windows（版本最低为 Windows 7，支持 x86、x86_64 和 ARM64 架构）
-- [官方版 Fold Craft Launcher](https://github.com/FCL-Team/FoldCraftLauncher)
-- [官方版 Zalith Launcher](https://github.com/ZalithLauncher/ZalithLauncher)
-- [官方版 Pojav Glow·Worm](https://github.com/Vera-Firefly/Pojav-Glow-Worm)
-- [我修改后的 PojavLauncher](https://github.com/TouchController/PojavLauncher)
+- [Fold Craft Launcher](https://github.com/FCL-Team/FoldCraftLauncher)
+- [Zalith Launcher](https://github.com/ZalithLauncher/ZalithLauncher)
+- [Zalith Launcher 2](https://github.com/ZalithLauncher/ZalithLauncher2)
+- [Pojav Glow·Worm](https://github.com/Vera-Firefly/Pojav-Glow-Worm)
 
 在未来可能会添加 Linux 上 X11 触屏的支持。iOS 和 macOS 由于没有相应环境和设备，不会提供支持，但是接受 iOS 和 macOS 支持的
 Pull
