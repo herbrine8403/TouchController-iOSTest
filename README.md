@@ -33,7 +33,7 @@ Support for more game versions and mod loaders is in developing currently.
 
 Below are platforms TouchController supports:
 
-- Windows (Minimum supported version is Windows 10, supports x86, x86_64 and ARM64 architecture)
+- Windows (Minimum supported version is Windows 7, supports x86, x86_64 and ARM64 architecture)
 - [Fold Craft Launcher](https://github.com/FCL-Team/FoldCraftLauncher)
 - [Zalith Launcher](https://github.com/ZalithLauncher/ZalithLauncher)
 - [Pojav Glow·Worm](https://github.com/Vera-Firefly/Pojav-Glow-Worm)
@@ -121,7 +121,7 @@ Finally, you can run `./gradlew build` to compile, and built file can bu found i
 
 目前支持的平台有：
 
-- Windows（版本最低为 Windows 10，支持 x86、x86_64 和 ARM64 架构）
+- Windows（版本最低为 Windows 7，支持 x86、x86_64 和 ARM64 架构）
 - [官方版 Fold Craft Launcher](https://github.com/FCL-Team/FoldCraftLauncher)
 - [官方版 Zalith Launcher](https://github.com/ZalithLauncher/ZalithLauncher)
 - [官方版 Pojav Glow·Worm](https://github.com/Vera-Firefly/Pojav-Glow-Worm)

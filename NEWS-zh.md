@@ -1,5 +1,9 @@
 # TouchController NEWS - 用户可见的更改。
 
+## 0.2.1-beta08
+
+- 修复 Windows 10 以下系统的支持
+
 ## 0.2.1-beta07
 
 - 修复了 1.20.1 触摸设置按键和其他 mod 重叠的问题

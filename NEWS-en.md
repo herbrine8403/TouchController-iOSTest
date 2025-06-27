@@ -1,5 +1,9 @@
 # TouchController NEWS - User visible changes.
 
+## 0.2.1-beta08
+
+- Fixed support for Windows versions below 10
+
 ## 0.2.1-beta07
 
 - Fixed overlapping of touch settings buttons with other mods in 1.20.1
