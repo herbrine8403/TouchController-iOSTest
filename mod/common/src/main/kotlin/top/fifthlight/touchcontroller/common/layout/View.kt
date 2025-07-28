@@ -188,7 +188,7 @@ fun Context.View() {
         }
     }
 
-    if (presetControlInfo.disableTouchGesture) {
+    if (presetControlInfo.splitControls) {
         result.showBlockOutline = true
     }
 
