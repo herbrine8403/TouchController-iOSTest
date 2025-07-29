@@ -10,7 +10,6 @@ import top.fifthlight.combine.data.Text
 import top.fifthlight.combine.layout.Alignment
 import top.fifthlight.combine.layout.Arrangement
 import top.fifthlight.combine.layout.Layout
-import top.fifthlight.combine.layout.offset
 import top.fifthlight.combine.modifier.Modifier
 import top.fifthlight.combine.modifier.ParentDataModifierNode
 import top.fifthlight.combine.modifier.placement.*
@@ -30,6 +29,7 @@ import top.fifthlight.touchcontroller.common.control.ControllerWidget
 import top.fifthlight.touchcontroller.common.ui.component.AutoScaleControllerWidget
 import top.fifthlight.touchcontroller.common.ui.component.CheckButton
 import top.fifthlight.touchcontroller.common.ui.component.ListButton
+import top.fifthlight.touchcontroller.common.ui.component.TwoItemRow
 import top.fifthlight.touchcontroller.common.ui.model.WidgetsTabModel
 import top.fifthlight.touchcontroller.common.ui.state.WidgetsTabState
 import kotlin.math.max
@@ -111,42 +111,6 @@ private fun WidgetsLayout(
             }
         },
         content = { WidgetsLayoutScope.content() },
-    )
-}
-
-@Composable
-private fun TwoItemRow(
-    modifier: Modifier = Modifier,
-    rightWidth: Int,
-    space: Int,
-    content: @Composable () -> Unit,
-) {
-    Layout(
-        modifier = modifier,
-        measurePolicy = { measurables, constraints ->
-            require(measurables.size == 2) { "TwoItemRow must contain two items" }
-
-            val (left, right) = measurables
-            val leftPlaceable = left.measure(
-                constraints
-                    .offset(-rightWidth - space, 0)
-                    .copy(minHeight = rightWidth, maxHeight = rightWidth)
-            )
-            val rightPlaceable = right.measure(
-                constraints.copy(
-                    minWidth = rightWidth,
-                    maxWidth = rightWidth,
-                    minHeight = leftPlaceable.height,
-                    maxHeight = leftPlaceable.height,
-                )
-            )
-
-            layout(leftPlaceable.width + rightPlaceable.width, leftPlaceable.height) {
-                leftPlaceable.placeAt(0, 0)
-                rightPlaceable.placeAt(leftPlaceable.width + space, 0)
-            }
-        },
-        content = content,
     )
 }
 
@@ -251,6 +215,7 @@ private fun CustomWidgetList(
                     ) {
                         DropdownItemList(
                             modifier = Modifier.verticalScroll(),
+                            onItemSelected = { popupOpened = false },
                             items = persistentListOf(
                                 Pair(Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_WIDGETS_WIDGET_PRESET_RENAME)) {
                                     onWidgetRenamed(index, widget)

@@ -1,26 +1,104 @@
 package top.fifthlight.touchcontroller.common.ui.tab.layout.custom
 
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import cafe.adriel.voyager.koin.koinScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
+import kotlinx.collections.immutable.PersistentList
+import kotlinx.collections.immutable.persistentListOf
 import org.koin.core.parameter.parametersOf
+import top.fifthlight.combine.animation.animateFloatAsState
 import top.fifthlight.combine.data.Text
 import top.fifthlight.combine.layout.Alignment
 import top.fifthlight.combine.layout.Arrangement
 import top.fifthlight.combine.modifier.Modifier
+import top.fifthlight.combine.modifier.placement.anchor
 import top.fifthlight.combine.modifier.placement.fillMaxSize
 import top.fifthlight.combine.modifier.placement.fillMaxWidth
 import top.fifthlight.combine.modifier.scroll.verticalScroll
 import top.fifthlight.combine.widget.base.layout.Column
 import top.fifthlight.combine.widget.base.layout.Row
 import top.fifthlight.combine.widget.ui.*
+import top.fifthlight.data.IntRect
 import top.fifthlight.touchcontroller.assets.Texts
 import top.fifthlight.touchcontroller.assets.Textures
+import top.fifthlight.touchcontroller.common.config.preset.LayoutPreset
+import top.fifthlight.touchcontroller.common.ui.component.ListButton
 import top.fifthlight.touchcontroller.common.ui.component.TabButton
+import top.fifthlight.touchcontroller.common.ui.component.TwoItemRow
 import top.fifthlight.touchcontroller.common.ui.model.PresetsTabModel
 import top.fifthlight.touchcontroller.common.ui.state.PresetsTabState
+import kotlin.uuid.Uuid
+
+@Composable
+private fun PresetsList(
+    modifier: Modifier = Modifier,
+    listContent: PersistentList<Pair<Uuid, LayoutPreset>> = persistentListOf(),
+    currentSelectedPresetUuid: Uuid? = null,
+    onPresetSelected: (Uuid, LayoutPreset) -> Unit = { _, _ -> },
+    onPresetEdited: (Uuid, LayoutPreset) -> Unit = { _, _ -> },
+    onPresetShowPath: (Uuid) -> Unit = {},
+    onPresetCopied: (Uuid, LayoutPreset) -> Unit = { _, _ -> },
+    onPresetDeleted: (Uuid, LayoutPreset) -> Unit = { _, _ -> },
+) {
+    for ((uuid, preset) in listContent) {
+        TwoItemRow(
+            modifier = modifier,
+            rightWidth = 24,
+            space = 4,
+        ) {
+            TabButton(
+                modifier = Modifier.fillMaxWidth(),
+                checked = currentSelectedPresetUuid == uuid,
+                onClick = {
+                    onPresetSelected(uuid, preset)
+                },
+            ) {
+                Text(preset.name)
+            }
+
+            var popupOpened by remember { mutableStateOf(false) }
+            var anchor by remember { mutableStateOf(IntRect.ZERO) }
+            ListButton(
+                modifier = Modifier.anchor { anchor = it },
+                onClick = {
+                    popupOpened = true
+                },
+            ) {
+                Icon(Textures.ICON_MENU)
+            }
+
+            val expandProgress by animateFloatAsState(if (popupOpened) 1f else 0f)
+            if (expandProgress != 0f) {
+                DropDownMenu(
+                    expandProgress = expandProgress,
+                    anchor = anchor,
+                    onDismissRequest = {
+                        popupOpened = false
+                    }
+                ) {
+                    DropdownItemList(
+                        modifier = Modifier.verticalScroll(),
+                        onItemSelected = { popupOpened = false },
+                        items = persistentListOf(
+                            Pair(Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_PRESETS_EDIT)) {
+                                onPresetEdited(uuid, preset)
+                            },
+                            Pair(Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_PRESETS_SHOW_PATH)) {
+                                onPresetShowPath(uuid)
+                            },
+                            Pair(Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_PRESETS_COPY)) {
+                                onPresetCopied(uuid, preset)
+                            },
+                            Pair(Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_PRESETS_DELETE)) {
+                                onPresetDeleted(uuid, preset)
+                            },
+                        ),
+                    )
+                }
+            }
+        }
+    }
+}
 
 object PresetsTab : CustomTab() {
     @Composable
@@ -315,50 +393,12 @@ object PresetsTab : CustomTab() {
             sideBarAtRight = sideBarAtRight,
             tabsButton = tabsButton,
             actions = {
-                val currentPreset = uiState.selectedPreset
-                val currentPresetUuid = uiState.selectedPresetUuid
-                IconButton(
-                    onClick = {
-                        uiState.selectedPresetUuid?.let {
-                            tabModel.openPresetPathDialog(it)
-                        }
-                    },
-                    enabled = currentPresetUuid != null,
-                ) {
-                    Text(Text.literal("导"))
-                }
                 IconButton(
                     onClick = {
                         tabModel.openCreatePresetChooseDialog()
                     }
                 ) {
                     Icon(Textures.ICON_ADD)
-                }
-                IconButton(
-                    onClick = {
-                        currentPreset?.let(screenModel::newPreset)
-                    },
-                    enabled = currentPreset != null,
-                ) {
-                    Icon(Textures.ICON_COPY)
-                }
-                IconButton(
-                    onClick = {
-                        val uuid = uiState.selectedPresetUuid ?: return@IconButton
-                        val currentPreset = currentPreset ?: return@IconButton
-                        tabModel.openEditPresetDialog(uuid, currentPreset)
-                    },
-                    enabled = currentPreset != null,
-                ) {
-                    Icon(Textures.ICON_CONFIG)
-                }
-                IconButton(
-                    onClick = {
-                        uiState.selectedPresetUuid?.let(tabModel::openDeletePresetBox)
-                    },
-                    enabled = currentPreset != null,
-                ) {
-                    Icon(Textures.ICON_DELETE)
                 }
             }
         ) { modifier ->
@@ -404,17 +444,26 @@ object PresetsTab : CustomTab() {
                         .verticalScroll()
                         .fillMaxSize()
                 ) {
-                    for ((uuid, preset) in uiState.allPresets.orderedEntries) {
-                        TabButton(
-                            modifier = Modifier.fillMaxWidth(),
-                            checked = uiState.selectedPresetUuid == uuid,
-                            onClick = {
-                                screenModel.selectPreset(uuid)
-                            }
-                        ) {
-                            Text(preset.name)
+                    PresetsList(
+                        modifier = Modifier.fillMaxWidth(),
+                        listContent = uiState.allPresets.orderedEntries,
+                        currentSelectedPresetUuid = uiState.selectedPresetUuid,
+                        onPresetSelected = { uuid, preset ->
+                            screenModel.selectPreset(uuid)
+                        },
+                        onPresetEdited = { uuid, preset ->
+                            tabModel.openEditPresetDialog(uuid, preset)
+                        },
+                        onPresetShowPath = { uuid ->
+                            tabModel.openPresetPathDialog(uuid)
+                        },
+                        onPresetCopied = { uuid, preset ->
+                            screenModel.newPreset(preset)
+                        },
+                        onPresetDeleted = { uuid, preset ->
+                            tabModel.openDeletePresetBox(uuid)
                         }
-                    }
+                    )
                 }
             }
         }

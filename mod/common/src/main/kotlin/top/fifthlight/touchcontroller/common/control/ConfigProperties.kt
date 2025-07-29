@@ -1236,34 +1236,30 @@ class TriggerActionProperty<Config : ControllerWidget>(
                     dropDownContent = {
                         DropdownItemList(
                             modifier = Modifier.verticalScroll(),
+                            onItemSelected = { expanded = false },
                             items = persistentListOf(
                                 Pair(Text.translatable(WidgetTriggerAction.Type.NONE.nameId)) {
                                     onConfigChanged(setValue(config, null))
-                                    expanded = false
                                 },
                                 Pair(Text.translatable(WidgetTriggerAction.Type.KEY.nameId)) {
                                     if (value !is WidgetTriggerAction.Key) {
                                         onConfigChanged(setValue(config, WidgetTriggerAction.Key.Click()))
                                     }
-                                    expanded = false
                                 },
                                 Pair(Text.translatable(WidgetTriggerAction.Type.GAME.nameId)) {
                                     if (value !is WidgetTriggerAction.Game) {
                                         onConfigChanged(setValue(config, WidgetTriggerAction.Game.GameMenu))
                                     }
-                                    expanded = false
                                 },
                                 Pair(Text.translatable(WidgetTriggerAction.Type.PLAYER.nameId)) {
                                     if (value !is WidgetTriggerAction.Player) {
                                         onConfigChanged(setValue(config, WidgetTriggerAction.Player.StartSprint))
                                     }
-                                    expanded = false
                                 },
                                 Pair(Text.translatable(WidgetTriggerAction.Type.LAYER_CONDITION.nameId)) {
                                     if (value !is WidgetTriggerAction.LayerCondition) {
                                         onConfigChanged(setValue(config, WidgetTriggerAction.LayerCondition.Toggle()))
                                     }
-                                    expanded = false
                                 },
                             ),
                         )
@@ -1345,9 +1341,9 @@ class TriggerActionProperty<Config : ControllerWidget>(
                                     dropDownContent = {
                                         DropdownItemList(
                                             modifier = Modifier.verticalScroll(),
+                                            onItemSelected = { expanded = false },
                                             items = WidgetTriggerAction.Key.Lock.LockActionType.entries.map {
                                                 Pair(Text.translatable(it.nameId)) {
-                                                    expanded = false
                                                     onConfigChanged(setValue(config, value.copy(lockType = it)))
                                                 }
                                             }.toPersistentList()
@@ -1378,9 +1374,9 @@ class TriggerActionProperty<Config : ControllerWidget>(
                             dropDownContent = {
                                 DropdownItemList(
                                     modifier = Modifier.verticalScroll(),
+                                    onItemSelected = { expanded = false },
                                     items = WidgetTriggerAction.Game.all.map {
                                         Pair(Text.translatable(it.nameId)) {
-                                            expanded = false
                                             onConfigChanged(setValue(config, it))
                                         }
                                     }.toPersistentList()
@@ -1409,9 +1405,9 @@ class TriggerActionProperty<Config : ControllerWidget>(
                             dropDownContent = {
                                 DropdownItemList(
                                     modifier = Modifier.verticalScroll(),
+                                    onItemSelected = { expanded = false },
                                     items = WidgetTriggerAction.Player.all.map {
                                         Pair(Text.translatable(it.nameId)) {
-                                            expanded = false
                                             onConfigChanged(setValue(config, it))
                                         }
                                     }.toPersistentList()
@@ -1440,9 +1436,9 @@ class TriggerActionProperty<Config : ControllerWidget>(
                             dropDownContent = {
                                 DropdownItemList(
                                     modifier = Modifier.verticalScroll(),
+                                    onItemSelected = { expanded = false },
                                     items = persistentListOf(
                                         Pair(Text.translatable(Texts.WIDGET_TRIGGER_LAYER_CONDITION_TOGGLE)) {
-                                            expanded = false
                                             onConfigChanged(
                                                 setValue(
                                                     config, WidgetTriggerAction.LayerCondition.Toggle(
@@ -1452,7 +1448,6 @@ class TriggerActionProperty<Config : ControllerWidget>(
                                             )
                                         },
                                         Pair(Text.translatable(Texts.WIDGET_TRIGGER_LAYER_CONDITION_ENABLE)) {
-                                            expanded = false
                                             onConfigChanged(
                                                 setValue(
                                                     config, WidgetTriggerAction.LayerCondition.Enable(
@@ -1462,7 +1457,6 @@ class TriggerActionProperty<Config : ControllerWidget>(
                                             )
                                         },
                                         Pair(Text.translatable(Texts.WIDGET_TRIGGER_LAYER_CONDITION_DISABLE)) {
-                                            expanded = false
                                             onConfigChanged(
                                                 setValue(
                                                     config, WidgetTriggerAction.LayerCondition.Disable(
@@ -1495,11 +1489,11 @@ class TriggerActionProperty<Config : ControllerWidget>(
                                 dropDownContent = {
                                     DropdownItemList(
                                         modifier = Modifier.verticalScroll(),
+                                        onItemSelected = { expanded = false },
                                         items = currentPreset.controlInfo.customConditions.conditions.map { condition ->
                                             val name = condition.name?.let { textFactory.literal(it) }
                                                 ?: textFactory.of(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_LAYERS_CUSTOM_CONDITION_UNNAMED)
                                             Pair(name) {
-                                                expanded = false
                                                 onConfigChanged(
                                                     setValue(
                                                         config, value.clone(condition.uuid)

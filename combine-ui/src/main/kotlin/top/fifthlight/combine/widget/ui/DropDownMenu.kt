@@ -27,13 +27,17 @@ import kotlin.math.max
 @Composable
 fun DropdownMenuScope.DropdownItemList(
     modifier: Modifier = Modifier,
+    onItemSelected: (Int) -> Unit = {},
     items: PersistentList<Pair<Text, () -> Unit>>,
 ) {
     DropdownItemList(
         modifier = modifier,
         items = items,
         textProvider = { it.first },
-        onItemSelected = { items[it].second() },
+        onItemSelected = {
+            onItemSelected(it)
+            items[it].second()
+        },
     )
 }
 
