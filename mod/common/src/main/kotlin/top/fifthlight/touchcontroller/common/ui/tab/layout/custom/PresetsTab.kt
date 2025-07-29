@@ -14,6 +14,7 @@ import top.fifthlight.combine.modifier.Modifier
 import top.fifthlight.combine.modifier.placement.anchor
 import top.fifthlight.combine.modifier.placement.fillMaxSize
 import top.fifthlight.combine.modifier.placement.fillMaxWidth
+import top.fifthlight.combine.modifier.placement.padding
 import top.fifthlight.combine.modifier.scroll.verticalScroll
 import top.fifthlight.combine.widget.base.layout.Column
 import top.fifthlight.combine.widget.base.layout.Row
@@ -23,7 +24,6 @@ import top.fifthlight.touchcontroller.assets.Texts
 import top.fifthlight.touchcontroller.assets.Textures
 import top.fifthlight.touchcontroller.common.config.preset.LayoutPreset
 import top.fifthlight.touchcontroller.common.ui.component.ListButton
-import top.fifthlight.touchcontroller.common.ui.component.TabButton
 import top.fifthlight.touchcontroller.common.ui.component.TwoItemRow
 import top.fifthlight.touchcontroller.common.ui.model.PresetsTabModel
 import top.fifthlight.touchcontroller.common.ui.state.PresetsTabState
@@ -40,60 +40,63 @@ private fun PresetsList(
     onPresetCopied: (Uuid, LayoutPreset) -> Unit = { _, _ -> },
     onPresetDeleted: (Uuid, LayoutPreset) -> Unit = { _, _ -> },
 ) {
-    for ((uuid, preset) in listContent) {
-        TwoItemRow(
-            modifier = modifier,
-            rightWidth = 24,
-            space = 4,
-        ) {
-            TabButton(
-                modifier = Modifier.fillMaxWidth(),
-                checked = currentSelectedPresetUuid == uuid,
-                onClick = {
-                    onPresetSelected(uuid, preset)
-                },
+    Column(modifier = modifier) {
+        for ((uuid, preset) in listContent) {
+            TwoItemRow(
+                rightWidth = 24,
             ) {
-                Text(preset.name)
-            }
-
-            var popupOpened by remember { mutableStateOf(false) }
-            var anchor by remember { mutableStateOf(IntRect.ZERO) }
-            ListButton(
-                modifier = Modifier.anchor { anchor = it },
-                onClick = {
-                    popupOpened = true
-                },
-            ) {
-                Icon(Textures.ICON_MENU)
-            }
-
-            val expandProgress by animateFloatAsState(if (popupOpened) 1f else 0f)
-            if (expandProgress != 0f) {
-                DropDownMenu(
-                    expandProgress = expandProgress,
-                    anchor = anchor,
-                    onDismissRequest = {
-                        popupOpened = false
-                    }
+                ListButton(
+                    modifier = Modifier.fillMaxWidth(),
+                    checked = currentSelectedPresetUuid == uuid,
+                    onClick = {
+                        onPresetSelected(uuid, preset)
+                    },
                 ) {
-                    DropdownItemList(
-                        modifier = Modifier.verticalScroll(),
-                        onItemSelected = { popupOpened = false },
-                        items = persistentListOf(
-                            Pair(Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_PRESETS_EDIT)) {
-                                onPresetEdited(uuid, preset)
-                            },
-                            Pair(Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_PRESETS_SHOW_PATH)) {
-                                onPresetShowPath(uuid)
-                            },
-                            Pair(Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_PRESETS_COPY)) {
-                                onPresetCopied(uuid, preset)
-                            },
-                            Pair(Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_PRESETS_DELETE)) {
-                                onPresetDeleted(uuid, preset)
-                            },
-                        ),
+                    Text(
+                        modifier = Modifier.alignment(Alignment.CenterLeft),
+                        text = preset.name,
                     )
+                }
+
+                var popupOpened by remember { mutableStateOf(false) }
+                var anchor by remember { mutableStateOf(IntRect.ZERO) }
+                ListButton(
+                    modifier = Modifier.anchor { anchor = it },
+                    onClick = {
+                        popupOpened = true
+                    },
+                ) {
+                    Icon(Textures.ICON_MENU)
+                }
+
+                val expandProgress by animateFloatAsState(if (popupOpened) 1f else 0f)
+                if (expandProgress != 0f) {
+                    DropDownMenu(
+                        expandProgress = expandProgress,
+                        anchor = anchor,
+                        onDismissRequest = {
+                            popupOpened = false
+                        }
+                    ) {
+                        DropdownItemList(
+                            modifier = Modifier.verticalScroll(),
+                            onItemSelected = { popupOpened = false },
+                            items = persistentListOf(
+                                Pair(Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_PRESETS_EDIT)) {
+                                    onPresetEdited(uuid, preset)
+                                },
+                                Pair(Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_PRESETS_SHOW_PATH)) {
+                                    onPresetShowPath(uuid)
+                                },
+                                Pair(Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_PRESETS_COPY)) {
+                                    onPresetCopied(uuid, preset)
+                                },
+                                Pair(Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_PRESETS_DELETE)) {
+                                    onPresetDeleted(uuid, preset)
+                                },
+                            ),
+                        )
+                    }
                 }
             }
         }
@@ -445,7 +448,9 @@ object PresetsTab : CustomTab() {
                         .fillMaxSize()
                 ) {
                     PresetsList(
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier
+                            .padding(4)
+                            .fillMaxWidth(),
                         listContent = uiState.allPresets.orderedEntries,
                         currentSelectedPresetUuid = uiState.selectedPresetUuid,
                         onPresetSelected = { uuid, preset ->

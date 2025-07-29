@@ -185,7 +185,6 @@ private fun CustomWidgetList(
                     .widgetType(ControllerWidgetType.NORMAL)
                     .fillMaxWidth(),
                 rightWidth = 24,
-                space = 4,
             ) {
                 WidgetButton(
                     widget = widget,
@@ -404,19 +403,14 @@ object WidgetsTab : CustomTab() {
                 }
 
                 when (val listContent = tabState.listContent) {
-                    is WidgetsTabState.ListContent.BuiltIn -> Column(
+                    is WidgetsTabState.ListContent.BuiltIn -> BuiltInWidgetList(
                         modifier = Modifier
                             .padding(4)
                             .verticalScroll()
                             .fillMaxSize(),
-                        verticalArrangement = Arrangement.spacedBy(4),
-                    ) {
-                        BuiltInWidgetList(
-                            modifier = Modifier.fillMaxWidth(),
-                            listContent = listContent,
-                            onWidgetSelected = ::addWidget,
-                        )
-                    }
+                        listContent = listContent,
+                        onWidgetSelected = ::addWidget,
+                    )
 
                     is WidgetsTabState.ListContent.Custom ->
                         if (listContent.widgets.isEmpty()) {
@@ -427,21 +421,16 @@ object WidgetsTab : CustomTab() {
                                 Text(Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_WIDGETS_WIDGET_PRESET_EMPTY_TIP))
                             }
                         } else {
-                            Column(
+                            CustomWidgetList(
                                 modifier = Modifier
                                     .padding(4)
                                     .verticalScroll()
                                     .fillMaxSize(),
-                                verticalArrangement = Arrangement.spacedBy(4),
-                            ) {
-                                CustomWidgetList(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    listContent = listContent,
-                                    onWidgetSelected = ::addWidget,
-                                    onWidgetRenamed = tabModel::openRenameWidgetPresetItemDialog,
-                                    onWidgetDeleted = tabModel::deleteWidgetPresetItem,
-                                )
-                            }
+                                listContent = listContent,
+                                onWidgetSelected = ::addWidget,
+                                onWidgetRenamed = tabModel::openRenameWidgetPresetItemDialog,
+                                onWidgetDeleted = tabModel::deleteWidgetPresetItem,
+                            )
                         }
                 }
             }

@@ -7,6 +7,7 @@ import kotlinx.collections.immutable.PersistentMap
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.plus
 import org.koin.core.parameter.parametersOf
+import top.fifthlight.combine.animation.animateFloatAsState
 import top.fifthlight.combine.data.LocalTextFactory
 import top.fifthlight.combine.data.Text
 import top.fifthlight.combine.layout.Alignment
@@ -17,17 +18,90 @@ import top.fifthlight.combine.modifier.placement.*
 import top.fifthlight.combine.modifier.scroll.verticalScroll
 import top.fifthlight.combine.widget.base.layout.*
 import top.fifthlight.combine.widget.ui.*
+import top.fifthlight.data.IntRect
 import top.fifthlight.touchcontroller.assets.Texts
 import top.fifthlight.touchcontroller.assets.Textures
 import top.fifthlight.touchcontroller.common.config.LayerConditionKey
 import top.fifthlight.touchcontroller.common.config.LayerConditionValue
+import top.fifthlight.touchcontroller.common.config.LayoutLayer
 import top.fifthlight.touchcontroller.common.config.preset.CustomCondition
 import top.fifthlight.touchcontroller.common.config.preset.CustomConditions
 import top.fifthlight.touchcontroller.common.config.text
 import top.fifthlight.touchcontroller.common.ui.component.ListButton
+import top.fifthlight.touchcontroller.common.ui.component.TwoItemRow
 import top.fifthlight.touchcontroller.common.ui.model.LayersTabModel
 import top.fifthlight.touchcontroller.common.ui.state.LayersTabState
 import kotlin.uuid.Uuid
+
+@Composable
+private fun LayersList(
+    modifier: Modifier = Modifier,
+    listContent: PersistentList<LayoutLayer> = persistentListOf(),
+    currentSelectedLayoutIndex: Int? = null,
+    onLayerSelected: (Int, LayoutLayer) -> Unit = { _, _ -> },
+    onLayerEdited: (Int, LayoutLayer) -> Unit = { _, _ -> },
+    onLayerCopied: (Int, LayoutLayer) -> Unit = { _, _ -> },
+    onLayerDeleted: (Int, LayoutLayer) -> Unit = { _, _ -> },
+) {
+    Column(modifier = modifier) {
+        for ((index, preset) in listContent.withIndex()) {
+            TwoItemRow(
+                rightWidth = 24,
+            ) {
+                ListButton(
+                    modifier = Modifier.fillMaxWidth(),
+                    checked = currentSelectedLayoutIndex == index,
+                    onClick = {
+                        onLayerSelected(index, preset)
+                    },
+                ) {
+                    Text(
+                        modifier = Modifier.alignment(Alignment.CenterLeft),
+                        text = preset.name,
+                    )
+                }
+
+                var popupOpened by remember { mutableStateOf(false) }
+                var anchor by remember { mutableStateOf(IntRect.ZERO) }
+                ListButton(
+                    modifier = Modifier.anchor { anchor = it },
+                    onClick = {
+                        popupOpened = true
+                    },
+                ) {
+                    Icon(Textures.ICON_MENU)
+                }
+
+                val expandProgress by animateFloatAsState(if (popupOpened) 1f else 0f)
+                if (expandProgress != 0f) {
+                    DropDownMenu(
+                        expandProgress = expandProgress,
+                        anchor = anchor,
+                        onDismissRequest = {
+                            popupOpened = false
+                        }
+                    ) {
+                        DropdownItemList(
+                            modifier = Modifier.verticalScroll(),
+                            onItemSelected = { popupOpened = false },
+                            items = persistentListOf(
+                                Pair(Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_LAYERS_EDIT)) {
+                                    onLayerEdited(index, preset)
+                                },
+                                Pair(Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_LAYERS_COPY)) {
+                                    onLayerCopied(index, preset)
+                                },
+                                Pair(Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_LAYERS_DELETE)) {
+                                    onLayerDeleted(index, preset)
+                                },
+                            ),
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
 
 private data class LayerCondition(
     val preset: PersistentMap<LayerConditionKey, LayerConditionValue>,
@@ -462,7 +536,6 @@ object LayersTab : CustomTab() {
             sideBarAtRight = sideBarAtRight,
             tabsButton = tabsButton,
             actions = {
-                val currentLayer = uiState.selectedLayer
                 IconButton(
                     onClick = {
                         tabModel.openCreateLayerDialog()
@@ -470,34 +543,6 @@ object LayersTab : CustomTab() {
                     enabled = uiState.selectedPreset != null,
                 ) {
                     Icon(Textures.ICON_ADD)
-                }
-                IconButton(
-                    onClick = {
-                        currentLayer?.let(tabModel::copyLayer)
-                    },
-                    enabled = currentLayer != null,
-                ) {
-                    Icon(Textures.ICON_COPY)
-                }
-                IconButton(
-                    onClick = {
-                        val index = uiState.pageState.selectedLayerIndex
-                        val layer = currentLayer ?: return@IconButton
-                        tabModel.openEditLayerDialog(index, layer)
-                    },
-                    enabled = currentLayer != null,
-                ) {
-                    Icon(Textures.ICON_CONFIG)
-                }
-                IconButton(
-                    onClick = {
-                        val index = uiState.pageState.selectedLayerIndex
-                        val layer = currentLayer ?: return@IconButton
-                        tabModel.openDeleteLayerDialog(index, layer)
-                    },
-                    enabled = currentLayer != null,
-                ) {
-                    Icon(Textures.ICON_DELETE)
                 }
             }
         ) { modifier ->
@@ -546,31 +591,25 @@ object LayersTab : CustomTab() {
                             .verticalScroll()
                             .fillMaxSize()
                     ) {
-                        for ((index, layer) in uiState.selectedPreset.layout.withIndex()) {
-                            ListButton(
-                                checked = index == uiState.pageState.selectedLayerIndex,
-                                onClick = {
-                                    screenModel.selectLayer(index)
-                                },
-                            ) {
-                                Row(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.SpaceBetween,
-                                    verticalAlignment = Alignment.CenterVertically,
-                                ) {
-                                    Text(
-                                        modifier = Modifier.weight(1f),
-                                        text = layer.name,
-                                    )
-                                    Text(
-                                        Text.format(
-                                            Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_LAYERS_CONDITIONS_COUNT,
-                                            layer.condition.conditions.size
-                                        )
-                                    )
-                                }
-                            }
-                        }
+                        LayersList(
+                            modifier = Modifier
+                                .padding(4)
+                                .fillMaxWidth(),
+                            listContent = uiState.selectedPreset.layout,
+                            currentSelectedLayoutIndex = uiState.pageState.selectedLayerIndex,
+                            onLayerSelected = { index, layer ->
+                                screenModel.selectLayer(index)
+                            },
+                            onLayerEdited = { index, layer ->
+                                tabModel.openEditLayerDialog(index, layer)
+                            },
+                            onLayerCopied = { index, layer ->
+                                tabModel.copyLayer(layer)
+                            },
+                            onLayerDeleted = { index, layer ->
+                                tabModel.openDeleteLayerDialog(index, layer)
+                            },
+                        )
                     }
                 } else {
                     Box(

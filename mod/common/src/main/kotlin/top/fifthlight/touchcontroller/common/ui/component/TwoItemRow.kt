@@ -9,7 +9,7 @@ import top.fifthlight.combine.modifier.Modifier
 fun TwoItemRow(
     modifier: Modifier = Modifier,
     rightWidth: Int,
-    space: Int,
+    space: Int = 0,
     content: @Composable () -> Unit,
 ) {
     Layout(
