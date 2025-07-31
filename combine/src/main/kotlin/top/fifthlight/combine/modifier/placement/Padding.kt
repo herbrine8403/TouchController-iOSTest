@@ -1,3 +1,4 @@
+// Padding.kt
 package top.fifthlight.combine.modifier.placement
 
 import top.fifthlight.combine.layout.Measurable
@@ -36,5 +37,29 @@ private data class PaddingNode(
         return layout(width, height) {
             placeable.placeAt(left, top)
         }
+    }
+
+    override fun MeasureScope.minIntrinsicWidth(measurable: Measurable, height: Int): Int {
+        val horizontalPadding = left + right
+        val verticalPadding = top + bottom
+        return measurable.minIntrinsicWidth(height - verticalPadding) + horizontalPadding
+    }
+
+    override fun MeasureScope.maxIntrinsicWidth(measurable: Measurable, height: Int): Int {
+        val horizontalPadding = left + right
+        val verticalPadding = top + bottom
+        return measurable.maxIntrinsicWidth(height - verticalPadding) + horizontalPadding
+    }
+
+    override fun MeasureScope.minIntrinsicHeight(measurable: Measurable, width: Int): Int {
+        val horizontalPadding = left + right
+        val verticalPadding = top + bottom
+        return measurable.minIntrinsicHeight(width - horizontalPadding) + verticalPadding
+    }
+
+    override fun MeasureScope.maxIntrinsicHeight(measurable: Measurable, width: Int): Int {
+        val horizontalPadding = left + right
+        val verticalPadding = top + bottom
+        return measurable.maxIntrinsicHeight(width - horizontalPadding) + verticalPadding
     }
 }

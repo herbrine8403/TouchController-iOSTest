@@ -5,6 +5,7 @@ import top.fifthlight.combine.data.Text
 import top.fifthlight.combine.layout.Alignment
 import top.fifthlight.combine.layout.Arrangement
 import top.fifthlight.combine.modifier.Modifier
+import top.fifthlight.combine.modifier.placement.fillMaxHeight
 import top.fifthlight.combine.modifier.placement.fillMaxSize
 import top.fifthlight.combine.modifier.placement.fillMaxWidth
 import top.fifthlight.combine.modifier.placement.padding
@@ -78,7 +79,9 @@ object PropertiesTab : CustomTab() {
                 actions = if (uiState.selectedWidget != null) {
                     {
                         Button(
-                            modifier = Modifier.weight(1f),
+                            modifier = Modifier
+                                .weight(1f)
+                                .fillMaxHeight(),
                             onClick = {
                                 screenModel.copyWidget(uiState.selectedWidget)
                             }
@@ -86,9 +89,12 @@ object PropertiesTab : CustomTab() {
                             Text(Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_COPY))
                         }
                         Button(
-                            modifier = Modifier.weight(1f),
+                            modifier = Modifier
+                                .weight(1f)
+                                .fillMaxHeight(),
                             onClick = {
-
+                                screenModel.copyWidget(uiState.selectedWidget)
+                                screenModel.deleteWidget(uiState.pageState.selectedWidgetIndex)
                             }
                         ) {
                             Text(Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_CUT))

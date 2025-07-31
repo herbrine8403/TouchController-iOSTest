@@ -53,6 +53,11 @@ internal sealed class WrapperLayoutNode(
             return coerceConstraintBounds(constraints, this)
         }
 
+        override fun minIntrinsicWidth(height: Int): Int = node.measurePolicy.minIntrinsicWidth(node.children, height)
+        override fun minIntrinsicHeight(width: Int): Int = node.measurePolicy.minIntrinsicHeight(node.children, width)
+        override fun maxIntrinsicWidth(height: Int): Int = node.measurePolicy.maxIntrinsicWidth(node.children, height)
+        override fun maxIntrinsicHeight(width: Int): Int = node.measurePolicy.maxIntrinsicHeight(node.children, width)
+
         override fun placeAt(x: Int, y: Int) {
             this.x = x
             this.y = y
@@ -134,7 +139,7 @@ internal sealed class WrapperLayoutNode(
     class Layout(
         node: LayoutNode,
         val children: WrapperLayoutNode,
-        val modifierNode: LayoutModifierNode
+        val modifierNode: LayoutModifierNode,
     ) : WrapperLayoutNode(node),
         PointerEventReceiver by children,
         FocusStateListener by children,
@@ -166,6 +171,11 @@ internal sealed class WrapperLayoutNode(
 
             return coerceConstraintBounds(constraints, this)
         }
+
+        override fun minIntrinsicWidth(height: Int): Int = modifierNode.minIntrinsicWidth(children, height)
+        override fun minIntrinsicHeight(width: Int): Int = modifierNode.minIntrinsicHeight(children, width)
+        override fun maxIntrinsicWidth(height: Int): Int = modifierNode.maxIntrinsicWidth(children, height)
+        override fun maxIntrinsicHeight(width: Int): Int = modifierNode.maxIntrinsicHeight(children, width)
 
         override fun Canvas.render() {
             withState {
@@ -203,6 +213,11 @@ internal sealed class WrapperLayoutNode(
             return coerceConstraintBounds(constraints, this)
         }
 
+        override fun minIntrinsicWidth(height: Int): Int = children.minIntrinsicWidth(height)
+        override fun minIntrinsicHeight(width: Int): Int = children.minIntrinsicHeight(width)
+        override fun maxIntrinsicWidth(height: Int): Int = children.maxIntrinsicWidth(height)
+        override fun maxIntrinsicHeight(width: Int): Int = children.maxIntrinsicHeight(width)
+
         override fun Canvas.render() {
             withState {
                 translate(x, y)
@@ -214,7 +229,7 @@ internal sealed class WrapperLayoutNode(
     class Draw(
         node: LayoutNode,
         children: WrapperLayoutNode,
-        val modifierNode: DrawModifierNode
+        val modifierNode: DrawModifierNode,
     ) : PositionWrapper(node, children),
         PointerEventReceiver by children,
         FocusStateListener by children,
@@ -381,6 +396,11 @@ class LayoutNode : Measurable, Placeable, Renderable, PointerEventReceiver,
         }
 
     override fun measure(constraints: Constraints) = wrappedNode.measure(constraints)
+    override fun minIntrinsicWidth(height: Int): Int = wrappedNode.minIntrinsicWidth(height)
+    override fun minIntrinsicHeight(width: Int): Int = wrappedNode.minIntrinsicHeight(width)
+    override fun maxIntrinsicWidth(height: Int): Int = wrappedNode.maxIntrinsicWidth(height)
+    override fun maxIntrinsicHeight(width: Int): Int = wrappedNode.maxIntrinsicHeight(width)
+
 
     override val width: Int
         get() = wrappedNode.width

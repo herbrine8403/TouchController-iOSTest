@@ -15,7 +15,7 @@ fun Modifier.fillMaxHeight(fraction: Float = 1f) = then(FillNode(height = fracti
 
 private data class FillNode(
     val width: Float? = null,
-    val height: Float? = null
+    val height: Float? = null,
 ) : LayoutModifierNode, Modifier.Node<FillNode> {
     override fun MeasureScope.measure(measurable: Measurable, constraints: Constraints): MeasureResult {
         fun transform(fraction: Float, size: Int): Int = if (size == Int.MAX_VALUE) {
@@ -26,14 +26,20 @@ private data class FillNode(
 
         var targetConstraints = constraints
         if (width != null) {
-            val width = transform(width, targetConstraints.maxWidth).coerceIn(targetConstraints.minWidth, targetConstraints.maxWidth)
+            val width = transform(width, targetConstraints.maxWidth).coerceIn(
+                targetConstraints.minWidth,
+                targetConstraints.maxWidth
+            )
             targetConstraints = targetConstraints.copy(
                 minWidth = width,
                 maxWidth = width,
             )
         }
         if (height != null) {
-            val height = transform(height, targetConstraints.maxHeight).coerceIn(targetConstraints.minHeight, targetConstraints.maxHeight)
+            val height = transform(height, targetConstraints.maxHeight).coerceIn(
+                targetConstraints.minHeight,
+                targetConstraints.maxHeight
+            )
             targetConstraints = targetConstraints.copy(
                 minHeight = height,
                 maxHeight = height
@@ -44,6 +50,28 @@ private data class FillNode(
 
         return layout(placeable.width, placeable.height) {
             placeable.placeAt(0, 0)
+        }
+    }
+
+    override fun MeasureScope.minIntrinsicWidth(measurable: Measurable, height: Int): Int =
+        measurable.minIntrinsicWidth(height)
+
+    override fun MeasureScope.maxIntrinsicWidth(measurable: Measurable, height: Int): Int {
+        return if (width != null) {
+            Int.MAX_VALUE
+        } else {
+            measurable.maxIntrinsicWidth(height)
+        }
+    }
+
+    override fun MeasureScope.minIntrinsicHeight(measurable: Measurable, width: Int): Int =
+        measurable.minIntrinsicHeight(width)
+
+    override fun MeasureScope.maxIntrinsicHeight(measurable: Measurable, width: Int): Int {
+        return if (height != null) {
+            Int.MAX_VALUE
+        } else {
+            measurable.maxIntrinsicHeight(width)
         }
     }
 }

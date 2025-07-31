@@ -4,24 +4,23 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import kotlinx.collections.immutable.PersistentList
+import top.fifthlight.combine.animation.animateFloatAsState
 import top.fifthlight.combine.data.Text
 import top.fifthlight.combine.input.MutableInteractionSource
 import top.fifthlight.combine.layout.Layout
-import top.fifthlight.combine.modifier.Constraints
 import top.fifthlight.combine.modifier.Modifier
 import top.fifthlight.combine.modifier.drawing.border
 import top.fifthlight.combine.modifier.drawing.clip
 import top.fifthlight.combine.modifier.focus.focusable
-import top.fifthlight.combine.modifier.placement.fillMaxSize
+import top.fifthlight.combine.modifier.placement.*
 import top.fifthlight.combine.modifier.pointer.clickable
-import top.fifthlight.combine.node.LocalTextMeasurer
 import top.fifthlight.combine.paint.Colors
 import top.fifthlight.combine.paint.Drawable
 import top.fifthlight.combine.widget.base.Popup
 import top.fifthlight.combine.widget.base.layout.Box
+import top.fifthlight.combine.widget.base.layout.Column
 import top.fifthlight.data.IntRect
 import top.fifthlight.data.IntSize
-import kotlin.math.max
 
 @JvmName("DropdownMenuListString")
 @Composable
@@ -50,45 +49,11 @@ fun <T> DropdownMenuScope.DropdownItemList(
     selectedIndex: Int = -1,
     onItemSelected: (Int) -> Unit = {},
 ) {
-    val itemTextureWidth = drawableSet.itemUnselected.normal.padding.width
-    val itemTextureHeight = drawableSet.itemUnselected.normal.padding.height
-    val textMeasurer = LocalTextMeasurer.current
-    Layout(
-        modifier = modifier,
-        measurePolicy = { measurables, constraints ->
-            var itemWidth = contentWidth
-            var itemHeight = 0
-            var itemHeights = IntArray(measurables.size)
-            for ((index, item) in items.withIndex()) {
-                val textSize = textMeasurer.measure(textProvider(item))
-                val width = textSize.width + itemTextureWidth
-                val height = textSize.height + itemTextureHeight
-                itemHeights[index] = height
-                itemWidth = max(width, itemWidth)
-                itemHeight += height
-            }
-
-            val width = itemWidth.coerceIn(constraints.minWidth, constraints.maxWidth)
-            val height = itemHeight.coerceIn(constraints.minHeight, constraints.maxHeight)
-
-            val placeables = measurables.mapIndexed { index, measurable ->
-                measurable.measure(
-                    Constraints(
-                        minWidth = width,
-                        maxWidth = width,
-                        minHeight = itemHeights[index],
-                        maxHeight = itemHeights[index],
-                    )
-                )
-            }
-            layout(width, height) {
-                var yPos = 0
-                placeables.forEachIndexed { index, placeable ->
-                    placeable.placeAt(0, yPos)
-                    yPos += placeable.height
-                }
-            }
-        },
+    Column(
+        modifier = Modifier
+            .width(IntrinsicSize.Min)
+            .minWidth(contentWidth)
+            .then(modifier)
     ) {
         for ((index, item) in items.withIndex()) {
             val text = textProvider(item)
@@ -105,7 +70,8 @@ fun <T> DropdownMenuScope.DropdownItemList(
                     .clickable(interactionSource) {
                         onItemSelected(index)
                     }
-                    .focusable(interactionSource),
+                    .focusable(interactionSource)
+                    .fillMaxWidth(),
                 color = if (index == selectedIndex) {
                     Colors.BLACK
                 } else {
@@ -125,7 +91,7 @@ interface DropdownMenuScope {
 
 private data class DropdownMenuScopeImpl(
     override val anchor: IntRect,
-    override val panelBorder: Drawable
+    override val panelBorder: Drawable,
 ) : DropdownMenuScope {
     override val contentWidth = anchor.size.width - panelBorder.padding.width
 }
@@ -177,5 +143,25 @@ fun DropDownMenu(
                 content(scope)
             }
         }
+    }
+}
+
+@Composable
+fun DropDownMenu(
+    anchor: IntRect,
+    border: Drawable = LocalSelectDrawableSet.current.floatPanel,
+    expanded: Boolean,
+    onDismissRequest: () -> Unit,
+    content: @Composable DropdownMenuScope.() -> Unit,
+) {
+    val expandProgress by animateFloatAsState(if (expanded) 1f else 0f)
+    if (expandProgress != 0f) {
+        DropDownMenu(
+            anchor = anchor,
+            border = border,
+            expandProgress = expandProgress,
+            onDismissRequest = onDismissRequest,
+            content = content,
+        )
     }
 }

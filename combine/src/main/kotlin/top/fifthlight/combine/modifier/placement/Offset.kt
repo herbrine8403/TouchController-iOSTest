@@ -23,9 +23,21 @@ private data class AbsoluteOffsetNode(
     override fun MeasureScope.measure(measurable: Measurable, constraints: Constraints): MeasureResult {
         val placeable = measurable.measure(constraints)
         return layout(placeable.width, placeable.height) {
-            placeable.placeAt(x, y)
+            placeable.placeAt(placeable.x + x, placeable.y + y)
         }
     }
+
+    override fun MeasureScope.minIntrinsicWidth(measurable: Measurable, height: Int): Int =
+        measurable.minIntrinsicWidth(height)
+
+    override fun MeasureScope.maxIntrinsicWidth(measurable: Measurable, height: Int): Int =
+        measurable.maxIntrinsicWidth(height)
+
+    override fun MeasureScope.minIntrinsicHeight(measurable: Measurable, width: Int): Int =
+        measurable.minIntrinsicHeight(width)
+
+    override fun MeasureScope.maxIntrinsicHeight(measurable: Measurable, width: Int): Int =
+        measurable.maxIntrinsicHeight(width)
 }
 
 private data class RelativeOffsetNode(
@@ -38,4 +50,16 @@ private data class RelativeOffsetNode(
             placeable.placeAt((placeable.width * x).toInt(), (placeable.height * y).toInt())
         }
     }
+
+    override fun MeasureScope.minIntrinsicWidth(measurable: Measurable, height: Int): Int =
+        measurable.minIntrinsicWidth(height)
+
+    override fun MeasureScope.maxIntrinsicWidth(measurable: Measurable, height: Int): Int =
+        measurable.maxIntrinsicWidth(height)
+
+    override fun MeasureScope.minIntrinsicHeight(measurable: Measurable, width: Int): Int =
+        measurable.minIntrinsicHeight(width)
+
+    override fun MeasureScope.maxIntrinsicHeight(measurable: Measurable, width: Int): Int =
+        measurable.maxIntrinsicHeight(width)
 }

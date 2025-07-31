@@ -6,15 +6,11 @@ import cafe.adriel.voyager.navigator.LocalNavigator
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
 import org.koin.core.parameter.parametersOf
-import top.fifthlight.combine.animation.animateFloatAsState
 import top.fifthlight.combine.data.Text
 import top.fifthlight.combine.layout.Alignment
 import top.fifthlight.combine.layout.Arrangement
 import top.fifthlight.combine.modifier.Modifier
-import top.fifthlight.combine.modifier.placement.anchor
-import top.fifthlight.combine.modifier.placement.fillMaxSize
-import top.fifthlight.combine.modifier.placement.fillMaxWidth
-import top.fifthlight.combine.modifier.placement.padding
+import top.fifthlight.combine.modifier.placement.*
 import top.fifthlight.combine.modifier.scroll.verticalScroll
 import top.fifthlight.combine.widget.base.layout.Column
 import top.fifthlight.combine.widget.base.layout.Row
@@ -24,7 +20,7 @@ import top.fifthlight.touchcontroller.assets.Texts
 import top.fifthlight.touchcontroller.assets.Textures
 import top.fifthlight.touchcontroller.common.config.preset.LayoutPreset
 import top.fifthlight.touchcontroller.common.ui.component.ListButton
-import top.fifthlight.touchcontroller.common.ui.component.TwoItemRow
+import top.fifthlight.touchcontroller.common.ui.component.LocalListButtonDrawable
 import top.fifthlight.touchcontroller.common.ui.model.PresetsTabModel
 import top.fifthlight.touchcontroller.common.ui.state.PresetsTabState
 import kotlin.uuid.Uuid
@@ -42,11 +38,11 @@ private fun PresetsList(
 ) {
     Column(modifier = modifier) {
         for ((uuid, preset) in listContent) {
-            TwoItemRow(
-                rightWidth = 24,
-            ) {
+            Row(modifier = Modifier.height(IntrinsicSize.Min)) {
                 ListButton(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxHeight(),
                     checked = currentSelectedPresetUuid == uuid,
                     onClick = {
                         onPresetSelected(uuid, preset)
@@ -58,45 +54,47 @@ private fun PresetsList(
                     )
                 }
 
-                var popupOpened by remember { mutableStateOf(false) }
+                var expanded by remember { mutableStateOf(false) }
                 var anchor by remember { mutableStateOf(IntRect.ZERO) }
-                ListButton(
-                    modifier = Modifier.anchor { anchor = it },
+                IconButton(
+                    modifier = Modifier
+                        .width(24)
+                        .minHeight(24)
+                        .fillMaxHeight()
+                        .anchor { anchor = it },
+                    drawableSet = LocalListButtonDrawable.current.unchecked,
                     onClick = {
-                        popupOpened = true
+                        expanded = true
                     },
                 ) {
                     Icon(Textures.ICON_MENU)
                 }
 
-                val expandProgress by animateFloatAsState(if (popupOpened) 1f else 0f)
-                if (expandProgress != 0f) {
-                    DropDownMenu(
-                        expandProgress = expandProgress,
-                        anchor = anchor,
-                        onDismissRequest = {
-                            popupOpened = false
-                        }
-                    ) {
-                        DropdownItemList(
-                            modifier = Modifier.verticalScroll(),
-                            onItemSelected = { popupOpened = false },
-                            items = persistentListOf(
-                                Pair(Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_PRESETS_EDIT)) {
-                                    onPresetEdited(uuid, preset)
-                                },
-                                Pair(Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_PRESETS_SHOW_PATH)) {
-                                    onPresetShowPath(uuid)
-                                },
-                                Pair(Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_PRESETS_COPY)) {
-                                    onPresetCopied(uuid, preset)
-                                },
-                                Pair(Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_PRESETS_DELETE)) {
-                                    onPresetDeleted(uuid, preset)
-                                },
-                            ),
-                        )
+                DropDownMenu(
+                    expanded = expanded,
+                    anchor = anchor,
+                    onDismissRequest = {
+                        expanded = false
                     }
+                ) {
+                    DropdownItemList(
+                        modifier = Modifier.verticalScroll(),
+                        onItemSelected = { expanded = false },
+                        items = persistentListOf(
+                            Pair(Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_PRESETS_EDIT)) {
+                                onPresetEdited(uuid, preset)
+                            },
+                            Pair(Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_PRESETS_SHOW_PATH)) {
+                                onPresetShowPath(uuid)
+                            },
+                            Pair(Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_PRESETS_COPY)) {
+                                onPresetCopied(uuid, preset)
+                            },
+                            Pair(Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_PRESETS_DELETE)) {
+                                onPresetDeleted(uuid, preset)
+                            },
+                        ),
+                    )
                 }
             }
         }
@@ -123,7 +121,7 @@ object PresetsTab : CustomTab() {
             },
         ) {
             Column(
-                modifier = Modifier.fillMaxWidth(.4f),
+                modifier = Modifier.width(IntrinsicSize.Min),
                 verticalArrangement = Arrangement.spacedBy(4),
             ) {
                 Button(
@@ -419,7 +417,9 @@ object PresetsTab : CustomTab() {
                         -1
                     }
                     Button(
-                        modifier = Modifier.weight(1f),
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxHeight(),
                         enabled = selectedUuid != null && index > 0,
                         onClick = {
                             selectedUuid?.let { uuid ->
@@ -430,7 +430,9 @@ object PresetsTab : CustomTab() {
                         Text(Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_PRESETS_MOVE_UP))
                     }
                     Button(
-                        modifier = Modifier.weight(1f),
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxHeight(),
                         enabled = selectedUuid != null && index < indices.last,
                         onClick = {
                             selectedUuid?.let { uuid ->

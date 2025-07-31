@@ -18,6 +18,30 @@ fun interface MeasurePolicy {
 
     fun measure(measurables: List<Measurable>, constraints: Constraints) =
         with(MeasureScope) { this.measure(measurables, constraints) }
+
+    fun MeasureScope.minIntrinsicWidth(measurables: List<Measurable>, height: Int): Int =
+        throw UnsupportedOperationException("minIntrinsicWidth not implemented")
+
+    fun MeasureScope.minIntrinsicHeight(measurables: List<Measurable>, width: Int): Int =
+        throw UnsupportedOperationException("minIntrinsicHeight not implemented")
+
+    fun MeasureScope.maxIntrinsicWidth(measurables: List<Measurable>, height: Int): Int =
+        throw UnsupportedOperationException("maxIntrinsicWidth not implemented")
+
+    fun MeasureScope.maxIntrinsicHeight(measurables: List<Measurable>, width: Int): Int =
+        throw UnsupportedOperationException("maxIntrinsicHeight not implemented")
+
+    fun minIntrinsicWidth(measurables: List<Measurable>, height: Int): Int =
+        with(MeasureScope) { this.minIntrinsicWidth(measurables, height) }
+
+    fun maxIntrinsicWidth(measurables: List<Measurable>, height: Int): Int =
+        with(MeasureScope) { this.maxIntrinsicWidth(measurables, height) }
+
+    fun minIntrinsicHeight(measurables: List<Measurable>, width: Int): Int =
+        with(MeasureScope) { this.minIntrinsicHeight(measurables, width) }
+
+    fun maxIntrinsicHeight(measurables: List<Measurable>, width: Int): Int =
+        with(MeasureScope) { this.maxIntrinsicHeight(measurables, width) }
 }
 
 object MeasureScope {
@@ -40,6 +64,11 @@ fun interface Placer {
 interface Measurable {
     val parentData: Any?
     fun measure(constraints: Constraints): Placeable
+
+    fun minIntrinsicWidth(height: Int): Int
+    fun minIntrinsicHeight(width: Int): Int
+    fun maxIntrinsicWidth(height: Int): Int
+    fun maxIntrinsicHeight(width: Int): Int
 }
 
 interface Placeable {

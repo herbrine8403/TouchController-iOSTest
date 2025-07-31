@@ -7,7 +7,6 @@ import kotlinx.collections.immutable.PersistentMap
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.plus
 import org.koin.core.parameter.parametersOf
-import top.fifthlight.combine.animation.animateFloatAsState
 import top.fifthlight.combine.data.LocalTextFactory
 import top.fifthlight.combine.data.Text
 import top.fifthlight.combine.layout.Alignment
@@ -28,7 +27,7 @@ import top.fifthlight.touchcontroller.common.config.preset.CustomCondition
 import top.fifthlight.touchcontroller.common.config.preset.CustomConditions
 import top.fifthlight.touchcontroller.common.config.text
 import top.fifthlight.touchcontroller.common.ui.component.ListButton
-import top.fifthlight.touchcontroller.common.ui.component.TwoItemRow
+import top.fifthlight.touchcontroller.common.ui.component.LocalListButtonDrawable
 import top.fifthlight.touchcontroller.common.ui.model.LayersTabModel
 import top.fifthlight.touchcontroller.common.ui.state.LayersTabState
 import kotlin.uuid.Uuid
@@ -45,11 +44,11 @@ private fun LayersList(
 ) {
     Column(modifier = modifier) {
         for ((index, preset) in listContent.withIndex()) {
-            TwoItemRow(
-                rightWidth = 24,
-            ) {
+            Row(modifier = Modifier.height(IntrinsicSize.Min)) {
                 ListButton(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxHeight(),
                     checked = currentSelectedLayoutIndex == index,
                     onClick = {
                         onLayerSelected(index, preset)
@@ -61,42 +60,44 @@ private fun LayersList(
                     )
                 }
 
-                var popupOpened by remember { mutableStateOf(false) }
+                var expanded by remember { mutableStateOf(false) }
                 var anchor by remember { mutableStateOf(IntRect.ZERO) }
-                ListButton(
-                    modifier = Modifier.anchor { anchor = it },
+                IconButton(
+                    modifier = Modifier
+                        .width(24)
+                        .minHeight(24)
+                        .fillMaxHeight()
+                        .anchor { anchor = it },
+                    drawableSet = LocalListButtonDrawable.current.unchecked,
                     onClick = {
-                        popupOpened = true
+                        expanded = true
                     },
                 ) {
                     Icon(Textures.ICON_MENU)
                 }
 
-                val expandProgress by animateFloatAsState(if (popupOpened) 1f else 0f)
-                if (expandProgress != 0f) {
-                    DropDownMenu(
-                        expandProgress = expandProgress,
-                        anchor = anchor,
-                        onDismissRequest = {
-                            popupOpened = false
-                        }
-                    ) {
-                        DropdownItemList(
-                            modifier = Modifier.verticalScroll(),
-                            onItemSelected = { popupOpened = false },
-                            items = persistentListOf(
-                                Pair(Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_LAYERS_EDIT)) {
-                                    onLayerEdited(index, preset)
-                                },
-                                Pair(Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_LAYERS_COPY)) {
-                                    onLayerCopied(index, preset)
-                                },
-                                Pair(Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_LAYERS_DELETE)) {
-                                    onLayerDeleted(index, preset)
-                                },
-                            ),
-                        )
+                DropDownMenu(
+                    expanded = expanded,
+                    anchor = anchor,
+                    onDismissRequest = {
+                        expanded = false
                     }
+                ) {
+                    DropdownItemList(
+                        modifier = Modifier.verticalScroll(),
+                        onItemSelected = { expanded = false },
+                        items = persistentListOf(
+                            Pair(Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_LAYERS_EDIT)) {
+                                onLayerEdited(index, preset)
+                            },
+                            Pair(Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_LAYERS_COPY)) {
+                                onLayerCopied(index, preset)
+                            },
+                            Pair(Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_LAYERS_DELETE)) {
+                                onLayerDeleted(index, preset)
+                            },
+                        ),
+                    )
                 }
             }
         }
@@ -253,12 +254,16 @@ private fun CustomConditionDialog(
                 .fillMaxWidth()
         ) {
             for ((index, condition) in state.conditions.conditions.withIndex()) {
-                Row(Modifier.fillMaxWidth()) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(IntrinsicSize.Min),
+                ) {
                     Box(
                         modifier = Modifier
                             .border(Textures.WIDGET_LIST_LIST)
                             .weight(1f)
-                            .minHeight(22),
+                            .fillMaxHeight(),
                         alignment = Alignment.CenterLeft,
                     ) {
                         Text(
@@ -269,6 +274,7 @@ private fun CustomConditionDialog(
                     }
 
                     IconButton(
+                        modifier = Modifier.fillMaxHeight(),
                         onClick = {
                             onUpdate(
                                 state.copy(
@@ -283,6 +289,7 @@ private fun CustomConditionDialog(
                         Icon(Textures.ICON_EDIT)
                     }
                     IconButton(
+                        modifier = Modifier.fillMaxHeight(),
                         onClick = {
                             onUpdate(
                                 state.copy(
@@ -557,7 +564,9 @@ object LayersTab : CustomTab() {
                         val layerIndices = selectedPreset.layout.indices
                         val selectedLayerIndex = uiState.pageState.selectedLayerIndex.takeIf { it in layerIndices }
                         Button(
-                            modifier = Modifier.weight(1f),
+                            modifier = Modifier
+                                .weight(1f)
+                                .fillMaxHeight(),
                             enabled = selectedLayerIndex != null && selectedLayerIndex > 0,
                             onClick = {
                                 selectedLayerIndex?.let { index ->
@@ -569,7 +578,9 @@ object LayersTab : CustomTab() {
                             Text(Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_LAYERS_MOVE_UP))
                         }
                         Button(
-                            modifier = Modifier.weight(1f),
+                            modifier = Modifier
+                                .weight(1f)
+                                .fillMaxHeight(),
                             enabled = selectedLayerIndex != null && selectedLayerIndex < layerIndices.last,
                             onClick = {
                                 selectedLayerIndex?.let { index ->

@@ -29,4 +29,24 @@ private data class MaxSizeNode(
             placeable.placeAt(0, 0)
         }
     }
+
+    override fun MeasureScope.minIntrinsicWidth(measurable: Measurable, height: Int): Int {
+        val intrinsic = measurable.minIntrinsicWidth(height)
+        return width?.coerceAtMost(intrinsic) ?: intrinsic
+    }
+
+    override fun MeasureScope.maxIntrinsicWidth(measurable: Measurable, height: Int): Int {
+        val intrinsic = measurable.maxIntrinsicWidth(height)
+        return width?.coerceAtMost(intrinsic) ?: intrinsic
+    }
+
+    override fun MeasureScope.minIntrinsicHeight(measurable: Measurable, width: Int): Int {
+        val intrinsic = measurable.minIntrinsicHeight(width)
+        return height?.coerceAtMost(intrinsic) ?: intrinsic
+    }
+
+    override fun MeasureScope.maxIntrinsicHeight(measurable: Measurable, width: Int): Int {
+        val intrinsic = measurable.maxIntrinsicHeight(width)
+        return height?.coerceAtMost(intrinsic) ?: intrinsic
+    }
 }

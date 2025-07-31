@@ -36,4 +36,20 @@ private data class SizeNode(
             placeable.placeAt(0, 0)
         }
     }
+
+    override fun MeasureScope.minIntrinsicWidth(measurable: Measurable, height: Int): Int {
+        return width ?: measurable.minIntrinsicWidth(height)
+    }
+
+    override fun MeasureScope.maxIntrinsicWidth(measurable: Measurable, height: Int): Int {
+        return width ?: measurable.maxIntrinsicWidth(height)
+    }
+
+    override fun MeasureScope.minIntrinsicHeight(measurable: Measurable, width: Int): Int {
+        return height ?: measurable.minIntrinsicHeight(width)
+    }
+
+    override fun MeasureScope.maxIntrinsicHeight(measurable: Measurable, width: Int): Int {
+        return height ?: measurable.maxIntrinsicHeight(width)
+    }
 }

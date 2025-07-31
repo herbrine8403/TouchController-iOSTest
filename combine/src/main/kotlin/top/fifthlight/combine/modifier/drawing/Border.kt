@@ -70,6 +70,30 @@ private data class BorderNode(
             placeable.placeAt(left, top)
         }
     }
+
+    override fun MeasureScope.minIntrinsicWidth(measurable: Measurable, height: Int): Int {
+        val horizontalBorder = left + right
+        val verticalBorder = top + bottom
+        return measurable.minIntrinsicWidth(height - verticalBorder) + horizontalBorder
+    }
+
+    override fun MeasureScope.maxIntrinsicWidth(measurable: Measurable, height: Int): Int {
+        val horizontalBorder = left + right
+        val verticalBorder = top + bottom
+        return measurable.maxIntrinsicWidth(height - verticalBorder) + horizontalBorder
+    }
+
+    override fun MeasureScope.minIntrinsicHeight(measurable: Measurable, width: Int): Int {
+        val horizontalBorder = left + right
+        val verticalBorder = top + bottom
+        return measurable.minIntrinsicHeight(width - horizontalBorder) + verticalBorder
+    }
+
+    override fun MeasureScope.maxIntrinsicHeight(measurable: Measurable, width: Int): Int {
+        val horizontalBorder = left + right
+        val verticalBorder = top + bottom
+        return measurable.maxIntrinsicHeight(width - horizontalBorder) + verticalBorder
+    }
 }
 
 fun Modifier.border(drawable: Drawable): Modifier = then(DrawableBorderNode(drawable))
@@ -91,6 +115,30 @@ private data class DrawableBorderNode(
         return layout(size) {
             placeable.placeAt(padding.left, padding.top)
         }
+    }
+
+    override fun MeasureScope.minIntrinsicWidth(measurable: Measurable, height: Int): Int {
+        val horizontalBorder = drawable.padding.width
+        val verticalBorder = drawable.padding.height
+        return measurable.minIntrinsicWidth(height - verticalBorder) + horizontalBorder
+    }
+
+    override fun MeasureScope.maxIntrinsicWidth(measurable: Measurable, height: Int): Int {
+        val horizontalBorder = drawable.padding.width
+        val verticalBorder = drawable.padding.height
+        return measurable.maxIntrinsicWidth(height - verticalBorder) + horizontalBorder
+    }
+
+    override fun MeasureScope.minIntrinsicHeight(measurable: Measurable, width: Int): Int {
+        val horizontalBorder = drawable.padding.width
+        val verticalBorder = drawable.padding.height
+        return measurable.minIntrinsicHeight(width - horizontalBorder) + verticalBorder
+    }
+
+    override fun MeasureScope.maxIntrinsicHeight(measurable: Measurable, width: Int): Int {
+        val horizontalBorder = drawable.padding.width
+        val verticalBorder = drawable.padding.height
+        return measurable.maxIntrinsicHeight(width - horizontalBorder) + verticalBorder
     }
 }
 

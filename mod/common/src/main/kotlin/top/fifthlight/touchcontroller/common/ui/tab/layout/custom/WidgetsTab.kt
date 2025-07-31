@@ -4,7 +4,6 @@ import androidx.compose.runtime.*
 import cafe.adriel.voyager.koin.koinScreenModel
 import kotlinx.collections.immutable.persistentListOf
 import org.koin.core.parameter.parametersOf
-import top.fifthlight.combine.animation.animateFloatAsState
 import top.fifthlight.combine.data.LocalTextFactory
 import top.fifthlight.combine.data.Text
 import top.fifthlight.combine.layout.Alignment
@@ -29,7 +28,7 @@ import top.fifthlight.touchcontroller.common.control.ControllerWidget
 import top.fifthlight.touchcontroller.common.ui.component.AutoScaleControllerWidget
 import top.fifthlight.touchcontroller.common.ui.component.CheckButton
 import top.fifthlight.touchcontroller.common.ui.component.ListButton
-import top.fifthlight.touchcontroller.common.ui.component.TwoItemRow
+import top.fifthlight.touchcontroller.common.ui.component.LocalListButtonDrawable
 import top.fifthlight.touchcontroller.common.ui.model.WidgetsTabModel
 import top.fifthlight.touchcontroller.common.ui.state.WidgetsTabState
 import kotlin.math.max
@@ -180,51 +179,56 @@ private fun CustomWidgetList(
 ) {
     WidgetsLayout(modifier) {
         for ((index, widget) in listContent.widgets.withIndex()) {
-            TwoItemRow(
+            Row(
                 modifier = Modifier
                     .widgetType(ControllerWidgetType.NORMAL)
-                    .fillMaxWidth(),
-                rightWidth = 24,
+                    .height(IntrinsicSize.Min)
+                    .fillMaxWidth()
             ) {
                 WidgetButton(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxHeight(),
                     widget = widget,
                     widgetIconSize = IntSize(16),
                     onClicked = { onWidgetSelected(widget) },
                 )
 
-                var popupOpened by remember { mutableStateOf(false) }
+                var expanded by remember { mutableStateOf(false) }
                 var anchor by remember { mutableStateOf(IntRect.ZERO) }
-                ListButton(
-                    modifier = Modifier.anchor { anchor = it },
+                IconButton(
+                    modifier = Modifier
+                        .width(24)
+                        .minHeight(24)
+                        .fillMaxHeight()
+                        .anchor { anchor = it },
+                    drawableSet = LocalListButtonDrawable.current.unchecked,
                     onClick = {
-                        popupOpened = true
+                        expanded = true
                     },
                 ) {
                     Icon(Textures.ICON_MENU)
                 }
 
-                val expandProgress by animateFloatAsState(if (popupOpened) 1f else 0f)
-                if (expandProgress != 0f) {
-                    DropDownMenu(
-                        expandProgress = expandProgress,
-                        anchor = anchor,
-                        onDismissRequest = {
-                            popupOpened = false
-                        }
-                    ) {
-                        DropdownItemList(
-                            modifier = Modifier.verticalScroll(),
-                            onItemSelected = { popupOpened = false },
-                            items = persistentListOf(
-                                Pair(Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_WIDGETS_WIDGET_PRESET_RENAME)) {
-                                    onWidgetRenamed(index, widget)
-                                },
-                                Pair(Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_WIDGETS_WIDGET_PRESET_DELETE)) {
-                                    onWidgetDeleted(index)
-                                },
-                            ),
-                        )
+                DropDownMenu(
+                    expanded = expanded,
+                    anchor = anchor,
+                    onDismissRequest = {
+                        expanded = false
                     }
+                ) {
+                    DropdownItemList(
+                        modifier = Modifier.verticalScroll(),
+                        onItemSelected = { expanded = false },
+                        items = persistentListOf(
+                            Pair(Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_WIDGETS_WIDGET_PRESET_RENAME)) {
+                                onWidgetRenamed(index, widget)
+                            },
+                            Pair(Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_WIDGETS_WIDGET_PRESET_DELETE)) {
+                                onWidgetDeleted(index)
+                            },
+                        ),
+                    )
                 }
             }
         }
@@ -375,7 +379,9 @@ object WidgetsTab : CustomTab() {
                 },
                 actions = {
                     CheckButton(
-                        modifier = Modifier.weight(1f),
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxHeight(),
                         checked = tabState.tabState.listState == WidgetsTabState.ListState.BUILTIN,
                         onClick = {
                             tabModel.selectBuiltinTab()
@@ -384,7 +390,9 @@ object WidgetsTab : CustomTab() {
                         Text(Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_WIDGETS_BUILTIN))
                     }
                     CheckButton(
-                        modifier = Modifier.weight(1f),
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxHeight(),
                         checked = tabState.tabState.listState == WidgetsTabState.ListState.CUSTOM,
                         onClick = {
                             tabModel.selectCustomTab()

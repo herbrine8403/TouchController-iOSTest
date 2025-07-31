@@ -10,8 +10,14 @@ import top.fifthlight.combine.input.input.TextInputState
 import top.fifthlight.combine.input.input.TextRange
 import top.fifthlight.combine.input.input.substring
 import top.fifthlight.combine.input.key.Key
+import top.fifthlight.combine.layout.Measurable
+import top.fifthlight.combine.layout.MeasurePolicy
+import top.fifthlight.combine.layout.MeasureResult
+import top.fifthlight.combine.layout.MeasureScope
+import top.fifthlight.combine.modifier.Constraints
 import top.fifthlight.combine.modifier.Modifier
 import top.fifthlight.combine.modifier.drawing.border
+import top.fifthlight.combine.modifier.drawing.clip
 import top.fifthlight.combine.modifier.focus.FocusInteraction
 import top.fifthlight.combine.modifier.focus.focusable
 import top.fifthlight.combine.modifier.input.textInput
@@ -65,6 +71,7 @@ fun EditText(
     var cursorShow by remember { mutableStateOf(false) }
     var cursorRect by remember { mutableStateOf<IntRect?>(null) }
     var areaRect by remember { mutableStateOf<IntRect?>(null) }
+    var scrollOffset by remember { mutableStateOf(0) }
     LaunchedEffect(interactionSource) {
         try {
             interactionSource.interactions.collect {
@@ -121,6 +128,7 @@ fun EditText(
 
     Canvas(
         modifier = Modifier
+            .clip()
             .minHeight(9)
             .border(drawable)
             .clickable(interactionSource) {
@@ -187,19 +195,57 @@ fun EditText(
                 }
             }
             .then(modifier),
-        measurePolicy = { _, constraints ->
-            val textSize = textMeasurer.measure(value, constraints.maxHeight)
-            layout(
-                width = textSize.width.coerceIn(constraints.minWidth, constraints.maxWidth),
-                height = textSize.height.coerceIn(constraints.minHeight, constraints.maxHeight),
-            ) {}
+        measurePolicy = object : MeasurePolicy {
+            override fun MeasureScope.measure(
+                measurables: List<Measurable>,
+                constraints: Constraints,
+            ): MeasureResult {
+                val textToMeasure = value.ifEmpty { placeholder?.string ?: "A" }
+                val textSize = textMeasurer.measure(textToMeasure)
+                return layout(
+                    width = textSize.width.coerceIn(constraints.minWidth, constraints.maxWidth),
+                    height = textSize.height.coerceIn(constraints.minHeight, constraints.maxHeight),
+                ) {}
+            }
+
+            override fun MeasureScope.minIntrinsicWidth(
+                measurables: List<Measurable>,
+                height: Int,
+            ): Int {
+                val textToMeasure = value.ifEmpty { placeholder?.string ?: "A" }
+                return textMeasurer.measure(textToMeasure).width
+            }
+
+            override fun MeasureScope.minIntrinsicHeight(
+                measurables: List<Measurable>,
+                width: Int,
+            ): Int {
+                val textToMeasure = value.ifEmpty { placeholder?.string ?: "A" }
+                return textMeasurer.measure(textToMeasure).height
+            }
+
+            override fun MeasureScope.maxIntrinsicWidth(
+                measurables: List<Measurable>,
+                height: Int,
+            ): Int {
+                val textToMeasure = value.ifEmpty { placeholder?.string ?: "" }
+                return textMeasurer.measure(textToMeasure).width
+            }
+
+            override fun MeasureScope.maxIntrinsicHeight(
+                measurables: List<Measurable>,
+                width: Int,
+            ): Int {
+                val textToMeasure = value.ifEmpty { placeholder?.string ?: "A" }
+                return textMeasurer.measure(textToMeasure).height
+            }
         }
     ) { node ->
         areaRect = IntRect(offset = node.absolutePosition, size = node.size)
         if (value.isEmpty() && !focused) {
-            val textSize = textMeasurer.measure(value)
-            val offsetY = (node.height - textSize.height) / 2
             if (placeholder != null) {
+                val textSize = textMeasurer.measure(placeholder)
+                val offsetY = (node.height - textSize.height) / 2
                 drawText(
                     offset = IntOffset(0, offsetY),
                     width = node.width,
@@ -224,6 +270,7 @@ fun EditText(
                 )
             }
 
+            val cursorWidth = 1
             // 计算光标位置
             val cursorX = if (textInputState.selectionLeft) {
                 selectionStartX
@@ -231,16 +278,28 @@ fun EditText(
                 selectionStartX + selectionWidth
             }
 
+            // 调整滚动偏移量以确保光标在可见区域中
+            val visibleAreaStart = scrollOffset
+            val visibleAreaEnd = scrollOffset + node.width
+            if (cursorX < visibleAreaStart) {
+                scrollOffset = cursorX
+            } else if (cursorX + cursorWidth > visibleAreaEnd) {
+                scrollOffset = cursorX + cursorWidth - node.width
+            }
+
+            // 确保滚动偏移量在范围内
+            scrollOffset = scrollOffset.coerceIn(0, (textSize.width - node.width + cursorWidth).coerceAtLeast(0))
+
             // 记录光标矩形（用于输入法）
             cursorRect = IntRect(
-                IntOffset(cursorX, offsetY) + node.absolutePosition,
+                IntOffset(cursorX - scrollOffset, offsetY) + node.absolutePosition,
                 IntSize(1, textSize.height)
             )
 
             // 绘制光标（如果需要）
             if (cursorShow) {
                 fillRect(
-                    offset = IntOffset(cursorX, offsetY),
+                    offset = IntOffset(cursorX - scrollOffset, offsetY),
                     size = IntSize(1, textSize.height),
                     color = Colors.WHITE,
                 )
@@ -262,8 +321,7 @@ fun EditText(
 
             // 绘制整个富文本
             drawText(
-                offset = IntOffset(0, offsetY),
-                width = node.width,
+                offset = IntOffset(-scrollOffset, offsetY),
                 text = styledText,
                 color = Colors.WHITE
             )

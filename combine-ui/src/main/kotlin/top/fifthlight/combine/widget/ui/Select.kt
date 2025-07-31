@@ -1,7 +1,6 @@
 package top.fifthlight.combine.widget.ui
 
 import androidx.compose.runtime.*
-import top.fifthlight.combine.animation.animateFloatAsState
 import top.fifthlight.combine.data.NinePatchTexture
 import top.fifthlight.combine.input.MutableInteractionSource
 import top.fifthlight.combine.modifier.Modifier
@@ -99,19 +98,16 @@ fun Select(
         }
     }
 
-    val expandProgress by animateFloatAsState(if (expanded) 1f else 0f)
-    if (expandProgress != 0f) {
-        DropDownMenu(
-            border = drawableSet.floatPanel,
-            anchor = anchor,
-            expandProgress = expandProgress,
-            onDismissRequest = { onExpandedChanged(false) }
+    DropDownMenu(
+        border = drawableSet.floatPanel,
+        anchor = anchor,
+        expanded = expanded,
+        onDismissRequest = { onExpandedChanged(false) }
+    ) {
+        CompositionLocalProvider(
+            LocalColorTheme provides colorTheme
         ) {
-            CompositionLocalProvider(
-                LocalColorTheme provides colorTheme
-            ) {
-                dropDownContent()
-            }
+            dropDownContent()
         }
     }
 }

@@ -87,7 +87,8 @@ abstract class CustomTab : Screen {
                 Row(
                     modifier = Modifier
                         .padding(2)
-                        .border(Textures.WIDGET_BACKGROUND_BACKGROUND_DARK_TITLE),
+                        .border(Textures.WIDGET_BACKGROUND_BACKGROUND_DARK_TITLE)
+                        .height(IntrinsicSize.Min),
                     horizontalArrangement = Arrangement.spacedBy(2),
                 ) {
                     actions()
