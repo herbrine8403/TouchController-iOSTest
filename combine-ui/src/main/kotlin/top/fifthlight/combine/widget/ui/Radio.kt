@@ -1,10 +1,6 @@
 package top.fifthlight.combine.widget.ui
 
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.staticCompositionLocalOf
+import androidx.compose.runtime.*
 import top.fifthlight.combine.input.InteractionSource
 import top.fifthlight.combine.input.MutableInteractionSource
 import top.fifthlight.combine.layout.Alignment
@@ -114,6 +110,7 @@ fun RadioColumn(
 
 @Composable
 fun RadioBoxItem(
+    modifier: Modifier = Modifier,
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     value: Boolean,
     onValueChanged: (Boolean) -> Unit,
@@ -122,7 +119,7 @@ fun RadioBoxItem(
 ) {
     val soundManager: SoundManager = LocalSoundManager.current
     Row(
-        modifier = Modifier.toggleable(
+        modifier = modifier.toggleable(
             interactionSource = interactionSource,
             value = value,
             onValueChanged = {

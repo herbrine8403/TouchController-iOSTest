@@ -15,7 +15,7 @@ import top.fifthlight.combine.modifier.placement.fillMaxSize
 import top.fifthlight.combine.modifier.placement.fillMaxWidth
 import top.fifthlight.combine.modifier.placement.padding
 import top.fifthlight.combine.modifier.scroll.verticalScroll
-import top.fifthlight.combine.widget.base.layout.Box
+import top.fifthlight.combine.node.LocalScreenSize
 import top.fifthlight.combine.widget.base.layout.Column
 import top.fifthlight.combine.widget.base.layout.Row
 import top.fifthlight.combine.widget.ui.*
@@ -97,6 +97,72 @@ fun BuiltInPresetKeySelector(
     value: BuiltInPresetKey,
     onValueChanged: (BuiltInPresetKey) -> Unit,
 ) {
+    @Composable
+    fun StyleBox(
+        modifier: Modifier = Modifier,
+        itemModifier: Modifier = Modifier,
+    ) {
+        Column(
+            modifier = modifier,
+            verticalArrangement = Arrangement.spacedBy(4),
+        ) {
+            Text(Text.translatable(Texts.SCREEN_MANAGE_CONTROL_PRESET_TEXTURE_STYLE))
+            RadioColumn {
+                for (textureSet in TextureSet.TextureSetKey.entries) {
+                    RadioBoxItem(
+                        modifier = itemModifier,
+                        value = value.textureSet == textureSet,
+                        onValueChanged = {
+                            onValueChanged(value.copy(textureSet = textureSet))
+                        },
+                    ) {
+                        Text(Text.translatable(textureSet.titleText))
+                    }
+                }
+            }
+        }
+    }
+
+    @Composable
+    fun OptionBox(modifier: Modifier = Modifier) {
+        Column(
+            modifier = modifier,
+            verticalArrangement = Arrangement.spacedBy(4),
+        ) {
+            Text(
+                Text.format(
+                    Texts.SCREEN_CONFIG_PERCENT,
+                    Text.translatable(Texts.SCREEN_MANAGE_CONTROL_PRESET_OPACITY),
+                    (value.opacity * 100).toInt().toString()
+                )
+            )
+            Slider(
+                modifier = Modifier.fillMaxWidth(),
+                range = 0f..1f,
+                value = value.opacity,
+                onValueChanged = {
+                    onValueChanged(value.copy(opacity = it))
+                },
+            )
+
+            Text(
+                Text.format(
+                    Texts.SCREEN_CONFIG_PERCENT,
+                    Text.translatable(Texts.SCREEN_MANAGE_CONTROL_PRESET_SCALE),
+                    (value.scale * 100).toInt().toString()
+                )
+            )
+            Slider(
+                modifier = Modifier.fillMaxWidth(),
+                range = .5f..4f,
+                value = value.scale,
+                onValueChanged = {
+                    onValueChanged(value.copy(scale = it))
+                },
+            )
+        }
+    }
+
     Row(
         modifier = Modifier
             .background(BackgroundTextures.BRICK_BACKGROUND)
@@ -107,78 +173,30 @@ fun BuiltInPresetKeySelector(
                 .weight(6f)
                 .fillMaxHeight(),
         ) {
-            Box(
+            PresetPreview(
                 modifier = Modifier
-                    .fillMaxWidth()
+                    .fillMaxSize()
                     .weight(1f),
-                alignment = Alignment.Center,
-            ) {
-                Text("Real-time preview")
-                PresetPreview(
-                    modifier = Modifier.fillMaxSize(),
-                    preset = value.preset.layout,
+                preset = value.preset.layout,
+            )
+            if (LocalScreenSize.current.width > 600) {
+                Row(
+                    modifier = Modifier
+                        .padding(4)
+                        .border(Textures.WIDGET_BACKGROUND_BACKGROUND_DARK)
+                        .fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(4),
+                ) {
+                    StyleBox()
+                    OptionBox(Modifier.weight(1f))
+                }
+            } else {
+                OptionBox(
+                    modifier = Modifier
+                        .padding(4)
+                        .border(Textures.WIDGET_BACKGROUND_BACKGROUND_DARK)
+                        .fillMaxWidth(),
                 )
-            }
-            Row(
-                modifier = Modifier
-                    .padding(4)
-                    .border(Textures.WIDGET_BACKGROUND_BACKGROUND_DARK)
-                    .fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(4),
-            ) {
-                Column(
-                    verticalArrangement = Arrangement.spacedBy(4),
-                ) {
-                    Text(Text.translatable(Texts.SCREEN_MANAGE_CONTROL_PRESET_TEXTURE_STYLE))
-                    RadioColumn {
-                        for (textureSet in TextureSet.TextureSetKey.entries) {
-                            RadioBoxItem(
-                                value = value.textureSet == textureSet,
-                                onValueChanged = {
-                                    onValueChanged(value.copy(textureSet = textureSet))
-                                },
-                            ) {
-                                Text(Text.translatable(textureSet.titleText))
-                            }
-                        }
-                    }
-                }
-                Column(
-                    modifier = Modifier.weight(1f),
-                    verticalArrangement = Arrangement.spacedBy(4),
-                ) {
-                    Text(
-                        Text.format(
-                            Texts.SCREEN_CONFIG_PERCENT,
-                            Text.translatable(Texts.SCREEN_MANAGE_CONTROL_PRESET_OPACITY),
-                            (value.opacity * 100).toInt().toString()
-                        )
-                    )
-                    Slider(
-                        modifier = Modifier.fillMaxWidth(),
-                        range = 0f..1f,
-                        value = value.opacity,
-                        onValueChanged = {
-                            onValueChanged(value.copy(opacity = it))
-                        },
-                    )
-
-                    Text(
-                        Text.format(
-                            Texts.SCREEN_CONFIG_PERCENT,
-                            Text.translatable(Texts.SCREEN_MANAGE_CONTROL_PRESET_SCALE),
-                            (value.scale * 100).toInt().toString()
-                        )
-                    )
-                    Slider(
-                        modifier = Modifier.fillMaxWidth(),
-                        range = .5f..4f,
-                        value = value.scale,
-                        onValueChanged = {
-                            onValueChanged(value.copy(scale = it))
-                        },
-                    )
-                }
             }
         }
         Column(
@@ -189,6 +207,13 @@ fun BuiltInPresetKeySelector(
                 .fillMaxHeight(),
             verticalArrangement = Arrangement.spacedBy(4),
         ) {
+            if (LocalScreenSize.current.width < 600) {
+                StyleBox(
+                    modifier = Modifier.fillMaxWidth(),
+                    itemModifier = Modifier.fillMaxWidth(),
+                )
+            }
+
             Text(Text.translatable(Texts.SCREEN_MANAGE_CONTROL_PRESET_CONTROL_STYLE))
             RadioColumn(modifier = Modifier.fillMaxWidth()) {
                 RadioBoxItem(

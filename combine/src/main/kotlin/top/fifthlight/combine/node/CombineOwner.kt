@@ -26,6 +26,8 @@ val LocalTextMeasurer: ProvidableCompositionLocal<TextMeasurer> =
     staticCompositionLocalOf { error("No TextMeasurer in context") }
 val LocalInputHandler: ProvidableCompositionLocal<InputHandler> =
     staticCompositionLocalOf { error("No InputHandler in context") }
+val LocalScreenSize: ProvidableCompositionLocal<IntSize> =
+    staticCompositionLocalOf { error("No ScreenSize in context") }
 
 interface DisposableLayer {
     fun dispose()
@@ -51,6 +53,7 @@ class CombineOwner(
     })
 
     private val tweenManager = TweenManager()
+    private var screenSize by mutableStateOf<IntSize>(IntSize.ZERO)
 
     private val rootLayer
         get() = layers.first()
@@ -75,6 +78,7 @@ class CombineOwner(
                     LocalTextMeasurer provides owner.textMeasurer,
                     LocalFocusManager provides focusManager,
                     LocalTweenManager provides owner.tweenManager,
+                    LocalScreenSize provides owner.screenSize,
                 ) {
                     content()
                 }
@@ -154,6 +158,7 @@ class CombineOwner(
 
     private var lastFrameTime: Long = -1L
     fun render(size: IntSize, canvas: Canvas) {
+        screenSize = size
         val nowFrameTime = System.currentTimeMillis()
         if (lastFrameTime != -1L) {
             val deltaTime = nowFrameTime - lastFrameTime
