@@ -5,6 +5,7 @@
 A mod bringing controlling style of bedrock version to Java version.
 
 Currently in early development, welcome to report for bugs or other problems you found is welcome!
+<br clear="left">
 <div align="center">
 
 [简体中文](#chinese) | [启动器适配文档 (How to add launcher support)](#launcher-support)
@@ -108,7 +109,7 @@ Finally, you can run `./gradlew build` to compile, and built file can bu found i
 一个为 Minecraft Java 版添加触控支持的 Mod。
 
 目前处于早期开发中，如果遇到 Bug 或者其他问题，欢迎积极报告！
-<br>
+<br clear="left">
 <div align="center">
 
 [![Android CI](https://github.com/TouchController/TouchController/actions/workflows/build.yml/badge.svg)](https://github.com/TouchController/TouchController/actions) ![Downloads](https://img.shields.io/github/downloads/TouchController/TouchController/total?style=&logo=github&color=blue) [![Modrinth](https://img.shields.io/modrinth/dt/touchcontroller?style=&logo=modrinth&color=008833)](https://modrinth.com/mod/touchcontroller)  [![CurseForge](https://cf.way2muchnoise.eu/full_1198137_downloads.svg)](https://curseforge.com/minecraft/mc-mods/touchcontroller)  
