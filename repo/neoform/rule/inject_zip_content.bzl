@@ -1,7 +1,8 @@
 load("@//repo/neoform:java_source_info.bzl", "JavaSourceInfo")
 
 def _inject_zip_content_impl(ctx):
-    output_jar = ctx.actions.declare_file(ctx.label.name + ".jar")
+    input_extension = ctx.file.input.extension
+    output_jar = ctx.actions.declare_file(ctx.label.name + "." + input_extension)
 
     input_deps = []
     if JavaSourceInfo in ctx.attr.input:
