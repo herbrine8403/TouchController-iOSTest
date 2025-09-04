@@ -1,5 +1,9 @@
 # ArmorStand NEWS - User visible changes.
 
+## 0.0.4
+
+- Fixed the bug that causes compute shader mode not working on Nvidia GPUs with Iris
+
 ## 0.0.3
 
 - Fixed the bug that compute shader mode cannot be used on Nvidia GPUs

@@ -105,7 +105,7 @@ void main() {
     targetVertex.normal = packSnorm4x8(vec4(0, 1, 0, 0));
 
     #ifdef IRIS_VERTEX_FORMAT
-    targetVertex.iris_Entity = ivec2(0);
+    targetVertex.iris_Entity = uvec2(0);
     targetVertex.mc_midTexCoord = vec2(0.0);
     targetVertex.at_tangent = 0;
     #endif// IRIS_VERTEX_FORMAT
