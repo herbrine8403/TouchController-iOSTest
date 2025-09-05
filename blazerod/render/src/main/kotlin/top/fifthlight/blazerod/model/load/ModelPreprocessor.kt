@@ -297,8 +297,7 @@ class ModelPreprocessor private constructor(
         }
 
         fun toLoadData(): MorphTargetsLoadData.TargetInfo {
-            buffer.position(buffer.capacity())
-            buffer.flip()
+            buffer.position(0)
             return MorphTargetsLoadData.TargetInfo(
                 buffer = buffer,
                 itemStride = itemStride,

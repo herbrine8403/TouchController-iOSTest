@@ -6,7 +6,6 @@ import org.joml.Vector3f
 import org.joml.Vector3fc
 import org.slf4j.LoggerFactory
 import top.fifthlight.blazerod.model.*
-import top.fifthlight.blazerod.model.Primitive.Attributes.MorphTarget
 import top.fifthlight.blazerod.model.pmx.format.*
 import top.fifthlight.blazerod.model.pmx.format.PmxMorphGroup.MorphItem
 import top.fifthlight.blazerod.model.util.MMD_SCALE
@@ -14,6 +13,7 @@ import top.fifthlight.blazerod.model.util.openChannelCaseInsensitive
 import top.fifthlight.blazerod.model.util.readAll
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
+import java.nio.IntBuffer
 import java.nio.channels.FileChannel
 import java.nio.charset.CodingErrorAction
 import java.nio.file.Path
@@ -50,6 +50,13 @@ class PmxLoader : ModelFileLoader {
         return signatureBytes.contentEquals(PMX_SIGNATURE)
     }
 
+    private class MaterialData(
+        val material: PmxMaterial,
+        val vertexAttributes: Primitive.Attributes.Primitive,
+        val indexBufferView: BufferView,
+        val vertices: Int,
+    )
+
     private class Context(
         private val basePath: Path,
     ) {
@@ -60,15 +67,16 @@ class PmxLoader : ModelFileLoader {
                 .onUnmappableCharacter(CodingErrorAction.REPORT)
         }
 
-        private lateinit var vertexAttributes: Primitive.Attributes.Primitive
+        private lateinit var vertexBuffer: ByteBuffer
         private var vertices: Int = -1
 
-        private lateinit var indexBufferView: BufferView
+        private lateinit var indexBuffer: IntArray
         private lateinit var indexBufferType: Accessor.ComponentType
         private var indices: Int = -1
 
         private lateinit var textures: List<Texture?>
-        private lateinit var materials: List<PmxMaterial>
+        private lateinit var materials: List<MaterialData>
+        private lateinit var vertexToMaterialMap: VertexMaterialTable
         private lateinit var bones: List<PmxBone>
         private val targetToIkDataMap = mutableMapOf<Int, MutableList<PmxBone.IkData>>()
         private val sourceToInheritMap = mutableMapOf<Int, MutableList<PmxBone.InheritData>>()
@@ -229,7 +237,72 @@ class PmxLoader : ModelFileLoader {
             )
         }
 
-        // Read all vertices from PMX file, and fill them to a vertex attribute array for loading.
+        private fun wrapVertexBuffer(
+            bufferName: String,
+            buffer: ByteBuffer,
+            vertexCount: Int,
+        ): Primitive.Attributes.Primitive {
+            val buffer = Buffer(
+                name = bufferName,
+                buffer = buffer,
+            )
+            val bufferView = BufferView(
+                buffer = buffer,
+                byteLength = buffer.buffer.remaining(),
+                byteOffset = 0,
+                byteStride = VERTEX_ATTRIBUTE_SIZE,
+            )
+            return Primitive.Attributes.Primitive(
+                position = Accessor(
+                    bufferView = bufferView,
+                    byteOffset = 0,
+                    componentType = Accessor.ComponentType.FLOAT,
+                    normalized = false,
+                    count = vertexCount,
+                    type = Accessor.AccessorType.VEC3,
+                ),
+                normal = Accessor(
+                    bufferView = bufferView,
+                    byteOffset = 3 * 4,
+                    componentType = Accessor.ComponentType.FLOAT,
+                    normalized = false,
+                    count = vertexCount,
+                    type = Accessor.AccessorType.VEC3,
+                ),
+                texcoords = listOf(
+                    Accessor(
+                        bufferView = bufferView,
+                        byteOffset = (3 + 3) * 4,
+                        componentType = Accessor.ComponentType.FLOAT,
+                        normalized = false,
+                        count = vertexCount,
+                        type = Accessor.AccessorType.VEC2,
+                    )
+                ),
+                joints = listOf(
+                    Accessor(
+                        bufferView = bufferView,
+                        byteOffset = (3 + 3 + 2) * 4,
+                        componentType = Accessor.ComponentType.UNSIGNED_INT,
+                        normalized = false,
+                        count = vertexCount,
+                        type = Accessor.AccessorType.VEC4,
+                    )
+                ),
+                weights = listOf(
+                    Accessor(
+                        bufferView = bufferView,
+                        byteOffset = (3 + 3 + 2 + 4) * 4,
+                        componentType = Accessor.ComponentType.FLOAT,
+                        normalized = false,
+                        count = vertexCount,
+                        type = Accessor.AccessorType.VEC4,
+                    )
+                )
+            )
+        }
+
+        // Read all vertices from PMX file.
         private fun loadVertices(buffer: ByteBuffer) {
             val vertexCount = buffer.getInt()
             if (vertexCount <= 0) {
@@ -240,7 +313,7 @@ class PmxLoader : ModelFileLoader {
             val boneIndexSize = globals.boneIndexSize
 
             val outputBuffer =
-                ByteBuffer.allocateDirect(VERTEX_ATTRIBUTE_SIZE * vertexCount).order(ByteOrder.nativeOrder())
+                ByteBuffer.allocateDirect(vertexCount * VERTEX_ATTRIBUTE_SIZE).order(ByteOrder.nativeOrder())
             var outputPosition = 0
             var inputPosition = buffer.position()
 
@@ -381,65 +454,8 @@ class PmxLoader : ModelFileLoader {
             }
             require(outputPosition == outputBuffer.capacity()) { "Bug: Not filled the entire output buffer" }
 
-            val vertexBuffer = Buffer(
-                name = "Vertex Buffer",
-                buffer = outputBuffer
-            )
-            val vertexBufferView = BufferView(
-                buffer = vertexBuffer,
-                byteLength = outputBuffer.remaining(),
-                byteOffset = 0,
-                byteStride = VERTEX_ATTRIBUTE_SIZE,
-            )
             vertices = vertexCount
-            vertexAttributes = Primitive.Attributes.Primitive(
-                position = Accessor(
-                    bufferView = vertexBufferView,
-                    byteOffset = 0,
-                    componentType = Accessor.ComponentType.FLOAT,
-                    normalized = false,
-                    count = vertexCount,
-                    type = Accessor.AccessorType.VEC3,
-                ),
-                normal = Accessor(
-                    bufferView = vertexBufferView,
-                    byteOffset = 3 * 4,
-                    componentType = Accessor.ComponentType.FLOAT,
-                    normalized = false,
-                    count = vertexCount,
-                    type = Accessor.AccessorType.VEC3,
-                ),
-                texcoords = listOf(
-                    Accessor(
-                        bufferView = vertexBufferView,
-                        byteOffset = (3 + 3) * 4,
-                        componentType = Accessor.ComponentType.FLOAT,
-                        normalized = false,
-                        count = vertexCount,
-                        type = Accessor.AccessorType.VEC2,
-                    )
-                ),
-                joints = listOf(
-                    Accessor(
-                        bufferView = vertexBufferView,
-                        byteOffset = (3 + 3 + 2) * 4,
-                        componentType = Accessor.ComponentType.UNSIGNED_INT,
-                        normalized = false,
-                        count = vertexCount,
-                        type = Accessor.AccessorType.VEC4,
-                    )
-                ),
-                weights = listOf(
-                    Accessor(
-                        bufferView = vertexBufferView,
-                        byteOffset = (3 + 3 + 2 + 4) * 4,
-                        componentType = Accessor.ComponentType.FLOAT,
-                        normalized = false,
-                        count = vertexCount,
-                        type = Accessor.AccessorType.VEC4,
-                    )
-                )
-            )
+            vertexBuffer = outputBuffer
             buffer.position(inputPosition)
         }
 
@@ -455,56 +471,46 @@ class PmxLoader : ModelFileLoader {
                 throw PmxLoadException("Bad surface data: should have $indexBufferSize bytes, but only ${buffer.remaining()} bytes available")
             }
 
-            val outputBuffer = ByteBuffer.allocateDirect(indexBufferSize).order(ByteOrder.nativeOrder())
+            val outputIndicesArray = IntArray(surfaceCount)
+            val outputIndices = IntBuffer.wrap(outputIndicesArray)
             // PMX use clockwise indices, but OpenGL use counterclockwise indices, so let's invert the order here.
             when (vertexIndexSize) {
                 1 -> {
                     indexBufferType = Accessor.ComponentType.UNSIGNED_BYTE
                     for (i in 0 until triangleCount) {
-                        outputBuffer.put(buffer.get())
-                        val a = buffer.get()
-                        val b = buffer.get()
-                        outputBuffer.put(b)
-                        outputBuffer.put(a)
+                        outputIndices.put(buffer.get().toUByte().toInt())
+                        val a = buffer.get().toUByte().toInt()
+                        val b = buffer.get().toUByte().toInt()
+                        outputIndices.put(b)
+                        outputIndices.put(a)
                     }
                 }
 
                 2 -> {
                     indexBufferType = Accessor.ComponentType.UNSIGNED_SHORT
                     for (i in 0 until triangleCount) {
-                        outputBuffer.putShort(buffer.getShort())
+                        outputIndices.put(buffer.getShort().toUShort().toInt())
                         val a = buffer.getShort()
                         val b = buffer.getShort()
-                        outputBuffer.putShort(b)
-                        outputBuffer.putShort(a)
+                        outputIndices.put(b.toUShort().toInt())
+                        outputIndices.put(a.toUShort().toInt())
                     }
                 }
 
                 4 -> {
                     indexBufferType = Accessor.ComponentType.UNSIGNED_INT
                     for (i in 0 until triangleCount) {
-                        outputBuffer.putInt(buffer.getInt())
+                        outputIndices.put(buffer.getInt())
                         val a = buffer.getInt()
                         val b = buffer.getInt()
-                        outputBuffer.putInt(b)
-                        outputBuffer.putInt(a)
+                        outputIndices.put(b)
+                        outputIndices.put(a)
                     }
                 }
 
                 else -> throw AssertionError()
             }
-            outputBuffer.flip()
-            val indexBuffer = Buffer(
-                name = "Index Buffer",
-                buffer = outputBuffer,
-            )
-            val bufferView = BufferView(
-                buffer = indexBuffer,
-                byteLength = outputBuffer.remaining(),
-                byteOffset = 0,
-                byteStride = 0,
-            )
-            indexBufferView = bufferView
+            indexBuffer = outputIndicesArray
             indices = surfaceCount
         }
 
@@ -577,8 +583,11 @@ class PmxLoader : ModelFileLoader {
                 )
             }
 
-            materials = (0 until materialCount).map {
-                PmxMaterial(
+            val vertexToMaterialMap = VertexMaterialTable(vertices, materialCount)
+
+            var indexOffset = 0
+            materials = (0 until materialCount).map { materialIndex ->
+                val pmxMaterial = PmxMaterial(
                     nameLocal = loadString(buffer),
                     nameUniversal = loadString(buffer),
                     diffuseColor = loadRgbaColor(buffer),
@@ -612,7 +621,60 @@ class PmxLoader : ModelFileLoader {
                         }
                     },
                 )
+
+                var nextRemappedVertexIndex = 0
+                val remappedIndices = ByteBuffer.allocateDirect(pmxMaterial.surfaceCount * indexBufferType.byteLength)
+                    .order(ByteOrder.nativeOrder())
+                val remappedVertices = ByteBuffer.allocateDirect(pmxMaterial.surfaceCount * VERTEX_ATTRIBUTE_SIZE)
+                for (index in indexOffset until (indexOffset + pmxMaterial.surfaceCount)) {
+                    val vertexIndex = indexBuffer[index]
+                    if (vertexIndex >= vertices) {
+                        throw PmxLoadException("Vertex index $vertexIndex out of bounds")
+                    }
+                    var remappedIndex = vertexToMaterialMap.getLocalIndex(vertexIndex, materialIndex)
+                    if (remappedIndex == -1) {
+                        remappedIndex = nextRemappedVertexIndex++
+                        vertexToMaterialMap.setLocalIndex(vertexIndex, materialIndex, remappedIndex)
+
+                        vertexBuffer.position(vertexIndex * VERTEX_ATTRIBUTE_SIZE)
+                        vertexBuffer.limit(vertexBuffer.position() + VERTEX_ATTRIBUTE_SIZE)
+                        remappedVertices.put(vertexBuffer)
+                        vertexBuffer.clear()
+                    }
+                    when (indexBufferType) {
+                        Accessor.ComponentType.UNSIGNED_BYTE -> remappedIndices.put(remappedIndex.toByte())
+                        Accessor.ComponentType.UNSIGNED_SHORT -> remappedIndices.putShort(remappedIndex.toShort())
+                        Accessor.ComponentType.UNSIGNED_INT -> remappedIndices.putInt(remappedIndex)
+                        else -> throw AssertionError()
+                    }
+                }
+
+                indexOffset += pmxMaterial.surfaceCount
+                remappedVertices.flip()
+                remappedIndices.flip()
+                vertexBuffer.clear()
+
+                MaterialData(
+                    material = pmxMaterial,
+                    vertexAttributes = wrapVertexBuffer(
+                        bufferName = "Vertex buffer for material ${pmxMaterial.nameLocal}",
+                        buffer = remappedVertices,
+                        vertexCount = nextRemappedVertexIndex,
+                    ),
+                    indexBufferView = BufferView(
+                        buffer = Buffer(
+                            name = "Index buffer for material ${pmxMaterial.nameLocal}",
+                            buffer = remappedIndices,
+                        ),
+                        byteLength = remappedIndices.remaining(),
+                        byteOffset = 0,
+                        byteStride = 0,
+                    ),
+                    vertices = nextRemappedVertexIndex,
+                )
             }
+
+            this.vertexToMaterialMap = vertexToMaterialMap
         }
 
         private fun Vector3f.transformPosition() = also {
@@ -771,16 +833,32 @@ class PmxLoader : ModelFileLoader {
                 }
                 when (morphType) {
                     PmxMorphType.VERTEX -> {
-                        val itemSize = 12
-                        val morphBuffer = ByteBuffer.allocateDirect(vertices * itemSize).order(ByteOrder.nativeOrder())
+                        val dataMap = mutableMapOf<Int, BuildingVertexMorphTarget>()
                         for (i in 0 until offsetSize) {
-                            val index = loadVertexIndex(buffer)
-                            morphBuffer.position(index * itemSize)
-                            morphBuffer.putFloat(buffer.getFloat() * -MMD_SCALE)
-                            morphBuffer.putFloat(buffer.getFloat() * MMD_SCALE)
-                            morphBuffer.putFloat(buffer.getFloat() * MMD_SCALE)
+                            // Get vertex index
+                            val vertexIndex = loadVertexIndex(buffer)
+
+                            // Lookup each material
+                            for (materialIndex in materials.indices) {
+                                // Map global vertex index to material local
+                                val materialLocalIndex = vertexToMaterialMap.getLocalIndex(vertexIndex, materialIndex)
+                                if (materialLocalIndex == -1) {
+                                    continue
+                                }
+
+                                // Fetch building morph target
+                                val buildingTarget = dataMap.getOrPut(materialIndex) {
+                                    val material = materials[materialIndex]
+                                    BuildingVertexMorphTarget(material.vertices)
+                                }
+
+                                // Push data into corresponding building morph target
+                                val x = buffer.getFloat() * -MMD_SCALE
+                                val y = buffer.getFloat() * MMD_SCALE
+                                val z = buffer.getFloat() * MMD_SCALE
+                                buildingTarget.setVertex(materialLocalIndex, x, y, z)
+                            }
                         }
-                        morphBuffer.position(0)
                         targets.add(
                             PmxMorph(
                                 pmxIndex = index,
@@ -788,22 +866,26 @@ class PmxLoader : ModelFileLoader {
                                 nameLocal = nameLocal.takeIf(String::isNotBlank),
                                 nameUniversal = nameUniversal.takeIf(String::isNotBlank),
                                 tag = expressionTag,
-                                data = MorphTarget(
-                                    position = Accessor(
-                                        name = "Morph #$index vertex buffer",
-                                        bufferView = BufferView(
-                                            buffer = Buffer(
-                                                buffer = morphBuffer,
+                                data = dataMap.mapValues { (materialIndex, value) ->
+                                    val morphBuffer = value.finish()
+                                    val material = materials[materialIndex]
+                                    Primitive.Attributes.MorphTarget(
+                                        position = Accessor(
+                                            name = "Morph #$index material #$materialIndex vertex buffer",
+                                            bufferView = BufferView(
+                                                buffer = Buffer(
+                                                    buffer = morphBuffer,
+                                                ),
+                                                byteLength = morphBuffer.capacity(),
+                                                byteOffset = 0,
+                                                byteStride = 12,
                                             ),
-                                            byteLength = morphBuffer.capacity(),
-                                            byteOffset = 0,
-                                            byteStride = itemSize,
-                                        ),
-                                        componentType = Accessor.ComponentType.FLOAT,
-                                        count = vertices,
-                                        type = Accessor.AccessorType.VEC3,
+                                            componentType = Accessor.ComponentType.FLOAT,
+                                            count = material.vertices,
+                                            type = Accessor.AccessorType.VEC3,
+                                        )
                                     )
-                                )
+                                },
                             )
                         )
                     }
@@ -858,6 +940,11 @@ class PmxLoader : ModelFileLoader {
             morphTargets = targets
             morphTargetGroups = morphGroups
         }
+
+        private data class MaterialMorphData(
+            val materialIndex: Int,
+            val morphIndex: Int,
+        )
 
         fun load(buffer: ByteBuffer): ModelFileLoader.LoadResult {
             val header = loadHeader(buffer)
@@ -975,15 +1062,26 @@ class PmxLoader : ModelFileLoader {
                 jointHumanoidTags = jointHumanoidTags,
             )
 
-            var indexOffset = 0
-            val materialToMeshIds = mutableMapOf<Int, MeshId>()
+            val pmxMorphToMaterialMorphIndexMap = mutableMapOf<Int, MutableList<MaterialMorphData>>()
+            val materialMorphMap = mutableMapOf<Int, MutableList<Primitive.Attributes.MorphTarget>>()
+            for ((morphIndex, pmxTarget) in morphTargets.withIndex()) {
+                val materialMorphIndexList = pmxMorphToMaterialMorphIndexMap.getOrPut(morphIndex, ::mutableListOf)
+                for ((materialIndex, target) in pmxTarget.data) {
+                    val materialMorphList = materialMorphMap.getOrPut(materialIndex, ::mutableListOf)
+                    val materialMorphIndex = materialMorphList.size
+                    materialMorphList.add(target)
+                    materialMorphIndexList.add(MaterialMorphData(materialIndex, materialMorphIndex))
+                }
+            }
 
-            materials.forEachIndexed { materialIndex, pmxMaterial ->
+            val materialToMeshIds = mutableMapOf<Int, MeshId>()
+            materials.forEachIndexed { materialIndex, materialData ->
                 val nodeIndex = nextNodeIndex++
                 val nodeId = NodeId(modelId, nodeIndex)
                 val meshId = MeshId(modelId, nodeIndex)
                 materialToMeshIds[materialIndex] = meshId
 
+                val pmxMaterial = materialData.material
                 val material = Material.Unlit(
                     name = pmxMaterial.nameLocal,
                     baseColor = pmxMaterial.diffuseColor,
@@ -1012,16 +1110,15 @@ class PmxLoader : ModelFileLoader {
                                             Primitive(
                                                 mode = Primitive.Mode.TRIANGLES,
                                                 material = material,
-                                                attributes = vertexAttributes,
+                                                attributes = materialData.vertexAttributes,
                                                 indices = Accessor(
-                                                    bufferView = indexBufferView,
-                                                    byteOffset = indexOffset * indexBufferType.byteLength,
+                                                    bufferView = materialData.indexBufferView,
                                                     componentType = indexBufferType,
                                                     normalized = false,
                                                     count = pmxMaterial.surfaceCount,
                                                     type = Accessor.AccessorType.SCALAR,
                                                 ),
-                                                targets = morphTargets.map { it.data },
+                                                targets = materialMorphMap[materialIndex] ?: listOf(),
                                             )
                                         ),
                                         weights = null,
@@ -1031,7 +1128,6 @@ class PmxLoader : ModelFileLoader {
                         }
                     )
                 )
-                indexOffset += pmxMaterial.surfaceCount
             }
 
             val cameraNodeIndex = nextNodeIndex++
@@ -1061,19 +1157,18 @@ class PmxLoader : ModelFileLoader {
                     scenes = listOf(scene),
                     skins = listOf(skin),
                     expressions = buildList {
-                        for (target in morphTargets) {
+                        for ((index, target) in morphTargets.withIndex()) {
                             val expression = Expression.Target(
                                 name = target.nameLocal ?: target.nameUniversal,
                                 tag = target.tag,
                                 isBinary = false,
-                                // TODO: filter out meshes affected by this morph target
-                                bindings = materials.indices.mapNotNull { materialIndex ->
+                                bindings = pmxMorphToMaterialMorphIndexMap[index]?.mapNotNull { (materialIndex, targetIndex) ->
                                     Expression.Target.Binding.MeshMorphTarget(
                                         meshId = materialToMeshIds[materialIndex] ?: return@mapNotNull null,
-                                        index = target.targetIndex,
+                                        index = targetIndex,
                                         weight = 0f,
                                     )
-                                }.takeIf { it.isNotEmpty() } ?: continue,
+                                } ?: listOf(),
                             )
                             pmxIndexToExpressions[target.pmxIndex] = expression
                             add(expression)
@@ -1084,7 +1179,8 @@ class PmxLoader : ModelFileLoader {
                                     name = group.nameLocal ?: group.nameUniversal,
                                     tag = group.tag,
                                     targets = group.items.mapNotNull { item ->
-                                        val target = pmxIndexToExpressions[item.index] ?: return@mapNotNull null
+                                        val pmxMorphIndex = item.index
+                                        val target = pmxIndexToExpressions[pmxMorphIndex] ?: return@mapNotNull null
                                         Expression.Group.TargetItem(
                                             target = target,
                                             influence = item.influence,
