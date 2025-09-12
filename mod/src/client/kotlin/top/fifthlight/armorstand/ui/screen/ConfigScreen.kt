@@ -200,6 +200,14 @@ class ConfigScreen(parent: Screen? = null) : ArmorStandScreen<ConfigScreen, Conf
         )
     }
 
+    private val hidePlayerArmorButton by lazy {
+        checkbox(
+            text = Text.translatable("armorstand.config.hide_player_armor"),
+            value = viewModel.uiState.map { it.hidePlayerArmor },
+            onValueChanged = viewModel::updateHidePlayerArmor,
+        )
+    }
+
     private val showOtherPlayersButton by lazy {
         checkbox(
             text = Text.translatable("armorstand.config.show_other_players"),
@@ -291,6 +299,7 @@ class ConfigScreen(parent: Screen? = null) : ArmorStandScreen<ConfigScreen, Conf
                         sendModelDataButton,
                         showOtherPlayersButton,
                         hidePlayerShadowButton,
+                        hidePlayerArmorButton,
                         thirdPersonDistanceScaleSlider,
                     ).forEach {
                         add(

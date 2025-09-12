@@ -86,6 +86,7 @@ class ConfigViewModel(scope: CoroutineScope) : ViewModel(scope) {
                             showOtherPlayerModel = config.showOtherPlayerModel,
                             sendModelData = config.sendModelData,
                             hidePlayerShadow = config.hidePlayerShadow,
+                            hidePlayerArmor = config.hidePlayerArmor,
                             modelScale = config.modelScale,
                             thirdPersonDistanceScale = config.thirdPersonDistanceScale,
                         )
@@ -163,6 +164,12 @@ class ConfigViewModel(scope: CoroutineScope) : ViewModel(scope) {
     fun updateHidePlayerShadow(hidePlayerShadow: Boolean) {
         ConfigHolder.update {
             copy(hidePlayerShadow = hidePlayerShadow)
+        }
+    }
+
+    fun updateHidePlayerArmor(hidePlayerArmor: Boolean) {
+        ConfigHolder.update {
+            copy(hidePlayerArmor = hidePlayerArmor)
         }
     }
 

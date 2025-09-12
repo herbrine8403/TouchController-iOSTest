@@ -3,6 +3,7 @@
   "armorstand.config.show_other_players": "Показывать модели других игроков",
   "armorstand.config.send_model_data": "Отправлять данные модели на сервер",
   "armorstand.config.hide_player_shadow": "Скрывать тень игроков",
+
   "armorstand.config.model_scale": "Масштаб модели: %s",
   "armorstand.config.third_person_distance_scale": "Масштаб расстояния от третьего лица: %s",
   "armorstand.config.open_model_directory": "Открыть папку моделей",
@@ -47,7 +48,7 @@
   "armorstand.animation.unnamed_ik_node": "Без названия",
   "armorstand.metadata.title": "Название: %s",
   "armorstand.metadata.title.unknown": "Название: Неизвестно",
-  "armorstand.metadata.version": "Версия: %s", 
+  "armorstand.metadata.version": "Версия: %s",
   "armorstand.metadata.authors": "Авторы: %s",
 
   "armorstand.metadata.copyright_information": "Авторские права: %s",

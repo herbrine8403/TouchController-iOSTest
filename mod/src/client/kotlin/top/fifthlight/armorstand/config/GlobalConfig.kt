@@ -27,6 +27,7 @@ data class GlobalConfig(
     val showOtherPlayerModel: Boolean = true,
     val sendModelData: Boolean = true,
     val hidePlayerShadow: Boolean = false,
+    val hidePlayerArmor: Boolean = false,
     val modelScale: Float = 1f,
     val thirdPersonDistanceScale: Float = 1f,
     val renderer: RendererKey = RendererKey.VERTEX_SHADER_TRANSFORM,
