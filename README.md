@@ -51,11 +51,13 @@ Apache 2.0 许可证授权。
 
 ## 鸣谢
 
-感谢 [Saba](https://github.com/benikabocha/saba) 项目为 MMD（PMX/PMD/VMD 格式）的逻辑提供了参考。
+捆绑了 [H2 数据库](https://www.h2database.com/)（MPL 2.0 或 EPL 1.0），作为模型管理功能的存储后端，在此感谢。
 
-项目使用了 [KaiMyEntity-C](https://github.com/Gengorou-C/KAIMyEntity-C) 项目的动画作为默认动画，在此感谢。
+感谢 [Saba](https://github.com/benikabocha/saba)（MIT） 项目为 MMD（PMX/PMD/VMD 格式）的逻辑提供了参考。
 
-使用了来自 [Cherished Worlds](https://github.com/illusivesoulworks/cherishedworlds) 的贴图作为收藏图标，在此感谢。
+捆绑了 [KaiMyEntity-C](https://github.com/Gengorou-C/KAIMyEntity-C) 项目的动画（作者已经在 README 声明不需要署名、可修改、可再分发）作为默认动画，在此感谢。
+
+使用了来自 [Cherished Worlds](https://github.com/illusivesoulworks/cherishedworlds)（LGPL 3.0 及以上版本） 的贴图作为收藏图标，在此感谢。
 
 ## 许可证
 
@@ -117,12 +119,14 @@ which adds a ball-shaped block, as an example for model rendering of BlazeRod. D
 
 ## Acknowledgments
 
-Thanks for [Saba](https://github.com/benikabocha/saba) project for providing reference for MMD (PMX/PMD/VMD format).
+Bundled [H2 database](https://www.h2database.com/)(MPL 2.0 or EPL 1.0), as model management feature's storage backend, thanks to them.
 
-This project used animations from [KaiMyEntity-C](https://github.com/Gengorou-C/KAIMyEntity-C) as default animation,
-thanks to them.
+Thanks for [Saba](https://github.com/benikabocha/saba)(MIT) project for providing reference for MMD (PMX/PMD/VMD format).
 
-The favorite icon is from [Cherished Worlds](https://github.com/illusivesoulworks/cherishedworlds), thanks to them.
+Bundled animations from [KaiMyEntity-C](https://github.com/Gengorou-C/KAIMyEntity-C)(Author declared it don't need credits, allow to modify and
+to redistribute) as default animation, thanks to them.
+
+The favorite icon is from [Cherished Worlds](https://github.com/illusivesoulworks/cherishedworlds)(LGPL 3.0 or later), thanks to them.
 
 ## License
 

@@ -158,6 +158,10 @@ merge_jar(
         ":mod_client_unmapped",
         ":mod_main_unmapped",
     ],
+    resources = {
+        "//third_party/licenses": "third_party",
+        "//:license": "",
+    },
 )
 
 merge_jar(
@@ -166,6 +170,10 @@ merge_jar(
         ":mod_client",
         ":mod_main",
     ],
+    resources = {
+        "//third_party/licenses": "third_party",
+        "//:license": "",
+    },
 )
 
 merge_jij(

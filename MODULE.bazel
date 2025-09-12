@@ -107,7 +107,7 @@ http_archive(
     name = "yes_steve_model",
     url = "https://cdn.modrinth.com/data/86xjpqqS/versions/1cHRrrpZ/yesstevemodel-fabric-1.21.1-2.4.1-release.jar",
     sha256 = "ec51cfae84d219a45fac5098a31bfe980bcb7c2d8b413e8fffbd05a411a85680",
-    build_file = "@//external/ysm:BUILD.ysm.bazel",
+    build_file = "@//third_party/ysm:BUILD.ysm.bazel",
 )
 http_file = use_repo_rule("@bazel_tools//tools/build_defs/repo:http.bzl", "http_file")
 http_file(
