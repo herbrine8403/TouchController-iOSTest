@@ -18,7 +18,7 @@ body:
                     required: true
                 -   label: 我已将 TouchController 模组更新到最新版本
                     required: true
-                -   label: 我已阅读：《[TouchController 游玩须知](https://wiki.touchcontroller.fifthlight.top/%E7%8E%A9%E5%AE%B6%E6%89%8B%E5%86%8C/%E6%B8%B8%E7%8E%A9%E9%A1%BB%E7%9F%A5.html)》《[TouchController 常见问题](https://wiki.touchcontroller.fifthlight.top/%E7%8E%A9%E5%AE%B6%E6%89%8B%E5%86%8C/%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98.html)》《[如何给 TouchController 报告 bug](https://wiki.touchcontroller.fifthlight.top/%E7%8E%A9%E5%AE%B6%E6%89%8B%E5%86%8C/%E6%8A%A5%E5%91%8ABUG.html)》
+                -   label: 我已阅读：《[TouchController 游玩须知](https://wiki.touchcontroller.fifthlight.top/manual/readme.html)》《[TouchController 常见问题](https://wiki.touchcontroller.fifthlight.top/manual/faq.html)》《[如何给 TouchController 报告 bug](https://wiki.touchcontroller.fifthlight.top/manual/reporting-bugs.html)》
                     required: true
                 -   label: 我已知晓：任何不合规定的 issue 都有可能被直接关闭
                     required: true
