@@ -213,6 +213,7 @@ java_binary(
         "@minecraft_assets//:assets",
         "@makeup_ultra_fast//file",
         "@yes_steve_model//:model_wine_fox",
+        "@yes_steve_model//:model_default",
         "//blazerod/model/example-models:example-models",
     ],
     env = {
@@ -229,7 +230,8 @@ java_binary(
         "-Ddev.launch.copyFiles=" +
             "$(rlocationpath @makeup_ultra_fast//file):shaderpacks/MakeUp-UltraFast-9.2.zip," +
             "$(rlocationpath //blazerod/model/example-models:example-models):models," +
-            "$(rlocationpath @yes_steve_model//:model_wine_fox):models/wine_fox",
+            "$(rlocationpath @yes_steve_model//:model_wine_fox):models/wine_fox," +
+            "$(rlocationpath @yes_steve_model//:model_default):models/default",
         "-Ddev.launch.expandRunfileProperties=fabric.remapClasspathFile",
         "-Dblazerod.debug=true",
         "-Dblazerod.debug.gui=true",
