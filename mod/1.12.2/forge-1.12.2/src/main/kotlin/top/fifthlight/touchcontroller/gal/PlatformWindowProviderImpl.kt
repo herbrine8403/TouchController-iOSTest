@@ -43,6 +43,8 @@ object PlatformWindowProviderImpl : PlatformWindowProvider {
 
             val glfwNativeClass = runCatching {
                 Class.forName("org.lwjgl3.glfw.GLFWNativeWin32")
+            }.getOrNull() ?: runCatching {
+                Class.forName("org.lwjgl.glfw.GLFWNativeWin32")
             }.getOrNull() ?: return null
             return glfwNativeClass.methods?.firstOrNull {
                 it.name == "glfwGetWin32Window"
@@ -73,6 +75,8 @@ object PlatformWindowProviderImpl : PlatformWindowProvider {
 
         val glfwNativeClass = runCatching {
             Class.forName("org.lwjgl3.glfw.GLFWNativeWayland")
+        }.getOrNull() ?: runCatching {
+            Class.forName("org.lwjgl.glfw.GLFWNativeWayland")
         }.getOrNull() ?: return null
         val displayPointer = glfwNativeClass.methods?.firstOrNull {
             it.name == "glfwGetWaylandDisplay"
