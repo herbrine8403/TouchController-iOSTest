@@ -10,9 +10,9 @@ object PlatformWindowProviderImpl : PlatformWindowProvider {
     private val logger = LoggerFactory.getLogger(PlatformWindowProviderImpl::class.java)
 
     override val windowWidth: Int
-        get() = Display.getWidth()
+        get() = (Display.getWidth() / Display.getPixelScaleFactor()).toInt()
     override val windowHeight: Int
-        get() = Display.getHeight()
+        get() = (Display.getHeight() / Display.getPixelScaleFactor()).toInt()
 
     private fun getCleanroomWindow(): Long? {
         val displayClass = runCatching {
