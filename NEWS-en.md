@@ -1,5 +1,9 @@
 # ArmorStand NEWS - User visible changes.
 
+## 0.0.8
+
+- Fixed the problem that NeoForge version cannot be launched on Windows
+
 ## 0.0.7
 
 - Added support for models of bedrock edition

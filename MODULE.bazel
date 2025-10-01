@@ -8,7 +8,7 @@ neoforge_version = "21.8.36"
 
 module(
     name = "armorstand",
-    version = "0.0.7",
+    version = "0.0.8",
 )
 
 bazel_dep(name = "rules_java", version = "8.12.0")

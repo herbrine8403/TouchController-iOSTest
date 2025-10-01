@@ -59,7 +59,7 @@ public class JarInJarMerger {
              var outputStream = new ZipOutputStream(Files.newOutputStream(outputJar))) {
             var jijJarEntries = new ArrayList<JijMetadata.Jar>();
             for (var jijEntry : jarEntries) {
-                var path = "META-INF/jarjar/" + jijEntry.group + ":" + jijEntry.artifact + ":" + jijEntry.version + ".jar";
+                var path = "META-INF/jarjar/" + jijEntry.group + "_" + jijEntry.artifact + "_" + jijEntry.version + ".jar";
                 try (var entryByteOutputStream = new ByteArrayOutputStream();
                      var entryInputStream = new JarInputStream(Files.newInputStream(jijEntry.path()))) {
                     var manifest = entryInputStream.getManifest();
