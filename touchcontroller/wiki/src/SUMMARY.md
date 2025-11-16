@@ -15,7 +15,7 @@
 - [输入适配](./mechanism/input-support.md)
 - [自定义控件](./mechanism/custom-widget.md)
 - [自定义图层条件](./mechanism/custom-conditions.md)
-- [自定义布局]()
+- [自定义布局](mechanism/custom-layout/custom-layout.md)
     - [预设系统](./mechanism/custom-layout/preset-system.md)
     - [图层系统](./mechanism/custom-layout/layer-system.md)
     - [切换模式](./mechanism/custom-layout/mode-switch.md)
