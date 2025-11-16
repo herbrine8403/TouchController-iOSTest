@@ -1,4 +1,4 @@
-# TouchController 设置界面
+# TouchController 的设置界面
 
 ## 页面标题
 

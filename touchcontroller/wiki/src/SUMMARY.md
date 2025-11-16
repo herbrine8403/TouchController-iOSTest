@@ -29,7 +29,7 @@
 # GUI
 
 - [设置界面](./gui/config-screen/config-screen.md)
-    - [标签页]()
+    - [标签页](./gui/config-screen/tab/tab.md)
         - [关于](./gui/config-screen/tab/about.md)
         - [常规](./gui/config-screen/tab/general.md)
         - [控制](./gui/config-screen/tab/control.md)
