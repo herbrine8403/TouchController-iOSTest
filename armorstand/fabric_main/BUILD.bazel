@@ -1,5 +1,4 @@
-load("//:properties.bzl", "home_page", "issue_tracker", "license", "mod_version", "sources_page")
-load("//rule:merge_library.bzl", "kt_merge_library", "merge_library_jar")
+load("//rule:merge_library.bzl", "kt_merge_library")
 load("//rule:remap_jar.bzl", "remap_jar")
 
 remap_jar(
@@ -27,19 +26,19 @@ kt_merge_library(
         allow_empty = True,
     ),
     associates = [
-        "//mod/src/main",
+        "//armorstand/main",
     ],
     merge_deps = [
-        "//mod/src/main",
+        "//armorstand/main",
     ],
-    resource_strip_prefix = "mod/src/fabric/resources",
+    resource_strip_prefix = "armorstand/fabric/resources",
     resources = glob(
         include = ["resources/**"],
         allow_empty = True,
     ),
     visibility = ["//mod:__subpackages__"],
     exports = [
-        "//mod/src/main",
+        "//armorstand/main",
     ],
     deps = [
         ":remapped_deps",
