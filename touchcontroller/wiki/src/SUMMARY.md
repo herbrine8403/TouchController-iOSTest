@@ -28,8 +28,7 @@
 
 # GUI
 
-- [设置界面]()
-    - [界面框架](./gui/config-screen/interface-frame.md)
+- [设置界面](./gui/config-screen/config-screen.md)
     - [标签页]()
         - [关于](./gui/config-screen/tab/about.md)
         - [通用]()
