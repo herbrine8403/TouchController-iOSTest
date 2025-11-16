@@ -4,6 +4,8 @@
 - 这个页面可以自定义控件的布局
 - 参见：[自定义布局的特性](../../../feature/custom-layout.md)
 
+![](assets/custom-widget-layout/file-20251116213404378.png)
+
 ## 页面结构
 
 ### 顶栏
