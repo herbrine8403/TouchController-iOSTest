@@ -17,7 +17,7 @@ remap_jar(
     remap_transitive_deps = True,
     remove_jar_in_jar = True,
     to_namespace = "named",
-    visibility = ["//mod:__subpackages__"],
+    visibility = ["//armorstand:__subpackages__"],
 )
 
 fabric_mod_json_jar(
@@ -62,7 +62,7 @@ kt_merge_library(
         allow_empty = True,
         exclude = ["resources/fabric.mod.json"],
     ),
-    visibility = ["//mod:__subpackages__"],
+    visibility = ["//armorstand:__subpackages__"],
     deps = [
         ":remapped_deps",
         "//armorstand/game:remapped_client_access_widened_named",
@@ -78,6 +78,6 @@ kt_merge_library(
 
 merge_library_jar(
     name = "fabric_unmapped_merged",
-    visibility = ["//mod:__subpackages__"],
+    visibility = ["//armorstand:__subpackages__"],
     deps = [":fabric_unmapped"],
 )

@@ -17,7 +17,7 @@ kt_merge_library(
         include = ["resources/**"],
         allow_empty = True,
     ),
-    visibility = ["//mod:__subpackages__"],
+    visibility = ["//armorstand:__subpackages__"],
     deps = [
         "//game/1.21.8:game_client_neoforge",
         "@maven//:org_jetbrains_kotlinx_kotlinx_coroutines_core_jvm",

@@ -46,7 +46,7 @@ kt_merge_library(
         allow_empty = True,
         exclude = ["resources/META-INF/neoforge.mods.toml"],
     ),
-    visibility = ["//mod:__subpackages__"],
+    visibility = ["//armorstand:__subpackages__"],
     deps = [
         "//blazerod/model/model-formats",
         "//blazerod/render/api/event",
@@ -61,6 +61,6 @@ kt_merge_library(
 
 merge_library_jar(
     name = "neoforge_unmapped_merged",
-    visibility = ["//mod:__subpackages__"],
+    visibility = ["//armorstand:__subpackages__"],
     deps = [":neoforge_unmapped"],
 )

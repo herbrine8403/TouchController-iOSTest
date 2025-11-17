@@ -77,11 +77,12 @@ def _game_version_impl(name, visibility, version, client_mappings, client, serve
         visibility = visibility,
     )
 
-    native.alias(
-        name = client_neoforge,
-        actual = neoforge,
-        visibility = visibility,
-    )
+    if neoforge:
+        native.alias(
+            name = client_neoforge,
+            actual = neoforge,
+            visibility = visibility,
+        )
 
     extract_jar(
         name = server_jar_file,
@@ -142,6 +143,7 @@ game_version = macro(
         "version": attr.string(
             mandatory = True,
             doc = "Minecraft version",
+            configurable = False,
         ),
         "client_mappings": attr.label(
             mandatory = True,
@@ -160,7 +162,7 @@ game_version = macro(
             doc = "Server JAR file",
         ),
         "neoforge": attr.label(
-            mandatory = True,
+            mandatory = False,
             doc = "NeoForge compiled target",
         ),
         "intermediary": attr.label(

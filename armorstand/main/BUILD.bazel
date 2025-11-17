@@ -9,7 +9,7 @@ java_library(
         ["resources/**"],
         allow_empty = True,
     ),
-    visibility = ["//mod:__subpackages__"],
+    visibility = ["//armorstand:__subpackages__"],
 )
 
 expand_template(
@@ -32,7 +32,7 @@ kt_merge_library(
         ],
         allow_empty = True,
     ) + ["ModInfo.kt"],
-    visibility = ["//mod:__subpackages__"],
+    visibility = ["//armorstand:__subpackages__"],
     deps = [
         "//game/1.21.8:game_server_named",
         "@maven//:org_jetbrains_kotlinx_kotlinx_coroutines_core_jvm",

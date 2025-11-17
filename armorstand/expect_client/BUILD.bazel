@@ -10,7 +10,7 @@ kt_merge_library(
         allow_empty = True,
     ),
     expect = True,
-    visibility = ["//mod:__subpackages__"],
+    visibility = ["//armorstand:__subpackages__"],
     deps = [
         "//armorstand/game:remapped_client_access_widened_named",
     ],

@@ -6,7 +6,7 @@ remap_jar(
     classpath = ["//game/1.21.8:game_client_intermediary"],
     from_namespace = "intermediary",
     inputs = [
-        "@maven//:net_fabricmc_fabric_api_fabric_api",
+        "@maven_fabric_1_21_8//:net_fabricmc_fabric_api_fabric_api",
     ],
     mapping = "//game/1.21.8:game_merged_mapping",
     mixin = True,
@@ -36,7 +36,7 @@ kt_merge_library(
         include = ["resources/**"],
         allow_empty = True,
     ),
-    visibility = ["//mod:__subpackages__"],
+    visibility = ["//armorstand:__subpackages__"],
     exports = [
         "//armorstand/main",
     ],
