@@ -354,7 +354,7 @@ class IkTargetComponent(
             }
 
             is UpdatePhase.DebugRender -> {
-                val consumers = phase.vertexConsumerProvider
+                val consumers = phase.multiBufferSource
 
                 val boxBuffer = consumers.getBuffer(RenderLayer.getDebugQuads())
                 for (joint in chains) {

@@ -43,7 +43,7 @@ class JointComponent(
                 if (node.hasComponentOfType(Type.InfluenceSource)) {
                     return
                 }
-                val consumers = phase.vertexConsumerProvider
+                val consumers = phase.multiBufferSource
                 // TODO: find the real parent joint
                 node.parent?.let { parentJoint ->
                     val buffer = consumers.getBuffer(DEBUG_RENDER_LAYER)

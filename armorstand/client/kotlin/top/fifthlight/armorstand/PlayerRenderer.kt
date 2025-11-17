@@ -1,13 +1,13 @@
 package top.fifthlight.armorstand
 
 import com.mojang.blaze3d.systems.RenderSystem
+import com.mojang.blaze3d.vertex.PoseStack
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import net.minecraft.client.MinecraftClient
-import net.minecraft.client.network.AbstractClientPlayerEntity
-import net.minecraft.client.render.VertexConsumerProvider
-import net.minecraft.client.render.entity.state.PlayerEntityRenderState
-import net.minecraft.client.util.math.MatrixStack
+import net.minecraft.client.player.AbstractClientPlayer
+import net.minecraft.client.player.LocalPlayer
+import net.minecraft.client.renderer.MultiBufferSource
+import net.minecraft.client.renderer.entity.state.PlayerRenderState
 import org.joml.Matrix4f
 import top.fifthlight.armorstand.config.ConfigHolder
 import top.fifthlight.armorstand.state.ModelInstanceManager
@@ -62,8 +62,8 @@ object PlayerRenderer {
 
     @JvmStatic
     fun updatePlayer(
-        player: AbstractClientPlayerEntity,
-        state: PlayerEntityRenderState,
+        player: AbstractClientPlayer,
+        state: PlayerRenderState,
     ) {
         val uuid = player.uuid
         val entry = ModelInstanceManager.get(uuid, System.nanoTime())
@@ -78,9 +78,9 @@ object PlayerRenderer {
     @JvmStatic
     fun appendPlayer(
         uuid: UUID,
-        vanillaState: PlayerEntityRenderState,
-        matrixStack: MatrixStack,
-        consumers: VertexConsumerProvider,
+        vanillaState: PlayerRenderState,
+        matrixStack: PoseStack,
+        consumers: MultiBufferSource,
         light: Int,
         overlay: Int,
     ): Boolean {
