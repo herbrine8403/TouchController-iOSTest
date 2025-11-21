@@ -22,7 +22,7 @@ def _game_version_impl(name, visibility, version, client_mappings, client, serve
     extract_jar(
         name = intermediary_mapping,
         entry_path = "mappings/mappings.tiny",
-        filename = "_mappings/intermediary.tiny",
+        filename = "intermediary.tiny",
         input = intermediary,
     )
 
@@ -47,7 +47,6 @@ def _game_version_impl(name, visibility, version, client_mappings, client, serve
     merge_mapping(
         name = merged_mapping,
         complete_namespace = {
-            "intermediary": "official",
             "named": "intermediary",
         },
         inputs = [

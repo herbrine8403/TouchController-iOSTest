@@ -4,6 +4,7 @@ import com.mojang.blaze3d.systems.RenderSystem
 import com.mojang.blaze3d.vertex.PoseStack
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import net.minecraft.client.Minecraft
 import net.minecraft.client.player.AbstractClientPlayer
 import net.minecraft.client.player.LocalPlayer
 import net.minecraft.client.renderer.MultiBufferSource
@@ -95,23 +96,23 @@ object PlayerRenderer {
         controller.apply(uuid, instance, vanillaState)
         instance.updateRenderData()
 
-        val backupItem = matrixStack.peek().copy()
-        matrixStack.pop()
-        matrixStack.push()
+        val backupItem = matrixStack.last().copy()
+        matrixStack.popPose()
+        matrixStack.pushPose()
 
         if (ArmorStandClient.instance.debugBone) {
-            instance.debugRender(matrixStack.peek().positionMatrix, consumers)
+            instance.debugRender(matrixStack.last().pose(), consumers)
         } else {
-            matrix.set(matrixStack.peek().positionMatrix)
+            matrix.set(matrixStack.last().pose())
             matrix.scale(ConfigHolder.config.value.modelScale)
             val currentRenderer = RendererManager.currentRenderer
             val task = instance.createRenderTask(matrix, light, overlay)
             if (currentRenderer is ScheduledRenderer<*, *> && renderingWorld) {
                 currentRenderer.schedule(task)
             } else {
-                val mainTarget = MinecraftClient.getInstance().framebuffer
-                val colorFrameBuffer = RenderSystem.outputColorTextureOverride ?: mainTarget.colorAttachmentView!!
-                val depthFrameBuffer = RenderSystem.outputDepthTextureOverride ?: mainTarget.depthAttachmentView
+                val mainTarget = Minecraft.getInstance().mainRenderTarget
+                val colorFrameBuffer = RenderSystem.outputColorTextureOverride ?: mainTarget.colorTextureView!!
+                val depthFrameBuffer = RenderSystem.outputDepthTextureOverride ?: mainTarget.depthTextureView
                 currentRenderer.render(
                     colorFrameBuffer = colorFrameBuffer,
                     depthFrameBuffer = depthFrameBuffer,
@@ -122,21 +123,21 @@ object PlayerRenderer {
             }
         }
 
-        matrixStack.pop()
-        matrixStack.push()
-        matrixStack.peek().apply {
-            positionMatrix.set(backupItem.positionMatrix)
-            normalMatrix.set(backupItem.normalMatrix)
+        matrixStack.popPose()
+        matrixStack.pushPose()
+        matrixStack.last().apply {
+            pose().set(backupItem.pose())
+            normal().set(backupItem.normal())
         }
         return true
     }
 
     fun executeDraw() {
         renderingWorld = false
-        val mainTarget = MinecraftClient.getInstance().framebuffer
+        val mainTarget = Minecraft.getInstance().mainRenderTarget
         RendererManager.currentRendererScheduled?.let { renderer ->
-            val colorFrameBuffer = RenderSystem.outputColorTextureOverride ?: mainTarget.colorAttachmentView!!
-            val depthFrameBuffer = RenderSystem.outputDepthTextureOverride ?: mainTarget.depthAttachmentView
+            val colorFrameBuffer = RenderSystem.outputColorTextureOverride ?: mainTarget.colorTextureView!!
+            val depthFrameBuffer = RenderSystem.outputDepthTextureOverride ?: mainTarget.depthTextureView
             renderer.executeTasks(colorFrameBuffer, depthFrameBuffer)
         }
     }

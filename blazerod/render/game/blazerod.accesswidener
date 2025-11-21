@@ -9,7 +9,7 @@ accessible class com/mojang/blaze3d/opengl/DirectStateAccess$Core
 accessible class com/mojang/blaze3d/opengl/DirectStateAccess$Emulated
 accessible method com/mojang/blaze3d/opengl/GlCommandEncoder executeDrawMultiple (Lcom/mojang/blaze3d/opengl/GlRenderPass;IIILcom/mojang/blaze3d/vertex/VertexFormat$IndexType;I)V
 accessible field com/mojang/blaze3d/vertex/VertexFormatElement ELEMENTS Ljava/util/List;
-accessible field net/minecraft/client/renderer/texture/OverlayTexture texture Lnet/minecraft/client/texture/NativeImageBackedTexture;
+accessible field net/minecraft/client/renderer/texture/OverlayTexture texture Lnet/minecraft/client/renderer/texture/DynamicTexture;
 accessible class com/mojang/blaze3d/opengl/GlDevice$ShaderKey
 accessible method com/mojang/blaze3d/opengl/GlCommandEncoder executeDraw (Lcom/mojang/blaze3d/opengl/GlRenderPass;IIILcom/mojang/blaze3d/vertex/VertexFormat$IndexType;I)V
 accessible field com/mojang/blaze3d/opengl/GlTexture id I

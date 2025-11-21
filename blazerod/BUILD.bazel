@@ -86,7 +86,7 @@ kt_jvm_library(
     exports = [
         "//blazerod/model/model-base",
         "//blazerod/model/model-formats",
-        "//blazerod/render:render_neoforge_unmapped",
+        "//blazerod/render:render_neoforge",
     ],
 )
 

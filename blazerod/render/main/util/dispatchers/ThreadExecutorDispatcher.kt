@@ -6,7 +6,7 @@ import kotlinx.coroutines.Runnable
 import net.minecraft.util.thread.BlockableEventLoop
 import kotlin.coroutines.CoroutineContext
 
-class ThreadExecutorDispatcher(private val executor: BlockableEventLoop<*>) : CoroutineDispatcher() {
+class BlockableEventLoopDispatcher(private val executor: BlockableEventLoop<*>) : CoroutineDispatcher() {
     override fun isDispatchNeeded(context: CoroutineContext) = !executor.isSameThread()
 
     override fun dispatch(context: CoroutineContext, block: Runnable) {

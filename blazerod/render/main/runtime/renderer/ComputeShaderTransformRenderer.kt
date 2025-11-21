@@ -11,7 +11,6 @@ import it.unimi.dsi.fastutil.ints.Int2ReferenceAVLTreeMap
 import it.unimi.dsi.fastutil.ints.Int2ReferenceMap
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.RenderPipelines
-import net.minecraft.client.renderer.RenderType
 import net.minecraft.client.renderer.texture.OverlayTexture
 import net.minecraft.resources.ResourceLocation
 import org.joml.Matrix4f
@@ -425,7 +424,7 @@ class ComputeShaderTransformRenderer private constructor() :
             modelMatrix.mulLocal(task.modelMatrix)
             modelMatrix.mulLocal(RenderSystem.getModelViewStack())
 
-            val dynamicUniforms = RenderSystem.getDynamicUniforms().write(
+            val dynamicUniforms = RenderSystem.getDynamicUniforms().writeTransform(
                 modelMatrix,
                 material.baseColor.toVector4f(baseColor),
                 RenderSystem.getModelOffset(),

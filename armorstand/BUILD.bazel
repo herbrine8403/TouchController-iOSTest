@@ -24,20 +24,14 @@ alias(
 )
 
 alias(
-    name = "mod_neoforge_unmapped",
-    actual = "//armorstand/neoforge_client:neoforge_unmapped",
+    name = "mod_neoforge_merged",
+    actual = "//armorstand/neoforge_client:neoforge_merged",
     visibility = ["//visibility:public"],
 )
 
 alias(
     name = "mod_fabric_unmapped_merged",
     actual = "//armorstand/fabric_client:fabric_unmapped_merged",
-    visibility = ["//visibility:public"],
-)
-
-alias(
-    name = "mod_neoforge_unmapped_merged",
-    actual = "//armorstand/neoforge_client:neoforge_unmapped_merged",
     visibility = ["//visibility:public"],
 )
 
@@ -49,17 +43,6 @@ remap_jar(
     mapping = "//game/1.21.8:game_merged_mapping",
     mixin = True,
     to_namespace = "intermediary",
-    visibility = ["//visibility:public"],
-)
-
-remap_jar(
-    name = "mod_neoforge_merged",
-    classpath = ["//game/1.21.8:game_client_named"],
-    from_namespace = "named",
-    inputs = [":mod_neoforge_unmapped_merged"],
-    mapping = "//game/1.21.8:game_merged_mapping",
-    mixin = True,
-    to_namespace = "mojang",
     visibility = ["//visibility:public"],
 )
 

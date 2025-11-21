@@ -15,7 +15,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import top.fifthlight.armorstand.PlayerRenderer;
-import top.fifthlight.armorstand.extension.internal.PlayerEntityRenderStateExtInternal;
+import top.fifthlight.armorstand.extension.internal.PlayerRenderStateExtInternal;
 
 @Mixin(LivingEntityRenderer.class)
 public abstract class PlayerModelMixin {
@@ -44,7 +44,7 @@ public abstract class PlayerModelMixin {
         if (!(state instanceof PlayerRenderState)) {
             return original.call(instance, state, showBody, translucent, showOutline);
         }
-        var uuid = ((PlayerEntityRenderStateExtInternal) state).armorstand$getUuid();
+        var uuid = ((PlayerRenderStateExtInternal) state).armorstand$getUuid();
         if (uuid == null) {
             return original.call(instance, state, showBody, translucent, showOutline);
         }

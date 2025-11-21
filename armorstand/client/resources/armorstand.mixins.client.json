@@ -13,7 +13,7 @@
     "GameRendererMixin",
     "MinecraftClientMixin",
     "MouseMixin",
-    "PlayerEntityRendererMixin",
+    "PlayerRendererMixin",
     "PlayerEntityRenderStateMixin",
     "PlayerModelMixin"
   ]
