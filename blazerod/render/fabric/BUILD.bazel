@@ -68,4 +68,7 @@ merge_library_jar(
     name = "fabric_unmapped_merged",
     visibility = ["//blazerod/render:__subpackages__"],
     deps = [":fabric_unmapped"],
+    manifest_entries = {
+        "Fabric-Loom-Mixin-Remap-Type": "static",
+    },
 )
