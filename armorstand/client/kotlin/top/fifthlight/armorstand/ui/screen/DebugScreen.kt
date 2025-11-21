@@ -56,6 +56,6 @@ class DebugScreen(parent: Screen? = null) : BaseArmorStandScreen<DebugScreen>(
                 add(closeButton, LayoutSettings.defaults().apply { alignVerticallyMiddle() })
             })
         rootLayout.arrangeElements()
-        rootLayout.visitWidgets { addWidget(it) }
+        rootLayout.visitWidgets { addRenderableWidget(it) }
     }
 }

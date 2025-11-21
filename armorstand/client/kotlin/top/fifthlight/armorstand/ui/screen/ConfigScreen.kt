@@ -110,7 +110,7 @@ class ConfigScreen(parent: Screen? = null) : ArmorStandScreen<ConfigScreen, Conf
     }
 
     private val pager by lazy {
-        PagingLayoutElement(
+        PagingWidget(
             textRenderer = font,
             currentPage = viewModel.uiState.value.currentOffset,
             totalPages = viewModel.uiState.value.totalItems,
@@ -167,7 +167,7 @@ class ConfigScreen(parent: Screen? = null) : ArmorStandScreen<ConfigScreen, Conf
                             grid.add(button)
                         }
                         grid.arrangeElements()
-                        grid.visitWidgets { addWidget(it) }
+                        grid.visitWidgets { addRenderableWidget(it) }
                     }
                 }
             }
@@ -436,7 +436,7 @@ class ConfigScreen(parent: Screen? = null) : ArmorStandScreen<ConfigScreen, Conf
                             Surface.footerSeparator(),
                         ),
                     ).also {
-                        addRenderableOnly(it)
+                        addRenderableWidget(it)
                     }
                 )
             }
@@ -460,10 +460,10 @@ class ConfigScreen(parent: Screen? = null) : ArmorStandScreen<ConfigScreen, Conf
         viewModel.updatePageSize((rows * columns).takeIf { it > 0 })
         modelGrid.visitWidgets { removeWidget(it) }
 
-        layout.visitWidgets { addWidget(it) }
+        layout.visitWidgets { addRenderableWidget(it) }
 
         pager.init()
-        addRenderableOnly(pager)
+        addRenderableWidget(pager)
         if (!initialized) {
             initialized = true
             tabNavigationLayoutElement.selectTab(0, false)

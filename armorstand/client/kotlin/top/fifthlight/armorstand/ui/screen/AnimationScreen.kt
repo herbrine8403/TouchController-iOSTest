@@ -236,7 +236,7 @@ class AnimationScreen(parent: Screen? = null) : ArmorStandScreen<AnimationScreen
 
         controlBar.arrangeElements()
         addRenderableOnly(controlBar)
-        controlBar.visitWidgets { addWidget(it) }
+        controlBar.visitWidgets { addRenderableWidget(it) }
 
         val animationPanel = BorderLayout(
             x = width - animationPanelWidth - 16,
@@ -268,7 +268,7 @@ class AnimationScreen(parent: Screen? = null) : ArmorStandScreen<AnimationScreen
         }
         animationPanel.arrangeElements()
         addRenderableOnly(animationPanel)
-        animationPanel.visitWidgets { addWidget(it) }
+        animationPanel.visitWidgets { addRenderableWidget(it) }
 
         val ikPanel = BorderLayout(
             x = 16,
@@ -296,7 +296,7 @@ class AnimationScreen(parent: Screen? = null) : ArmorStandScreen<AnimationScreen
         }
         ikPanel.arrangeElements()
         addRenderableOnly(ikPanel)
-        ikPanel.visitWidgets { addWidget(it) }
+        ikPanel.visitWidgets { addRenderableWidget(it) }
     }
 
     override fun tick() {

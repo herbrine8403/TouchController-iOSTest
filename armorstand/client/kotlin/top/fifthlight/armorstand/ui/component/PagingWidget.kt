@@ -15,7 +15,7 @@ import net.minecraft.util.CommonColors
 import net.minecraft.client.gui.navigation.ScreenRectangle
 import java.util.function.Consumer
 
-class PagingLayoutElement(
+class PagingWidget(
     private val textRenderer: Font,
     height: Int = 20,
     var currentPage: Int = 1,

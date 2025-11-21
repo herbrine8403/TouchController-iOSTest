@@ -109,11 +109,11 @@ java_binary(
         "-Ddev.launch.copyFiles=" +
             "$(rlocationpath @makeup_ultra_fast//:primary):shaderpacks/MakeUp-UltraFast-9.2.zip," +
             "$(rlocationpath //blazerod/model/example-models:example-models):models",
-        "-Dblazerod.debug=true",
-        "-Dblazerod.debug.gui=true",
-        "-Darmorstand.debug=true",
-        "-Darmorstand.debug.bone=false",
-        "-Darmorstand.debug.gui=false",
+        #"-Dblazerod.debug=true",
+        #"-Dblazerod.debug.gui=true",
+        #"-Darmorstand.debug=true",
+        #"-Darmorstand.debug.bone=false",
+        #"-Darmorstand.debug.gui=false",
         "-Xmx4G",
     ],
     main_class = "top.fifthlight.fabazel.devlaunchwrapper.DevLaunchWrapper",
