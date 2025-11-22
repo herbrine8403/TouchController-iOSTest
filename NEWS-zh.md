@@ -4,6 +4,7 @@
 
 - 添加了使用 Forge 输入事件模组的支持（例如 YSM）
 - 添加了台湾繁体中文翻译 (LanYun2022)
+- 完善了 Forge 上的 LWJGL3 支持 (Lessebq)
 
 ## 0.2.1-beta14
 
