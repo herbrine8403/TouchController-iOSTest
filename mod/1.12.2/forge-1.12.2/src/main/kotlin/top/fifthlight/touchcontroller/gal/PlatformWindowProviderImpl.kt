@@ -10,9 +10,9 @@ object PlatformWindowProviderImpl : PlatformWindowProvider {
     private val logger = LoggerFactory.getLogger(PlatformWindowProviderImpl::class.java)
 
     override val windowWidth: Int
-        get() = Display.getWidth()
+        get() = (Display.getWidth() / Display.getPixelScaleFactor()).toInt()
     override val windowHeight: Int
-        get() = Display.getHeight()
+        get() = (Display.getHeight() / Display.getPixelScaleFactor()).toInt()
 
     private fun getCleanroomWindow(): Long? {
         val displayClass = runCatching {
@@ -43,6 +43,8 @@ object PlatformWindowProviderImpl : PlatformWindowProvider {
 
             val glfwNativeClass = runCatching {
                 Class.forName("org.lwjgl3.glfw.GLFWNativeWin32")
+            }.getOrNull() ?: runCatching {
+                Class.forName("org.lwjgl.glfw.GLFWNativeWin32")
             }.getOrNull() ?: return null
             return glfwNativeClass.methods?.firstOrNull {
                 it.name == "glfwGetWin32Window"
@@ -73,6 +75,8 @@ object PlatformWindowProviderImpl : PlatformWindowProvider {
 
         val glfwNativeClass = runCatching {
             Class.forName("org.lwjgl3.glfw.GLFWNativeWayland")
+        }.getOrNull() ?: runCatching {
+            Class.forName("org.lwjgl.glfw.GLFWNativeWayland")
         }.getOrNull() ?: return null
         val displayPointer = glfwNativeClass.methods?.firstOrNull {
             it.name == "glfwGetWaylandDisplay"
