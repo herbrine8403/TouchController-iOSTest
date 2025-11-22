@@ -12,6 +12,7 @@ mdbook(
     name = "wiki",
     srcs = glob([
         "src/**/*.md",
+        "src/**/assets/**",
         "theme/**",
     ]),
     book = "book.toml",
