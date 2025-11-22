@@ -1,5 +1,5 @@
-load("@rules_java//java:defs.bzl", "JavaInfo")
 load("@//repo/neoform:java_source_info.bzl", "JavaSourceInfo")
+load("@rules_java//java:defs.bzl", "JavaInfo")
 
 def _inject_zip_content_impl(ctx):
     input_extension = ctx.file.input.extension
@@ -31,7 +31,7 @@ def _inject_zip_content_impl(ctx):
         JavaInfo(
             output_jar = output_jar,
             compile_jar = output_jar,
-        )
+        ),
     ]
 
 inject_zip_content = rule(

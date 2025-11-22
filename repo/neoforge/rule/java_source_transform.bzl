@@ -44,7 +44,7 @@ def _java_source_transform_impl(ctx):
 
     return [
         DefaultInfo(
-            files = depset([output_jar])
+            files = depset([output_jar]),
         ),
         JavaSourceTransformInfo(
             output_jar = output_jar,
@@ -53,7 +53,7 @@ def _java_source_transform_impl(ctx):
         JavaSourceInfo(
             source_jar = output_jar,
             deps = [source_info],
-        )
+        ),
     ]
 
 java_source_transform = rule(

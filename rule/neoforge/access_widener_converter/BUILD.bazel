@@ -7,5 +7,5 @@ java_binary(
     visibility = ["//visibility:public"],
     deps = [
         "@maven//:net_fabricmc_access_widener",
-    ]
+    ],
 )

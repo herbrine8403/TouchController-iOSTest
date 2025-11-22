@@ -1,4 +1,5 @@
 load("@bazel_skylib//rules:expand_template.bzl", "expand_template")
+load("@rules_java//java:defs.bzl", "java_library")
 load("//armorstand:properties.bzl", "armorstand_version", "license")
 load("//rule:merge_library.bzl", "kt_merge_library")
 

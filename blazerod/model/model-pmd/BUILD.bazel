@@ -18,12 +18,12 @@ kt_jvm_library(
         ":mod_info_json",
         "//blazerod:icon",
     ],
-    resources = glob(["resources/**"]),
     resource_strip_prefix = "blazerod/model/model-pmd/resources",
+    resources = glob(["resources/**"]),
     visibility = ["//visibility:public"],
     deps = [
         "//blazerod/model/model-base",
-        "@maven//:org_slf4j_slf4j_api",
         "@maven//:org_joml_joml",
+        "@maven//:org_slf4j_slf4j_api",
     ],
 )

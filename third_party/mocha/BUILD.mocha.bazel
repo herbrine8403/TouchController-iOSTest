@@ -2,12 +2,12 @@ load("@rules_java//java:defs.bzl", "java_library")
 
 java_library(
     name = "mocha",
-    visibility = ["//visibility:public"],
     srcs = glob([
         "**/*.java",
     ]) + [
         "@//third_party/mocha:EntityObjectProperty.java",
     ],
+    visibility = ["//visibility:public"],
     deps = [
         "@maven//:org_jetbrains_annotations",
         "@maven_blazerod//:org_javassist_javassist",

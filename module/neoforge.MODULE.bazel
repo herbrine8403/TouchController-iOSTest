@@ -45,37 +45,46 @@ neoforge_versions = {
 }
 
 neoform = use_extension("//repo:neoform.bzl", "neoform")
+
 neoforge = use_extension("//repo:neoforge.bzl", "neoforge")
+
 [
     (
         neoform.version(
-            version = data["neoform_version"],
-            sha256 = data["neoform_sha256"],
             client_jar = "@minecraft//%s:client" % version,
-            server_jar = "@minecraft//%s:server" % version,
-            client_mapping = "@minecraft//%s:client_mappings" % version,
-            server_mapping = "@minecraft//%s:server_mappings" % version,
             client_libraries = "@minecraft//%s:client_libraries" % version,
+            client_mapping = "@minecraft//%s:client_mappings" % version,
+            server_jar = "@minecraft//%s:server" % version,
+            server_mapping = "@minecraft//%s:server_mappings" % version,
+            sha256 = data["neoform_sha256"],
+            version = data["neoform_version"],
         ),
-        use_repo(neoform, **{
-            ("neoform_%s" % version.replace(".", "_")): ("neoform_%s" % data["neoform_version"].replace(".", "_").replace("-", "_")),
-        }),
+        use_repo(
+            neoform,
+            **{
+                ("neoform_%s" % version.replace(".", "_")): ("neoform_%s" % data["neoform_version"].replace(".", "_").replace("-", "_")),
+            }
+        ),
         neoforge.version(
-            version = data["neoforge_version"],
-            userdev_sha256 = data["neoforge_userdev_sha256"],
+            joined_patched_sources = "@neoform_%s//tasks/joined_patch" % version.replace(".", "_"),
             sources_sha256 = data["neoforge_sources_sha256"],
             universal_sha256 = data["neoforge_universal_sha256"],
-            joined_patched_sources = "@neoform_%s//tasks/joined_patch" % version.replace(".", "_"),
+            userdev_sha256 = data["neoforge_userdev_sha256"],
+            version = data["neoforge_version"],
         ),
-        use_repo(neoforge, **{
-            ("neoforge_%s" % version.replace(".", "_")): ("neoforge_%s" % data["neoforge_version"].replace(".", "_")),
-        }),
+        use_repo(
+            neoforge,
+            **{
+                ("neoforge_%s" % version.replace(".", "_")): ("neoforge_%s" % data["neoforge_version"].replace(".", "_")),
+            }
+        ),
     )
     for version, data in neoforge_versions.items()
 ]
 
 neoform.pin(pin_file = "//:neoform_pin.txt")
-neoforge.pin(pin_file = "//:neoforge_pin.txt")
 
+neoforge.pin(pin_file = "//:neoforge_pin.txt")
 use_repo(neoforge, "neoforge_pin")
+
 use_repo(neoform, "neoform_pin")

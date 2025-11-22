@@ -30,6 +30,6 @@ kt_jvm_library(
         "//blazerod:icon",
     ],
     visibility = ["//visibility:public"],
-    deps = ["//blazerod/model/model-base"],
     runtime_deps = format_targets,
+    deps = ["//blazerod/model/model-base"],
 )

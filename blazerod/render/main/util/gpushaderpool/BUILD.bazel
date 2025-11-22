@@ -2,7 +2,10 @@ load("//rule:merge_library.bzl", "kt_merge_library")
 
 kt_merge_library(
     name = "gpushaderpool",
-    srcs = ["GpuShaderDataPool.kt", "SlicedMappableRingBuffer.kt"],
+    srcs = [
+        "GpuShaderDataPool.kt",
+        "SlicedMappableRingBuffer.kt",
+    ],
     merge_deps = [
         "//blazerod/render/main/extension",
         "//blazerod/render/main/util/math",

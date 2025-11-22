@@ -19,13 +19,13 @@ kt_jvm_library(
         ":mod_info_json",
         "//blazerod:icon",
     ],
-    resources = glob(["resources/**"]),
     resource_strip_prefix = "blazerod/model/model-gltf/resources",
+    resources = glob(["resources/**"]),
     visibility = ["//visibility:public"],
     deps = [
         "//:kotlin_serialization",
         "//blazerod/model/model-base",
-        "@maven//:org_joml_joml",
         "@maven//:org_jetbrains_kotlinx_kotlinx_serialization_json_jvm",
+        "@maven//:org_joml_joml",
     ],
 )

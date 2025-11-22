@@ -2,6 +2,6 @@ load("//rule:merge_library.bzl", "kt_merge_library")
 
 kt_merge_library(
     name = "debug",
-    visibility = ["//blazerod/render:__subpackages__"],
     srcs = glob(["*.kt"]),
+    visibility = ["//blazerod/render:__subpackages__"],
 )

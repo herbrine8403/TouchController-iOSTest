@@ -1,5 +1,5 @@
-load("@rules_java//java:defs.bzl", "java_library")
 load("@bazel_skylib//rules:expand_template.bzl", "expand_template")
+load("@rules_java//java:defs.bzl", "java_library")
 
 def _mod_info_jar_impl(name, visibility, fabric, neoforge, resource_strip_prefix, substitutions):
     resources = []
@@ -16,7 +16,7 @@ def _mod_info_jar_impl(name, visibility, fabric, neoforge, resource_strip_prefix
         neoforge_name = name + "_neoforge_expanded"
         mod_id = substitutions["${mod_id}"]
         if mod_id:
-            substitutions = substitutions | { "${mod_id}": mod_id.replace("-", "_") }
+            substitutions = substitutions | {"${mod_id}": mod_id.replace("-", "_")}
         expand_template(
             name = neoforge_name,
             template = neoforge,

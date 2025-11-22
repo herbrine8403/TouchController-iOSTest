@@ -18,8 +18,8 @@ kt_jvm_library(
         ":mod_info_json",
         "//blazerod:icon",
     ],
-    resources = glob(["resources/**"]),
     resource_strip_prefix = "blazerod/model/model-vmd/resources",
+    resources = glob(["resources/**"]),
     visibility = ["//visibility:public"],
     deps = [
         "//blazerod/model/model-base",

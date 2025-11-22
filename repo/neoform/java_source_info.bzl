@@ -15,5 +15,5 @@ JavaSourceInfo, _ = provider(
         "transitive_libraries": "depset. Transitive libraries.",
         "libraries": "sequence of files. libraries.",
     },
-    init = _java_source_info_init
+    init = _java_source_info_init,
 )

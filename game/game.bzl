@@ -2,9 +2,9 @@
 
 load("@rules_java//java:java_import.bzl", "java_import")
 load("//rule:extract_jar.bzl", "extract_jar")
+load("//rule:jar.bzl", "jar")
 load("//rule:merge_mapping.bzl", "merge_mapping", "merge_mapping_input")
 load("//rule:remap_jar.bzl", "remap_jar")
-load("//rule:jar.bzl", "jar")
 
 def _game_version_impl(name, visibility, version, client_mappings, client, server, neoforge, intermediary, sodium_intermediary, iris_intermediary):
     intermediary_mapping = name + "_intermediary_mapping"

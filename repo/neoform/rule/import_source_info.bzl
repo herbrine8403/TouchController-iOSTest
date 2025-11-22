@@ -27,7 +27,7 @@ import_source_info = rule(
     implementation = _import_source_info_impl,
     attrs = {
         "deps": attr.label_list(
-            providers = [JavaSourceInfo]
+            providers = [JavaSourceInfo],
         ),
     },
 )

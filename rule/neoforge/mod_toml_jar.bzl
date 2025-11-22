@@ -1,5 +1,5 @@
-load("@rules_java//java:defs.bzl", "java_library")
 load("@bazel_skylib//rules:expand_template.bzl", "expand_template")
+load("@rules_java//java:defs.bzl", "java_library")
 
 def _neoforge_mod_toml_jar_impl(name, visibility, src, resource_strip_prefix, substitutions):
     expand_template(

@@ -2,10 +2,10 @@ load("@rules_java//java:defs.bzl", "java_library")
 
 java_library(
     name = "api",
-    visibility = ["//visibility:public"],
     srcs = [
-        "ExpectFactory.java",
-        "ActualImpl.java",
         "ActualConstructor.java",
+        "ActualImpl.java",
+        "ExpectFactory.java",
     ],
+    visibility = ["//visibility:public"],
 )

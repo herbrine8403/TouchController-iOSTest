@@ -19,16 +19,16 @@ kt_merge_library(
         "//blazerod/render/main/util/math",
         "//blazerod/render/main/util/objectpool",
         "//blazerod/render/main/util/cowbuffer",
-        "//blazerod/render/main/util/iterator"
+        "//blazerod/render/main/util/iterator",
     ],
     visibility = ["//blazerod/render:__subpackages__"],
     deps = [
         "//blazerod/model/model-base",
         "//blazerod/render/game:remapped_client_access_widened_named",
+        "@maven//:it_unimi_dsi_fastutil",
         "@maven//:org_jetbrains_kotlin_kotlin_stdlib",
         "@maven//:org_jetbrains_kotlinx_kotlinx_coroutines_core_jvm",
         "@maven//:org_joml_joml",
-        "@maven//:it_unimi_dsi_fastutil",
         "@maven_blazerod//:org_lwjgl_lwjgl",
     ],
 )

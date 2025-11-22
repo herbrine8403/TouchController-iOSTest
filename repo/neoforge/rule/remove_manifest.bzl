@@ -26,5 +26,5 @@ remove_manifest = rule(
             executable = True,
             cfg = "exec",
         ),
-    }
+    },
 )

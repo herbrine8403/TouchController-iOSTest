@@ -51,7 +51,7 @@ fabric_merge_jij = rule(
         "deps": attr.label_keyed_string_dict(
             mandatory = True,
             allow_files = [".jar"],
-            doc = "JARs to be merged as jar-in-jar"
+            doc = "JARs to be merged as jar-in-jar",
         ),
         "_jij_merger_executable": attr.label(
             default = Label("@//rule/fabric/jij_merger"),

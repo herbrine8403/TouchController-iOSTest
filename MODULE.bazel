@@ -13,21 +13,31 @@ bazel_dep(name = "bazel_lib", version = "3.0.0")
 bazel_dep(name = "platforms", version = "1.0.0")
 bazel_dep(name = "rules_rust", version = "0.67.0")
 bazel_dep(name = "rules_rust_mdbook", version = "0.67.0")
+bazel_dep(name = "rules_android", version = "0.6.6")
+bazel_dep(name = "rules_android_ndk", version = "0.1.3")
 
 include("//module:rust.MODULE.bazel")
+
+include("//module:android.MODULE.bazel")
+
 include("//module:mdbook.MODULE.bazel")
 
 include("//module:minecraft.MODULE.bazel")
+
 include("//module:rules.MODULE.bazel")
 
 include("//module:neoforge.MODULE.bazel")
+
 include("//module:fabric.MODULE.bazel")
 
 include("//module:sodium.MODULE.bazel")
+
 include("//module:iris.MODULE.bazel")
+
 include("//module:modrinth.MODULE.bazel")
 
 include("//module:blazerod.MODULE.bazel")
+
 include("//module:armorstand.MODULE.bazel")
 
 maven = use_extension("@rules_jvm_external//:extensions.bzl", "maven")

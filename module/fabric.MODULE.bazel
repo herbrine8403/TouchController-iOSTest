@@ -114,17 +114,16 @@ fabric_versions = {
                 "eu.pb4:placeholder-api:%s" % entry["placeholder_api"],
                 "net.fabricmc:fabric-language-kotlin:1.13.5+kotlin.2.2.10",
             ],
+            fetch_sources = True,
+            lock_file = "//game/%s:maven_install_fabric.json" % version,
             repositories = [
                 "https://maven.fabricmc.net/",
                 "https://repo1.maven.org/maven2/",
                 "https://maven.terraformersmc.com/",
                 "https://maven.nucleoid.xyz/",
             ],
-            lock_file = "//game/%s:maven_install_fabric.json" % version,
-            fetch_sources = True,
         ),
         use_repo(maven, "maven_fabric_%s" % version.replace(".", "_")),
     )
     for version, entry in fabric_versions.items()
 ]
-

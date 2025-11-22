@@ -30,5 +30,5 @@ kt_junit_test = macro(
         "srcs": attr.label_list(allow_files = True),
         "data": attr.label_list(allow_files = True),
         "jvm_flags": attr.string_list(),
-    }
+    },
 )

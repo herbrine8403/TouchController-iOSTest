@@ -22,7 +22,7 @@ kt_merge_library(
     deps = [
         "//blazerod/model/model-base",
         "//blazerod/render/game:remapped_client_access_widened_named",
-        "@maven//:org_joml_joml",
         "@maven//:it_unimi_dsi_fastutil",
+        "@maven//:org_joml_joml",
     ],
 )

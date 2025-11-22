@@ -1,5 +1,4 @@
-load("@rules_java//java:defs.bzl", "java_common")
-load("@rules_java//java:defs.bzl", "JavaInfo")
+load("@rules_java//java:defs.bzl", "JavaInfo", "java_common")
 
 def _decompile_jar_impl(ctx):
     output_file = ctx.actions.declare_file("%s.jar" % ctx.label.name)

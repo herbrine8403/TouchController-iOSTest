@@ -3,4 +3,6 @@ common --tool_java_runtime_version=remotejdk_21
 common --tool_java_language_version=21
 common --java_language_version=21
 
+common --http_max_parallel_downloads=32
+
 build --worker_max_multiplex_instances=KotlinKsp=1

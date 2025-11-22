@@ -1,4 +1,4 @@
-load("@rules_java//java:defs.bzl", "java_common", "JavaInfo")
+load("@rules_java//java:defs.bzl", "JavaInfo", "java_common")
 
 def _java_merge_impl(ctx):
     deps_java_infos = [dep[JavaInfo] for dep in ctx.attr.deps if JavaInfo in dep]
