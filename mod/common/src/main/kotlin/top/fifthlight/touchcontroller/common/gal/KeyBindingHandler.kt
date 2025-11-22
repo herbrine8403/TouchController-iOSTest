@@ -6,6 +6,7 @@ import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import top.fifthlight.combine.data.Text
 import top.fifthlight.combine.data.TextFactory
+import top.fifthlight.touchcontroller.common.event.KeyEvents
 import kotlin.uuid.Uuid
 
 @Serializable
@@ -55,7 +56,9 @@ abstract class KeyBindingState {
 
     // Click for once. You probably don't want to use this as it only increases press count, without actually pressing
     // the button. If it causes problems, use clicked = true instead.
-    abstract fun click()
+    open fun click() {
+        KeyEvents.onKeyDown(this)
+    }
 
     abstract fun haveClickCount(): Boolean
 
@@ -122,7 +125,6 @@ abstract class KeyBindingState {
         override val categoryName: Text
             get() = textFactory.empty()
 
-        override fun click() {}
         override fun haveClickCount() = false
     }
 }

@@ -22,11 +22,17 @@ import top.fifthlight.touchcontroller.common.event.WindowEvents
 import top.fifthlight.touchcontroller.common.model.ControllerHudModel
 import top.fifthlight.touchcontroller.gal.PlatformWindowProviderImpl
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback as FabricHudRenderCallback
+import net.minecraft.client.option.KeyBinding
+import top.fifthlight.touchcontroller.common.event.KeyEvents
+import top.fifthlight.touchcontroller.gal.KeyBindingStateImpl
 
 class TouchController : ClientModInitializer, KoinComponent {
     private val logger = LoggerFactory.getLogger(TouchController::class.java)
     companion object {
         var loaded = false
+
+        @JvmStatic
+        var isInEmulatedSetDown = false
     }
 
     override fun onInitializeClient() {
@@ -55,6 +61,16 @@ class TouchController : ClientModInitializer, KoinComponent {
                 val canvas = CanvasImpl(drawContext)
                 RenderSystem.enableBlend()
                 RenderEvents.onHudRender(canvas)
+            }
+        }
+
+        KeyEvents.addHandler { state ->
+            val vanillaState = state as KeyBindingStateImpl
+            val vanillaKeyBinding = vanillaState.keyBinding
+            if (vanillaKeyBinding.javaClass != KeyBinding::class.java) {
+                isInEmulatedSetDown = true
+                vanillaState.keyBinding.isPressed = true
+                isInEmulatedSetDown = false
             }
         }
 

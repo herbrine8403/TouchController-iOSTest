@@ -6,7 +6,9 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents
+import net.fabricmc.fabric.api.client.screen.v1.ScreenKeyboardEvents
 import net.fabricmc.fabric.api.event.client.player.ClientPlayerBlockBreakEvents
+import net.minecraft.client.KeyMapping
 import net.minecraft.client.Minecraft
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
@@ -19,6 +21,7 @@ import top.fifthlight.touchcontroller.common.event.*
 import top.fifthlight.touchcontroller.common.model.ControllerHudModel
 import top.fifthlight.touchcontroller.common_1_21_1.versionModule
 import top.fifthlight.touchcontroller.common_1_21_x.GameConfigEditorImpl
+import top.fifthlight.touchcontroller.common_1_21_x.gal.KeyBindingStateImpl
 import top.fifthlight.touchcontroller.common_1_21_x.gal.PlatformWindowProviderImpl
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback as FabricHudRenderCallback
 
@@ -27,6 +30,9 @@ class TouchController : ClientModInitializer, KoinComponent {
     
     companion object {
         var loaded = false
+
+        @JvmStatic
+        var isInEmulatedSetDown = false
     }
 
     override fun onInitializeClient() {
@@ -57,6 +63,16 @@ class TouchController : ClientModInitializer, KoinComponent {
                 RenderSystem.enableBlend()
                 RenderEvents.onHudRender(canvas)
                 RenderSystem.disableBlend()
+            }
+        }
+
+        KeyEvents.addHandler { state ->
+            val vanillaState = state as KeyBindingStateImpl
+            val vanillaKeyBinding = vanillaState.keyBinding
+            if (vanillaKeyBinding.javaClass != KeyMapping::class.java) {
+                isInEmulatedSetDown = true
+                vanillaState.keyBinding.isDown = true
+                isInEmulatedSetDown = false
             }
         }
 

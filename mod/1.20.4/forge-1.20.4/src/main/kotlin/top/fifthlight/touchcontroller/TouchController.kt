@@ -1,9 +1,11 @@
 package top.fifthlight.touchcontroller
 
+import com.mojang.blaze3d.platform.InputConstants
 import com.mojang.blaze3d.systems.RenderSystem
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.screens.Screen
 import net.minecraftforge.client.event.ClientPlayerNetworkEvent
+import net.minecraftforge.client.event.InputEvent
 import net.minecraftforge.client.event.RenderGuiEvent
 import net.minecraftforge.client.event.RenderHighlightEvent
 import net.minecraftforge.common.MinecraftForge
@@ -27,6 +29,7 @@ import top.fifthlight.touchcontroller.common.model.ControllerHudModel
 import top.fifthlight.touchcontroller.common.ui.screen.getConfigScreen
 import top.fifthlight.touchcontroller.common_1_20_4.versionModule
 import top.fifthlight.touchcontroller.common_1_20_x.GameConfigEditorImpl
+import top.fifthlight.touchcontroller.common_1_20_x.gal.KeyBindingStateImpl
 import top.fifthlight.touchcontroller.common_1_20_x.gal.PlatformWindowProviderImpl
 
 @Mod(BuildInfo.MOD_ID)
@@ -80,6 +83,14 @@ class TouchController(context: FMLJavaModLoadingContext) : KoinComponent {
 
         MinecraftForge.registerConfigScreen { client, parent ->
             getConfigScreen(parent) as Screen
+        }
+
+        KeyEvents.addHandler { state ->
+            val keyBinding = state as KeyBindingStateImpl
+            val vanillaBinding = keyBinding.keyBinding
+            MinecraftForge.EVENT_BUS.post(InputEvent.Key(
+                vanillaBinding.key.value, 0, InputConstants.PRESS, 0,
+            ))
         }
 
         val controllerHudModel: ControllerHudModel = get()

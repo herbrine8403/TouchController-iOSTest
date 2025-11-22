@@ -10,6 +10,7 @@ import net.minecraftforge.fml.common.Mod
 import net.minecraftforge.fml.common.event.FMLInitializationEvent
 import net.minecraftforge.fml.common.event.FMLLoadCompleteEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+import net.minecraftforge.fml.common.gameevent.InputEvent
 import net.minecraftforge.fml.common.gameevent.PlayerEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.koin.core.component.KoinComponent
@@ -21,6 +22,7 @@ import top.fifthlight.touchcontroller.buildinfo.BuildInfo
 import top.fifthlight.touchcontroller.common.config.GlobalConfigHolder
 import top.fifthlight.touchcontroller.common.di.appModule
 import top.fifthlight.touchcontroller.common.event.*
+import top.fifthlight.touchcontroller.gal.KeyBindingStateImpl
 import top.fifthlight.touchcontroller.gal.PlatformWindowProviderImpl
 
 @Mod(
@@ -68,6 +70,10 @@ class TouchController : KoinComponent {
     private fun initialize() {
         val configHolder: GlobalConfigHolder = get()
         configHolder.load()
+
+        KeyEvents.addHandler {
+            MinecraftForge.EVENT_BUS.post(InputEvent.KeyInputEvent())
+        }
 
         MinecraftForge.EVENT_BUS.register(object {
             @SubscribeEvent

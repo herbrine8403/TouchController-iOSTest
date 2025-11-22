@@ -1,12 +1,15 @@
 package top.fifthlight.touchcontroller
 
+import com.mojang.blaze3d.platform.InputConstants
 import com.mojang.blaze3d.systems.RenderSystem
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.screens.Screen
 import net.minecraftforge.client.ConfigScreenHandler.ConfigScreenFactory
 import net.minecraftforge.client.event.ClientPlayerNetworkEvent
+import net.minecraftforge.client.event.InputEvent
 import net.minecraftforge.client.event.RenderGuiEvent
 import net.minecraftforge.client.event.RenderHighlightEvent
+import net.minecraftforge.client.settings.KeyModifier
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.event.TickEvent
 import net.minecraftforge.event.level.BlockEvent
@@ -29,6 +32,7 @@ import top.fifthlight.touchcontroller.common.model.ControllerHudModel
 import top.fifthlight.touchcontroller.common.ui.screen.getConfigScreen
 import top.fifthlight.touchcontroller.common_1_20_1.versionModule
 import top.fifthlight.touchcontroller.common_1_20_x.GameConfigEditorImpl
+import top.fifthlight.touchcontroller.common_1_20_x.gal.KeyBindingStateImpl
 import top.fifthlight.touchcontroller.common_1_20_x.gal.PlatformWindowProviderImpl
 import java.util.function.BiFunction
 
@@ -38,6 +42,8 @@ class TouchController : KoinComponent {
     
     companion object {
         var loaded = false
+        @JvmStatic
+        var currentModifier: KeyModifier? = null
     }
 
     init {
@@ -89,6 +95,18 @@ class TouchController : KoinComponent {
                     getConfigScreen(parent) as Screen
                 }
             )
+        }
+
+        KeyEvents.addHandler { state ->
+            val keyBinding = state as KeyBindingStateImpl
+            val vanillaBinding = keyBinding.keyBinding
+
+            currentModifier = vanillaBinding.keyModifier
+            @Suppress("UnstableApiUsage")
+            MinecraftForge.EVENT_BUS.post(InputEvent.Key(
+                vanillaBinding.key.value, 0, InputConstants.PRESS, 0,
+            ))
+            currentModifier = null
         }
 
         val controllerHudModel: ControllerHudModel = get()

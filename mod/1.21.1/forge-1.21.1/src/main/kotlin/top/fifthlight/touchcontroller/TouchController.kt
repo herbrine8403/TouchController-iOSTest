@@ -1,9 +1,12 @@
 package top.fifthlight.touchcontroller
 
+import com.mojang.blaze3d.platform.InputConstants
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.screens.Screen
 import net.minecraftforge.client.event.ClientPlayerNetworkEvent
+import net.minecraftforge.client.event.InputEvent
 import net.minecraftforge.client.event.RenderHighlightEvent
+import net.minecraftforge.client.settings.KeyModifier
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.event.TickEvent
 import net.minecraftforge.event.level.BlockEvent
@@ -21,12 +24,14 @@ import top.fifthlight.touchcontroller.buildinfo.BuildInfo
 import top.fifthlight.touchcontroller.common.config.GlobalConfigHolder
 import top.fifthlight.touchcontroller.common.event.BlockBreakEvents
 import top.fifthlight.touchcontroller.common.event.ConnectionEvents
+import top.fifthlight.touchcontroller.common.event.KeyEvents
 import top.fifthlight.touchcontroller.common.event.TickEvents
 import top.fifthlight.touchcontroller.common.event.WindowEvents
 import top.fifthlight.touchcontroller.common.model.ControllerHudModel
 import top.fifthlight.touchcontroller.common.ui.screen.getConfigScreen
 import top.fifthlight.touchcontroller.common_1_21_1.versionModule
 import top.fifthlight.touchcontroller.common_1_21_x.GameConfigEditorImpl
+import top.fifthlight.touchcontroller.common_1_21_x.gal.KeyBindingStateImpl
 import top.fifthlight.touchcontroller.common_1_21_x.gal.PlatformWindowProviderImpl
 
 @Mod(BuildInfo.MOD_ID)
@@ -37,6 +42,8 @@ class TouchController(
     
     companion object {
         var loaded = false
+        @JvmStatic
+        var currentModifier: KeyModifier? = null
     }
 
     init {
@@ -82,6 +89,17 @@ class TouchController(
 
         MinecraftForge.registerConfigScreen { client, parent ->
             getConfigScreen(parent) as Screen
+        }
+
+        KeyEvents.addHandler { state ->
+            val keyBinding = state as KeyBindingStateImpl
+            val vanillaBinding = keyBinding.keyBinding
+
+            currentModifier = vanillaBinding.keyModifier
+            MinecraftForge.EVENT_BUS.post(InputEvent.Key(
+                vanillaBinding.key.value, 0, InputConstants.PRESS, 0,
+            ))
+            currentModifier = null
         }
 
         val controllerHudModel: ControllerHudModel = get()

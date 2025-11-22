@@ -30,6 +30,10 @@ import top.fifthlight.touchcontroller.common.ui.screen.getConfigScreen
 import top.fifthlight.touchcontroller.common_1_21_1.versionModule
 import top.fifthlight.touchcontroller.common_1_21_x.GameConfigEditorImpl
 import top.fifthlight.touchcontroller.common_1_21_x.gal.PlatformWindowProviderImpl
+import com.mojang.blaze3d.platform.InputConstants
+import net.neoforged.neoforge.client.event.InputEvent
+import net.neoforged.neoforge.client.settings.KeyModifier
+import top.fifthlight.touchcontroller.common_1_21_x.gal.KeyBindingStateImpl
 
 @Mod(BuildInfo.MOD_ID)
 class TouchController(modEventBus: IEventBus, private val container: ModContainer) : KoinComponent {
@@ -37,6 +41,9 @@ class TouchController(modEventBus: IEventBus, private val container: ModContaine
     
     companion object {
         var loaded = false
+
+        @JvmStatic
+        var currentModifier: KeyModifier? = null
     }
 
     init {
@@ -83,6 +90,18 @@ class TouchController(modEventBus: IEventBus, private val container: ModContaine
         container.registerExtensionPoint(IConfigScreenFactory::class.java, IConfigScreenFactory { _, parent ->
             getConfigScreen(parent) as Screen
         })
+
+        KeyEvents.addHandler { state ->
+            val keyBinding = state as KeyBindingStateImpl
+            val vanillaBinding = keyBinding.keyBinding
+
+            currentModifier = vanillaBinding.keyModifier
+            @Suppress("UnstableApiUsage")
+            NeoForge.EVENT_BUS.post(InputEvent.Key(
+                vanillaBinding.key.value, 0, InputConstants.PRESS, 0,
+            ))
+            currentModifier = null
+        }
 
         val controllerHudModel: ControllerHudModel = get()
         NeoForge.EVENT_BUS.register(object {

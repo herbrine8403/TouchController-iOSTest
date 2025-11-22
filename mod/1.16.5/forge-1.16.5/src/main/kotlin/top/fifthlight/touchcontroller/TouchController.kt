@@ -5,6 +5,7 @@ import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.screen.Screen
 import net.minecraftforge.client.event.ClientPlayerNetworkEvent
 import net.minecraftforge.client.event.DrawHighlightEvent
+import net.minecraftforge.client.event.InputEvent
 import net.minecraftforge.client.event.RenderGameOverlayEvent
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.event.TickEvent
@@ -20,6 +21,7 @@ import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
 import org.koin.core.context.startKoin
 import org.koin.logger.slf4jLogger
+import org.lwjgl.glfw.GLFW
 import org.slf4j.LoggerFactory
 import top.fifthlight.combine.platform.CanvasImpl
 import top.fifthlight.touchcontroller.buildinfo.BuildInfo
@@ -28,6 +30,7 @@ import top.fifthlight.touchcontroller.common.di.appModule
 import top.fifthlight.touchcontroller.common.event.*
 import top.fifthlight.touchcontroller.common.model.ControllerHudModel
 import top.fifthlight.touchcontroller.common.ui.screen.getConfigScreen
+import top.fifthlight.touchcontroller.gal.KeyBindingStateImpl
 import top.fifthlight.touchcontroller.gal.PlatformWindowProviderImpl
 import java.util.function.BiFunction
 
@@ -86,6 +89,14 @@ class TouchController : KoinComponent {
             BiFunction<Minecraft, Screen, Screen> { client, parent ->
                 getConfigScreen(parent) as Screen
             }
+        }
+
+        KeyEvents.addHandler { state ->
+            val keyBinding = state as KeyBindingStateImpl
+            val vanillaBinding = keyBinding.keyBinding
+            MinecraftForge.EVENT_BUS.post(InputEvent.KeyInputEvent(
+                vanillaBinding.key.value, 0, GLFW.GLFW_PRESS, 0,
+            ))
         }
 
         val controllerHudModel: ControllerHudModel = get()

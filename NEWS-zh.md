@@ -1,5 +1,10 @@
 # TouchController NEWS - 用户可见的更改。
 
+## 0.2.1-beta15
+
+- 添加了使用 Forge 输入事件模组的支持（例如 YSM）
+- 添加了台湾繁体中文翻译 (LanYun2022)
+
 ## 0.2.1-beta14
 
 - 添加了乌克兰语翻译 (StarmanMine142)

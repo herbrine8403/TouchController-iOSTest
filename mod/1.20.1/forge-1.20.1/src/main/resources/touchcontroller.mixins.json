@@ -17,6 +17,7 @@
     "DisableMouseDirectionMixin",
     "InGameHudMixin",
     "KeyBindingMixin",
+    "KeyModifierMixin",
     "KeyboardInputMixin",
     "MultiPlayerGameModeMixin",
     "ToggleKeyMappingMixin"

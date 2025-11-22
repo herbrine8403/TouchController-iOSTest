@@ -9,8 +9,8 @@ import top.fifthlight.touchcontroller.common.gal.DefaultKeyBindingType
 import top.fifthlight.touchcontroller.common.gal.KeyBindingHandler
 import top.fifthlight.touchcontroller.common.gal.KeyBindingState
 
-private class KeyBindingStateImpl(
-    private val keyBinding: KeyBinding,
+class KeyBindingStateImpl(
+    val keyBinding: KeyBinding,
 ) : KeyBindingState() {
     override val id: String
         get() = keyBinding.keyDescription
@@ -25,6 +25,7 @@ private class KeyBindingStateImpl(
         get() = TextImpl(TextComponentTranslation(keyBinding.keyCategory))
 
     override fun click() {
+        super.click()
         keyBinding.pressTime++
     }
 

@@ -16,8 +16,8 @@ private fun KeyBinding.click() {
 
 private fun KeyBinding.getClickCount() = (this as ClickableKeyBinding).`touchController$getClickCount`()
 
-private class KeyBindingStateImpl(
-    private val keyBinding: KeyBinding,
+class KeyBindingStateImpl(
+    val keyBinding: KeyBinding,
 ) : KeyBindingState() {
     override val id: String
         get() = keyBinding.name
@@ -32,6 +32,7 @@ private class KeyBindingStateImpl(
         get() = TextImpl(TranslationTextComponent(keyBinding.category))
 
     override fun click() {
+        super.click()
         keyBinding.click()
     }
 

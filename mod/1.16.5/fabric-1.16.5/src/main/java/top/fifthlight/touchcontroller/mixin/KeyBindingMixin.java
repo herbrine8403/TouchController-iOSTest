@@ -12,6 +12,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import top.fifthlight.touchcontroller.TouchController;
 import top.fifthlight.touchcontroller.common.config.GlobalConfig;
 import top.fifthlight.touchcontroller.common.config.GlobalConfigHolder;
 import top.fifthlight.touchcontroller.gal.KeyBindingHandlerImpl;
@@ -84,6 +85,17 @@ public abstract class KeyBindingMixin implements ClickableKeyBinding {
     private void overrideIsDown(CallbackInfoReturnable<Boolean> info) {
         if (KeyBindingHandlerImpl.INSTANCE.isDown((KeyBinding) (Object) this)) {
             info.setReturnValue(true);
+        }
+    }
+
+    @Inject(
+            method = "setPressed(Z)V",
+            at = @At("HEAD"),
+            cancellable = true
+    )
+    private void blockEmulatedKeyDown(boolean value, CallbackInfo ci) {
+        if (TouchController.isInEmulatedSetDown()) {
+            ci.cancel();
         }
     }
 }

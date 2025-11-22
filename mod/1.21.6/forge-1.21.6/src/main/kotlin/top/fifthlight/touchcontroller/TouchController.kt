@@ -1,8 +1,10 @@
 package top.fifthlight.touchcontroller
 
+import com.mojang.blaze3d.platform.InputConstants
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.screens.Screen
 import net.minecraftforge.client.event.ClientPlayerNetworkEvent
+import net.minecraftforge.client.event.InputEvent
 import net.minecraftforge.client.event.RenderHighlightEvent
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.event.TickEvent
@@ -20,12 +22,14 @@ import top.fifthlight.touchcontroller.buildinfo.BuildInfo
 import top.fifthlight.touchcontroller.common.config.GlobalConfigHolder
 import top.fifthlight.touchcontroller.common.event.BlockBreakEvents
 import top.fifthlight.touchcontroller.common.event.ConnectionEvents
+import top.fifthlight.touchcontroller.common.event.KeyEvents
 import top.fifthlight.touchcontroller.common.event.TickEvents
 import top.fifthlight.touchcontroller.common.event.WindowEvents
 import top.fifthlight.touchcontroller.common.model.ControllerHudModel
 import top.fifthlight.touchcontroller.common.ui.screen.getConfigScreen
 import top.fifthlight.touchcontroller.common_1_21_6_1_21_8.versionModule
 import top.fifthlight.touchcontroller.common_1_21_x.GameConfigEditorImpl
+import top.fifthlight.touchcontroller.common_1_21_x.gal.KeyBindingStateImpl
 import top.fifthlight.touchcontroller.common_1_21_x.gal.PlatformWindowProviderImpl
 import java.util.function.Predicate
 
@@ -83,6 +87,14 @@ class TouchController(
 
         MinecraftForge.registerConfigScreen { client, parent ->
             getConfigScreen(parent) as Screen
+        }
+
+        KeyEvents.addHandler { state ->
+            val keyBinding = state as KeyBindingStateImpl
+            val vanillaBinding = keyBinding.keyBinding
+            InputEvent.BUS.post(InputEvent.Key(
+                vanillaBinding.key.value, 0, InputConstants.PRESS, 0,
+            ))
         }
 
         val controllerHudModel: ControllerHudModel = get()

@@ -1,5 +1,10 @@
 # TouchController NEWS - User visible changes.
 
+## 0.2.1-beta15
+
+- Added support for mods using Forge input events (like YSM)
+- Added Taiwan traditional chinese translation (LanYun2022)
+
 ## 0.2.1-beta14
 
 - Added Ukrainian translation (StarmanMine142)

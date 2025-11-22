@@ -28,6 +28,10 @@ import top.fifthlight.touchcontroller.common_1_21_6_1_21_8.versionModule
 import top.fifthlight.touchcontroller.common_1_21_x.GameConfigEditorImpl
 import top.fifthlight.touchcontroller.common_1_21_x.gal.PlatformWindowProviderImpl
 import java.util.function.Predicate
+import com.mojang.blaze3d.platform.InputConstants
+import net.minecraftforge.client.event.InputEvent
+import top.fifthlight.touchcontroller.common.event.KeyEvents
+import top.fifthlight.touchcontroller.common_1_21_x.gal.KeyBindingStateImpl
 
 @Mod(BuildInfo.MOD_ID)
 class TouchController(
@@ -83,6 +87,15 @@ class TouchController(
 
         MinecraftForge.registerConfigScreen { client, parent ->
             getConfigScreen(parent) as Screen
+        }
+
+        KeyEvents.addHandler { state ->
+            val keyBinding = state as KeyBindingStateImpl
+            val vanillaBinding = keyBinding.keyBinding
+            @Suppress("UnstableApiUsage")
+            InputEvent.BUS.post(InputEvent.Key(
+                vanillaBinding.key.value, 0, InputConstants.PRESS, 0,
+            ))
         }
 
         val controllerHudModel: ControllerHudModel = get()
