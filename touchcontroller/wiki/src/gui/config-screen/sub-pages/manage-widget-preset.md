@@ -1,6 +1,6 @@
 # 子页面：管理预设
 
-- 此页面只拥有[返回按钮](../config-screen.md#返回)
+- 此页面只拥有[返回按钮](../../config-screen.md#返回)
 - 这个页面可以用来配置由开发团队提供的控件预设。
 - 参见：[管理预设的特性](../../../mechanism/manage-widget-preset.md)
 

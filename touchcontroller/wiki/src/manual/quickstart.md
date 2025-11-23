@@ -67,7 +67,7 @@
 
 ### 设置界面
 
-您可以通过多种方法进入 TouchController 的设置界面。关于如何设置，请参考[设置界面](../gui/config-screen/config-screen.md)及其子页面。
+您可以通过多种方法进入 TouchController 的设置界面。关于如何设置，请参考[设置界面](../gui/config-screen.md)及其子页面。
 
 #### 通过模组菜单
 

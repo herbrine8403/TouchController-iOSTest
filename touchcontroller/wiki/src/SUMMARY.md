@@ -25,15 +25,15 @@
 
 # GUI
 
-- [设置界面](./gui/config-screen/config-screen.md)
-    - [标签页](./gui/config-screen/tab/tab.md)
+- [设置界面](./gui/config-screen.md)
+    - [标签页](./gui/config-screen/tab.md)
         - [关于](./gui/config-screen/tab/about.md)
         - [常规](./gui/config-screen/tab/general.md)
         - [控制](./gui/config-screen/tab/control.md)
         - [触控圈](./gui/config-screen/tab/touch-ring.md)
         - [调试](./gui/config-screen/tab/debug.md)
         - [物品](gui/config-screen/tab/item.md)
-    - [子页面](./gui/config-screen/sub-pages/sub-pages.md)
+    - [子页面](./gui/config-screen/sub-pages.md)
         - [管理控件预设](./gui/config-screen/sub-pages/manage-widget-preset.md)
         - [自定义控件布局](./gui/config-screen/sub-pages/custom-widget-layout.md)
         - [GUI 控件布局](./gui/config-screen/sub-pages/gui-widget-layout.md)
