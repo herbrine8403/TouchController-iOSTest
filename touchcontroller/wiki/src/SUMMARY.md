@@ -13,7 +13,7 @@
 - [锚点机制](./mechanism/anchor-mechanism.md)
 - [静默转头](./mechanism/slient-turning-head.md)
 - [输入适配](./mechanism/input-support.md)
-- [自定义布局](mechanism/custom-layout/custom-layout.md)
+- [自定义布局](mechanism/custom-layout.md)
     - [预设系统](./mechanism/custom-layout/preset-system.md)
     - [图层系统](./mechanism/custom-layout/layer-system.md)
     - [切换模式](./mechanism/custom-layout/mode-switch.md)
