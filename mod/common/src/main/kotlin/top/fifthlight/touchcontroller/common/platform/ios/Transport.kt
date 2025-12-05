@@ -25,7 +25,7 @@ object Transport {
             try {
                 // Call launcher's Tools class which is loaded via system class loader
                 // and can access JNI functions in the main app binary
-                val toolsClass = Class.forName("net.kdt.pojavlaunch.Tools")
+                val toolsClass = Class.forName("lol.gzmc.glaunch.Utils")
                 val method = toolsClass.getMethod("registerTouchControllerNatives", Class::class.java)
                 method.invoke(null, Transport::class.java)
                 logger.info("iOS: Tools.registerTouchControllerNatives() succeeded")
