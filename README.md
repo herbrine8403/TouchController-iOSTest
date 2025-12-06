@@ -303,6 +303,6 @@ If you can't read Chinese, feel free to use a translator.
  <picture>
    <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=TouchController/TouchController&type=Date&theme=dark" />
    <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=TouchController/TouchController&type=Date" />
-   <img alt="Star 历史图表" src="https://api.star-history.com/svg?repos=TouchController/TouchController&type=Date" />
+   <img alt="Star" src="https://api.star-history.com/svg?repos=TouchController/TouchController&type=Date" />
  </picture>
 </a>
