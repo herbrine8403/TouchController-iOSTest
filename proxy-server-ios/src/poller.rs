@@ -1,7 +1,4 @@
-use std::{
-    io,
-    os::unix::net::SocketAddr,
-};
+use std::io;
 
 use log::info;
 use tokio::{
