@@ -15,7 +15,6 @@ pub extern "system" fn Java_top_fifthlight_touchcontroller_common_platform_ios_T
     _class: JClass,
 ) {
     OsLogger::new("top.fifthlight.touchcontroller")
-        .category("TouchController")
         .level_filter(LevelFilter::Info)
         .install()
         .expect("Failed to initialize iOS logger");

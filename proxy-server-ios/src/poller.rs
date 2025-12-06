@@ -20,8 +20,6 @@ pub struct Poller {
 
 impl Poller {
     pub fn new(name: &str) -> io::Result<Self> {
-        // For iOS, we use regular Unix socket path (not abstract like Android)
-        let address = SocketAddr::new(std::os::unix::net::SocketAddr::from_path_name(name)?);
         let inner = std::os::unix::net::UnixStream::connect(name)?;
 
         let runtime = Runtime::new()?;
