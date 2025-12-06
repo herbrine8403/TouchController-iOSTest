@@ -1,0 +1,49 @@
+name: Build iOS Static Library
+
+on:
+  push:
+    branches: [ "0.2" ]
+  pull_request:
+    branches: [ "0.2" ]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup Rust
+      uses: dtolnay/rust-toolchain@stable
+      with:
+        toolchain: stable
+        targets: aarch64-apple-ios,x86_64-apple-ios
+
+    - name: Install additional iOS targets
+      run: |
+        rustup target add aarch64-apple-ios x86_64-apple-ios
+
+    - name: Build for iOS (arm64)
+      run: |
+        cargo build --target aarch64-apple-ios --release -p proxy-server-ios
+
+    - name: Build for iOS (x86_64)
+      run: |
+        cargo build --target x86_64-apple-ios --release -p proxy-server-ios
+
+    - name: Create Universal Library
+      run: |
+        mkdir -p target/universal-ios/release
+        lipo -create \
+          target/aarch64-apple-ios/release/libproxy_server_ios.a \
+          target/x86_64-apple-ios/release/libproxy_server_ios.a \
+          -output target/universal-ios/release/libproxy_server_ios.a
+
+    - name: Upload iOS Static Library
+      uses: actions/upload-artifact@v4
+      with:
+        name: libproxy_server_ios.a
+        path: target/universal-ios/release/libproxy_server_ios.a

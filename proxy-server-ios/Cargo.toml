@@ -1,0 +1,21 @@
+[package]
+name = "proxy-server-ios"
+version = "0.0.1"
+edition = "2021"
+
+[lib]
+crate-type = ["staticlib"]  # Generate a static library for iOS
+
+[dependencies]
+tokio = { workspace = true, features = [
+    "macros",
+    "sync",
+    "rt-multi-thread",
+    "net",
+    "io-util",
+] }
+log.workspace = true
+oslog = "0.2"  # For iOS logging
+proxy-protocol.path = "../proxy-protocol"
+jni.workspace = true
+bytemuck.workspace = true
