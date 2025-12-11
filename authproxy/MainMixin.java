@@ -3,6 +3,7 @@ package top.fifthlight.authproxy.mixin;
 import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
 import com.mojang.logging.LogUtils;
 import net.minecraft.server.Main;
+import org.slf4j.Logger;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
@@ -10,6 +11,7 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
 
+@SuppressWarnings("RedundantExplicitVariableType")
 @Mixin(Main.class)
 public abstract class MainMixin {
     @Redirect(
@@ -20,19 +22,19 @@ public abstract class MainMixin {
             )
     )
     private static YggdrasilAuthenticationService createAuthenticationService(Proxy proxy) {
-        var logger = LogUtils.getLogger();
+        Logger logger = LogUtils.getLogger();
 
-        var socksProxyHost = System.getProperty("socksProxyHost");
-        var socksProxyPort = System.getProperty("socksProxyPort");
-        var httpProxyHost = System.getProperty("http.proxyHost");
-        var httpProxyPort = System.getProperty("http.proxyPort");
-        var httpsProxyHost = System.getProperty("https.proxyHost");
-        var httpsProxyPort = System.getProperty("https.proxyPort");
+        String socksProxyHost = System.getProperty("socksProxyHost");
+        String socksProxyPort = System.getProperty("socksProxyPort");
+        String httpProxyHost = System.getProperty("http.proxyHost");
+        String httpProxyPort = System.getProperty("http.proxyPort");
+        String httpsProxyHost = System.getProperty("https.proxyHost");
+        String httpsProxyPort = System.getProperty("https.proxyPort");
 
         // First, try SOCKS5
         if (socksProxyHost != null && socksProxyPort != null) {
             try {
-                var port = Integer.parseInt(socksProxyPort);
+                int port = Integer.parseInt(socksProxyPort);
                 logger.info("Use SOCKS proxy: {}:{}", socksProxyHost, port);
                 return new YggdrasilAuthenticationService(
                         new Proxy(Proxy.Type.SOCKS, new InetSocketAddress(socksProxyHost, port))
@@ -45,7 +47,7 @@ public abstract class MainMixin {
         // Second try HTTPS
         if (httpsProxyHost != null && httpsProxyPort != null) {
             try {
-                var port = Integer.parseInt(httpsProxyPort);
+                int port = Integer.parseInt(httpsProxyPort);
                 logger.info("Use HTTPS proxy: {}:{}", httpsProxyHost, port);
                 return new YggdrasilAuthenticationService(
                         new Proxy(Proxy.Type.HTTP, new InetSocketAddress(httpsProxyHost, port))
@@ -58,7 +60,7 @@ public abstract class MainMixin {
         // Third try HTTP
         if (httpProxyHost != null && httpProxyPort != null) {
             try {
-                var port = Integer.parseInt(httpProxyPort);
+                int port = Integer.parseInt(httpProxyPort);
                 logger.info("Use HTTP proxy: {}:{}", httpProxyHost, port);
                 return new YggdrasilAuthenticationService(
                         new Proxy(Proxy.Type.HTTP, new InetSocketAddress(httpProxyHost, port))
