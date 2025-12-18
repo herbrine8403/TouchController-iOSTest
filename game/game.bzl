@@ -5,6 +5,7 @@ load("//rule:extract_jar.bzl", "extract_jar")
 load("//rule:jar.bzl", "jar")
 load("//rule:merge_mapping.bzl", "merge_mapping", "merge_mapping_input")
 load("//rule:remap_jar.bzl", "remap_jar")
+load("//rule:decompile_jar.bzl", "decompile_jar")
 
 def _game_version_impl(name, visibility, version, client_mappings, client, server, neoforge, intermediary, sodium_intermediary, iris_intermediary):
     intermediary_mapping = name + "_intermediary_mapping"
@@ -14,6 +15,7 @@ def _game_version_impl(name, visibility, version, client_mappings, client, serve
     mapping_jar = name + "_mapping_jar"
     client_intermediary = name + "_client_intermediary"
     client_named = name + "_client_named"
+    client_named_source = name + "_client_named_source"
     client_neoforge = name + "_client_neoforge"
     server_jar_file = name + "_server_jar_file"
     server_jar = name + "_server_jar"
@@ -84,6 +86,12 @@ def _game_version_impl(name, visibility, version, client_mappings, client, serve
         mapping = ":" + merged_mapping,
         to_namespace = "named",
         visibility = visibility,
+    )
+
+    decompile_jar(
+        name = client_named_source,
+        inputs = [":" + client_named],
+        tags = ["manual"],
     )
 
     if neoforge:

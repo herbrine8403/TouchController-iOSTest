@@ -31,11 +31,6 @@ apply_access_widener(
     input = "//game/1.21.8:game_client_named",
 )
 
-decompile_jar(
-    name = "decompile_client_access_widened_named",
-    inputs = [":remapped_client_access_widened_named"],
-)
-
 java_library(
     name = "ball_block_unmapped",
     srcs = glob(["src/main/java/**/*.java"]),
