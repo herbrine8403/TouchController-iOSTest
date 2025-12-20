@@ -67,32 +67,34 @@ fun EditText(
             interactionSource.interactions.collect {
                 when (it) {
                     FocusInteraction.Blur -> {
-                        inputManager.tryHideKeyboard()
+                        inputManager?.tryHideKeyboard()
                         focused = false
                     }
 
                     FocusInteraction.Focus -> {
-                        inputManager.tryShowKeyboard()
+                        inputManager?.tryShowKeyboard()
                         focused = true
                     }
                 }
             }
         } finally {
-            inputManager.updateInputState(null)
-            inputManager.tryHideKeyboard()
+            inputManager?.updateInputState(null)
+            inputManager?.tryHideKeyboard()
         }
     }
-    LaunchedEffect(textInputState, focused, cursorRect, areaRect) {
-        if (focused) {
-            inputManager.updateInputState(textInputState, cursorRect, areaRect)
-        } else {
-            inputManager.updateInputState(null)
+    inputManager?.let {
+        LaunchedEffect(textInputState, focused, cursorRect, areaRect) {
+            if (focused) {
+                inputManager.updateInputState(textInputState, cursorRect, areaRect)
+            } else {
+                inputManager.updateInputState(null)
+            }
         }
-    }
-    LaunchedEffect(focused) {
-        if (focused) {
-            inputManager.events.collect { newState ->
-                updateInputState { newState }
+        LaunchedEffect(focused) {
+            if (focused) {
+                inputManager.events?.collect { newState ->
+                    updateInputState { newState }
+                }
             }
         }
     }
@@ -122,7 +124,7 @@ fun EditText(
             .minHeight(9)
             .border(drawable)
             .clickable(interactionSource) {
-                inputManager.tryShowKeyboard()
+                inputManager?.tryShowKeyboard()
             }
             .focusable(interactionSource)
             .textInput { updateInputState { commitText(it) } }

@@ -168,20 +168,21 @@ private data class VerticalScrollNode(
             }
             val tileHeight = height * backgroundScale
             val tileOffset = scrollState.progress.value.toFloat() % tileHeight
-            drawBackgroundTexture(
-                identifier = background.identifier,
-                scale = backgroundScale,
-                dstRect = Rect(
-                    offset = Offset(
-                        x = 0f,
-                        y = -tileHeight - tileOffset,
-                    ),
-                    size = Size(
-                        width = node.width.toFloat(),
-                        height = node.height.toFloat() + tileHeight * 2,
-                    ),
+            with(background) {
+                draw(
+                    scale = backgroundScale,
+                    dstRect = Rect(
+                        offset = Offset(
+                            x = 0f,
+                            y = -tileHeight - tileOffset,
+                        ),
+                        size = Size(
+                            width = node.width.toFloat(),
+                            height = node.height.toFloat() + tileHeight * 2,
+                        ),
+                    )
                 )
-            )
+            }
         }
     }
 

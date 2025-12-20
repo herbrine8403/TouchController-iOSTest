@@ -3,11 +3,13 @@ load("//rule:merge_library.bzl", "kt_merge_library")
 kt_merge_library(
     name = "screen",
     srcs = glob(["*.kt"]),
+    expect = True,
     merge_deps = [
         "//combine/core/data",
     ],
     visibility = ["//combine:__subpackages__"],
     deps = [
         "//:compose",
+        "@maven//:org_jetbrains_kotlinx_kotlinx_coroutines_core_jvm",
     ],
 )

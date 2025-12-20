@@ -28,20 +28,6 @@ interface Canvas {
     fun drawText(offset: IntOffset, text: Text, color: Color)
     fun drawText(offset: IntOffset, width: Int, text: Text, color: Color)
 
-    fun drawTexture(
-        identifier: Identifier,
-        dstRect: Rect,
-        srcRect: Rect,
-        tint: Color = Colors.WHITE,
-    )
-
-    fun drawBackgroundTexture(
-        identifier: Identifier,
-        scale: Float = 1f,
-        dstRect: Rect,
-        tint: Color = Colors.WHITE,
-    )
-
     fun pushClip(absoluteArea: IntRect, relativeArea: IntRect)
     fun popClip()
 }

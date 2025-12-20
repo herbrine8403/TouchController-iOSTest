@@ -1,0 +1,26 @@
+{
+    "schemaVersion": 1,
+    "id": "combine-hello-world",
+    "version": "1.0.0",
+    "name": "Combine hello world",
+    "description": "Add a ball block to Minecraft.",
+    "authors": [
+        "fifth_light"
+    ],
+    "license": "Apache-2.0",
+    "environment": "*",
+    "entrypoints": {
+        "client": [
+            "top.fifthlight.combine.example.helloworld.HelloWorldMod"
+        ],
+        "modmenu": [
+          "top.fifthlight.combine.example.helloworld.HelloWorldMod"
+        ]
+    },
+    "depends": {
+        "minecraft": "1.21.8",
+        "java": ">=21",
+        "fabric-api": "*",
+        "fabric-language-kotlin": "*"
+    }
+}

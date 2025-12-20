@@ -2,6 +2,7 @@ package top.fifthlight.combine.data
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.staticCompositionLocalOf
+import top.fifthlight.mergetools.api.ExpectFactory
 
 val LocalTextFactory = staticCompositionLocalOf<TextFactory> { error("No TextFactory in context") }
 
@@ -20,6 +21,11 @@ interface TextFactory {
     fun empty(): Text
     fun format(identifier: Identifier, vararg arguments: Any?): Text
     fun toNative(text: Text): Any
+
+    @ExpectFactory
+    interface Factory {
+        fun of(): TextFactory
+    }
 }
 
 interface Text {

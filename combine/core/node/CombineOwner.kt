@@ -24,8 +24,8 @@ val LocalCombineOwner: ProvidableCompositionLocal<CombineOwner> =
     staticCompositionLocalOf { error("No CombineOwner in context") }
 val LocalTextMeasurer: ProvidableCompositionLocal<TextMeasurer> =
     staticCompositionLocalOf { error("No TextMeasurer in context") }
-val LocalInputHandler: ProvidableCompositionLocal<InputHandler> =
-    staticCompositionLocalOf { error("No InputHandler in context") }
+val LocalInputHandler: ProvidableCompositionLocal<InputHandler?> =
+    staticCompositionLocalOf { null }
 val LocalScreenSize: ProvidableCompositionLocal<IntSize> =
     staticCompositionLocalOf { error("No ScreenSize in context") }
 

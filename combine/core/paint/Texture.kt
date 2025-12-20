@@ -1,69 +1,20 @@
 package top.fifthlight.combine.paint
 
 import androidx.compose.runtime.Immutable
-import top.fifthlight.combine.data.Identifier
-import top.fifthlight.data.IntOffset
-import top.fifthlight.data.IntPadding
-import top.fifthlight.data.IntRect
-import top.fifthlight.data.IntSize
-import top.fifthlight.data.Rect
+import top.fifthlight.data.*
 
 @Immutable
-data class AtlasTexture(
-    val identifier: Identifier,
-    val atlasSize: IntSize,
-) {
-    private val atlasFloatSize = atlasSize.toSize()
-
-    fun texture(
-        atlasOffset: IntOffset,
-        size: IntSize,
-    ) = Texture(
-        identifier = identifier,
-        size = size,
-        uvRect = Rect(
-            offset = atlasOffset.toOffset() / atlasFloatSize,
-            size = size.toSize() / atlasFloatSize,
-        ),
-    )
-}
-
-@Immutable
-data class Texture(
-    val identifier: Identifier,
+abstract class Texture(
     override val size: IntSize,
-    val uvRect: Rect = Rect.ONE,
 ) : Drawable {
     override val padding: IntPadding
         get() = IntPadding.ZERO
 
-    override fun Canvas.draw(
-        dstRect: IntRect,
-        tint: Color,
-    ) {
-        drawTexture(
-            identifier = identifier,
-            dstRect = dstRect.toRect(),
-            srcRect = uvRect,
-            tint = tint,
-        )
-    }
-
-    fun Canvas.draw(
+    abstract fun Canvas.draw(
         dstRect: Rect,
         tint: Color = Colors.WHITE,
         srcRect: Rect,
-    ) {
-        drawTexture(
-            identifier = identifier,
-            dstRect = dstRect,
-            srcRect = Rect(
-                offset = uvRect.offset + srcRect.offset / size.toSize(),
-                size = uvRect.size * (srcRect.size / size.toSize()),
-            ),
-            tint = tint,
-        )
-    }
+    )
 
     fun Canvas.draw(
         dstRect: IntRect,
@@ -218,18 +169,12 @@ data class NinePatchTexture(
 }
 
 @Immutable
-data class BackgroundTexture(
-    val identifier: Identifier,
+abstract class BackgroundTexture(
     override val size: IntSize,
 ) : Drawable {
     override val padding: IntPadding
         get() = IntPadding.ZERO
 
-    override fun Canvas.draw(dstRect: IntRect, tint: Color) {
-        drawBackgroundTexture(
-            identifier = identifier,
-            dstRect = dstRect.toRect(),
-            tint = tint,
-        )
-    }
+    fun Canvas.draw(dstRect: IntRect, tint: Color = Colors.WHITE, scale: Float) = draw(dstRect.toRect(), tint, scale)
+    abstract fun Canvas.draw(dstRect: Rect, tint: Color = Colors.WHITE, scale: Float)
 }

@@ -76,24 +76,6 @@ data class PaddingDrawable(
 }
 
 @Immutable
-data class RawTextureDrawable(val identifier: Identifier) : Drawable {
-    override val size: IntSize
-        get() = IntSize.ZERO
-
-    override val padding: IntPadding
-        get() = IntPadding.ZERO
-
-    override fun Canvas.draw(dstRect: IntRect, tint: Color) {
-        drawTexture(
-            identifier = identifier,
-            dstRect = dstRect.toRect(),
-            srcRect = Rect.ONE,
-            tint = tint,
-        )
-    }
-}
-
-@Immutable
 data class ColorDrawable(val color: Color) : Drawable {
     override val size: IntSize
         get() = IntSize.ZERO
@@ -119,13 +101,8 @@ data class BackgroundTextureDrawable(
     override val padding: IntPadding
         get() = backgroundTexture.padding
 
-    override fun Canvas.draw(dstRect: IntRect, tint: Color) {
-        drawBackgroundTexture(
-            identifier = backgroundTexture.identifier,
-            scale = scale,
-            dstRect = dstRect.toRect(),
-            tint = tint,
-        )
+    override fun Canvas.draw(dstRect: IntRect, tint: Color)  = with(backgroundTexture) {
+        draw(dstRect, tint, scale)
     }
 }
 

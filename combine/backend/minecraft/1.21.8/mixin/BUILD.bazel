@@ -1,0 +1,17 @@
+load("//rule:merge_library.bzl", "java_merge_library")
+
+java_merge_library(
+    name = "mixin",
+    srcs = glob(["*.java"]),
+    merge_deps = [
+        "//combine/backend/minecraft/1.21.8/extension",
+    ],
+    resource_strip_prefix = "combine/backend/minecraft/1.21.8/mixin/resource",
+    resources = glob(["resource/**"]),
+    visibility = ["//combine/backend/minecraft/1.21.8:__subpackages__"],
+    deps = [
+        "//game/1.21.8:game_client_named",
+        "@maven_fabric_1_21_8//:net_fabricmc_sponge_mixin",
+        "@minecraft//1.21.8:client_libraries",
+    ],
+)

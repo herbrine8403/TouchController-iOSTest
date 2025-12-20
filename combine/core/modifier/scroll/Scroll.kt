@@ -7,6 +7,7 @@ import aurelienribon.tweenengine.Tween
 import aurelienribon.tweenengine.TweenAccessor
 import aurelienribon.tweenengine.TweenManager
 import aurelienribon.tweenengine.equations.Quint
+import kotlinx.coroutines.ExperimentalForInheritanceCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import top.fifthlight.combine.animation.LocalTweenManager
@@ -29,6 +30,8 @@ class ScrollState(private val tweenManager: TweenManager) {
     internal var scrolling: Boolean = false
     private var tween: Tween? = null
 
+    // We use delegate here, so no problem
+    @OptIn(ExperimentalForInheritanceCoroutinesApi::class)
     private class TweenFlow(
         private val stateFlow: MutableStateFlow<Int>,
     ): MutableStateFlow<Int> by stateFlow {

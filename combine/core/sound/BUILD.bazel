@@ -5,6 +5,6 @@ kt_merge_library(
     srcs = glob(["*.kt"]),
     visibility = ["//combine:__subpackages__"],
     deps = [
-        "@maven//:androidx_compose_runtime_runtime",
+        "@maven//:org_jetbrains_compose_runtime_runtime_desktop",
     ],
 )

@@ -1,15 +1,9 @@
 package top.fifthlight.combine.backend.swing
 
-import top.fifthlight.combine.data.Identifier
 import top.fifthlight.combine.data.Text
 import top.fifthlight.combine.paint.Canvas
 import top.fifthlight.combine.paint.Color
-import top.fifthlight.data.IntOffset
-import top.fifthlight.data.IntRect
-import top.fifthlight.data.IntSize
-import top.fifthlight.data.Offset
-import top.fifthlight.data.Rect
-import top.fifthlight.data.Size
+import top.fifthlight.data.*
 import java.awt.Graphics2D
 
 class SwingCanvas(private val graphics: Graphics2D): Canvas {
@@ -94,24 +88,6 @@ class SwingCanvas(private val graphics: Graphics2D): Canvas {
         width: Int,
         text: Text,
         color: Color,
-    ) {
-        TODO("Not yet implemented")
-    }
-
-    override fun drawTexture(
-        identifier: Identifier,
-        dstRect: Rect,
-        srcRect: Rect,
-        tint: Color,
-    ) {
-        TODO("Not yet implemented")
-    }
-
-    override fun drawBackgroundTexture(
-        identifier: Identifier,
-        scale: Float,
-        dstRect: Rect,
-        tint: Color,
     ) {
         TODO("Not yet implemented")
     }

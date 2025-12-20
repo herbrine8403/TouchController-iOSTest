@@ -34,5 +34,6 @@ kt_merge_library(
     deps = [
         "//:compose",
         "@maven//:org_jetbrains_kotlinx_kotlinx_collections_immutable_jvm",
+        "@maven//:org_jetbrains_kotlinx_kotlinx_coroutines_core_jvm",
     ],
 )
