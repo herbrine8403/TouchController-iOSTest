@@ -1,6 +1,6 @@
 load("//rule:merge_library.bzl", "kt_merge_library")
 load("//rule/combine:library.bzl", "kt_texture_lib")
-load("//rule/combine:minecraft.bzl", "vanilla_pack")
+load("//rule/combine:minecraft.bzl", "atlas_pack", "vanilla_pack")
 
 kt_texture_lib(
     name = "texture_lib",
@@ -21,6 +21,12 @@ kt_merge_library(
 
 vanilla_pack(
     name = "vanilla_pack",
+    dep = "//combine/theme/blackstone/texture",
+    namespace = "combine",
+)
+
+atlas_pack(
+    name = "atlas_pack",
     dep = "//combine/theme/blackstone/texture",
     namespace = "combine",
 )

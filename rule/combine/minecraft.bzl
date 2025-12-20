@@ -6,6 +6,63 @@ def _texture_to_arg(texture):
 def _nine_patch_texture_to_arg(texture):
     return ["--ninepatch", texture.identifier, texture.texture.path, texture.metadata.path]
 
+AtlasPackInfo = provider(fields = ["atlas_jar", "atlas_metadata"])
+
+def _atlas_pack_impl(ctx):
+    texture_info = ctx.attr.dep[TextureLibraryInfo]
+    output_file = ctx.actions.declare_file(ctx.attr.name + ".zip")
+    metadata_file = ctx.actions.declare_file(ctx.attr.name + ".json")
+
+    args = ctx.actions.args()
+    args.add(ctx.attr.namespace)
+    args.add(output_file.path)
+    args.add(metadata_file.path)
+    args.add("--width", ctx.attr.width)
+    args.add("--height", ctx.attr.height)
+    args.add_all(texture_info.textures, map_each = _texture_to_arg)
+    args.add_all(texture_info.ninepatch_textures, map_each = _nine_patch_texture_to_arg)
+
+    ctx.actions.run(
+        inputs = texture_info.files,
+        outputs = [output_file, metadata_file],
+        executable = ctx.executable._generator_bin,
+        arguments = [args],
+    )
+
+    return [
+        DefaultInfo(files = depset([output_file])),
+        AtlasPackInfo(
+            atlas_jar = output_file,
+            atlas_metadata = metadata_file,
+        ),
+    ]
+
+atlas_pack = rule(
+    implementation = _atlas_pack_impl,
+    attrs = {
+        "dep": attr.label(
+            providers = [TextureLibraryInfo],
+            mandatory = True,
+        ),
+        "namespace": attr.string(
+            mandatory = True,
+        ),
+        "width": attr.int(
+            mandatory = False,
+            default = 128,
+        ),
+        "height": attr.int(
+            mandatory = False,
+            default = 128,
+        ),
+        "_generator_bin": attr.label(
+            default = Label("//rule/combine/minecraft/atlas"),
+            cfg = "exec",
+            executable = True,
+        )
+    }
+)
+
 def _vanilla_pack_impl(ctx):
     texture_info = ctx.attr.dep[TextureLibraryInfo]
     output_file = ctx.actions.declare_file(ctx.attr.name + ".zip")

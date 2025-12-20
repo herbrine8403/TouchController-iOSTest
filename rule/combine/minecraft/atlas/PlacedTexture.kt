@@ -8,7 +8,6 @@ import java.nio.file.Path
 
 @Serializable
 data class PlacedTexture(
-    val path: Path,
     val identifier: String,
     val position: IntOffset,
     val size: IntSize,
