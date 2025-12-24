@@ -62,7 +62,7 @@ fun main(vararg args: String) {
 
         val textures = mutableListOf<Texture>()
 
-        var i = 3
+        var i = 4
         while (i < args.size) {
             if (args.size - i < 3) {
                 System.err.println("Bad texture entry")

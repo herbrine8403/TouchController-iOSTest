@@ -1,7 +1,7 @@
-load("//rule:merge_library.bzl", "kt_merge_library")
-load("//rule/combine:library.bzl", "kt_texture_lib")
-load("//rule/combine:minecraft.bzl", "atlas_pack", "vanilla_pack", "kt_vanilla_lib")
 load("//combine/theme:theme_info_jar.bzl", "theme_info_jar")
+load("//rule:merge_library.bzl", "kt_merge_library", "merge_library_jar")
+load("//rule/combine:library.bzl", "kt_texture_lib")
+load("//rule/combine:minecraft.bzl", "atlas_pack", "kt_vanilla_lib", "vanilla_pack")
 
 kt_texture_lib(
     name = "texture_lib",
@@ -13,11 +13,13 @@ kt_merge_library(
     srcs = glob(["*.kt"]),
     merge_deps = [
         ":texture_lib",
+    ],
+    visibility = ["//visibility:public"],
+    deps = [
         "//combine/core/paint",
         "//combine/style",
         "//combine/theme/base",
     ],
-    visibility = ["//visibility:public"],
 )
 
 vanilla_pack(
@@ -42,12 +44,20 @@ theme_info_jar(
 )
 
 kt_vanilla_lib(
-    name = "vanilla_lib",
-    pack = ":vanilla_pack",
+    name = "vanilla_lib_unmerged",
     dep = ":texture_lib",
-    visibility = ["//visibility:public"],
+    pack = ":vanilla_pack",
     resource_jars = [
         ":mod_info_json",
         ":vanilla_pack",
-    ]
+    ],
+    visibility = ["//visibility:public"],
+)
+
+merge_library_jar(
+    name = "vanilla_lib",
+    deps = [
+        ":oreui",
+        ":vanilla_lib_unmerged",
+    ],
 )
