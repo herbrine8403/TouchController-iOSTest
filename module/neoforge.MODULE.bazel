@@ -9,6 +9,17 @@ maven.install(
     ],
 )
 
+lexforge_versions = {
+    "1.20.1": {
+        "mcp_version": "1.20.1-20230612.114412",
+        "mcp_sha256": "f46d1050d8bed9046886b90a0d2fb80b4c6b5120fc35d32e5d37498dbe0a6d2a",
+        "forge_version": "1.20.1-47.1.47",
+        "forge_userdev_sha256": "33d84a704fcef300b37696d2f0a8beb69f4f398d879db1f48425a30e49406a4d",
+        "forge_sources_sha256": "f67acaa73376b148a7b6c359c90aa4585b37bea75752086d8fda0c43c996fecc",
+        "forge_universal_sha256": "56e31f331e70597f791227dd368670c634ece32691a7ff1b0df1acf89c676adb",
+    },
+}
+
 neoforge_versions = {
     "1.20.4": {
         "neoform_version": "1.20.4-20240627.114801",
@@ -62,6 +73,42 @@ neoforge_versions = {
 
 neoform = use_extension("//repo:neoform.bzl", "neoform")
 neoforge = use_extension("//repo:neoforge.bzl", "neoforge")
+
+[
+    (
+        neoform.version(
+            legacy = True,
+            client_jar = "@minecraft//%s:client" % version,
+            client_libraries = "@minecraft//%s:client_libraries" % version,
+            client_mapping = "@minecraft//%s:client_mappings" % version,
+            server_jar = "@minecraft//%s:server" % version,
+            server_mapping = "@minecraft//%s:server_mappings" % version,
+            sha256 = data["mcp_sha256"],
+            version = data["mcp_version"],
+        ),
+        use_repo(
+            neoform,
+            **{
+                ("mcp_%s" % version.replace(".", "_")): ("mcp_%s" % data["mcp_version"].replace(".", "_").replace("-", "_")),
+            }
+        ),
+        neoforge.version(
+            legacy = True,
+            joined_patched_sources = "@mcp_%s//tasks/joined_patch" % version.replace(".", "_"),
+            sources_sha256 = data["forge_sources_sha256"],
+            universal_sha256 = data["forge_universal_sha256"],
+            userdev_sha256 = data["forge_userdev_sha256"],
+            version = data["forge_version"],
+        ),
+        use_repo(
+            neoforge,
+            **{
+                ("forge_%s" % version.replace(".", "_")): ("forge_%s" % data["forge_version"].replace(".", "_").replace("-", "_")),
+            }
+        ),
+    )
+    for version, data in lexforge_versions.items()
+]
 
 [
     (

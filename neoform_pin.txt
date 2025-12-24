@@ -1,3 +1,12 @@
+https://maven.minecraftforge.net/releases/ca/weblite/java-objc-bridge/1.1/java-objc-bridge-1.1.jar 77e34a13bccffc6c8b1a0e3ed46ddb0ea7dd56f2104ecdfacaaec9e4054ac332
+https://maven.minecraftforge.net/releases/com/google/code/findbugs/jsr305/3.0.2/jsr305-3.0.2.jar 766ad2a0783f2687962c8ad74ceecc38a28b9f72a2d085ee438b7813e928d0c7
+https://maven.minecraftforge.net/releases/net/minecraftforge/ForgeAutoRenamingTool/1.0.2/ForgeAutoRenamingTool-1.0.2-all.jar a95a95065dc0919d3b705f9ba50404fead73b39dc2c57ac023a950855f3f5387
+https://maven.minecraftforge.net/releases/net/minecraftforge/forgeflower/2.0.629.0/forgeflower-2.0.629.0.jar 88ab184ff019c39778c6d5574112d4e13768eea21e1b927b6a3e5066b03f73ad
+https://maven.minecraftforge.net/releases/net/minecraftforge/installertools/1.2.0/installertools-1.2.0-fatjar.jar 13239d3ab1c884a1441e1ca723f242faa6f1300fb8abdfa9a8b067b722cd8225
+https://maven.minecraftforge.net/releases/net/minecraftforge/installertools/1.3.2/installertools-1.3.2-fatjar.jar b9caa6293aa4b291efca656e256dc278285278952ed6eb79bf8804b866622765
+https://maven.minecraftforge.net/releases/net/minecraftforge/mergetool/1.1.7/mergetool-1.1.7-api.jar b4b513223d1c3cd2be95f3abe7721c63f7eded5206a134e52845b0868608e358
+https://maven.minecraftforge.net/releases/net/minecraftforge/mergetool/1.1.7/mergetool-1.1.7-fatjar.jar 2fbb74386cc9f9f4e816d2b5167ed9274c0864eae532d658e34587b2a47857e8
+https://maven.minecraftforge.net/releases/org/jetbrains/annotations/24.0.1/annotations-24.0.1.jar 61666dbce7e42e6c85b43c04fcfb8293a21dcb55b3c80e869270ce42c01a6b35
 https://maven.neoforged.net/releases/ca/weblite/java-objc-bridge/1.1/java-objc-bridge-1.1.jar 77e34a13bccffc6c8b1a0e3ed46ddb0ea7dd56f2104ecdfacaaec9e4054ac332
 https://maven.neoforged.net/releases/com/google/code/findbugs/jsr305/3.0.2/jsr305-3.0.2.jar 766ad2a0783f2687962c8ad74ceecc38a28b9f72a2d085ee438b7813e928d0c7
 https://maven.neoforged.net/releases/net/minecraftforge/installertools/1.3.2/installertools-1.3.2-fatjar.jar b9caa6293aa4b291efca656e256dc278285278952ed6eb79bf8804b866622765

@@ -7,7 +7,7 @@ load("//rule:merge_mapping.bzl", "merge_mapping", "merge_mapping_input")
 load("//rule:remap_jar.bzl", "remap_jar")
 load("//rule:decompile_jar.bzl", "decompile_jar")
 
-def _game_version_impl(name, visibility, version, client_mappings, client, server, neoforge, intermediary, sodium_intermediary, iris_intermediary):
+def _game_version_impl(name, visibility, version, client_mappings, client, server, server_legacy, neoforge, intermediary, sodium_intermediary, iris_intermediary):
     intermediary_mapping = name + "_intermediary_mapping"
     intermediary_input = name + "_intermediary_input"
     named_input = name + "_named_input"
@@ -101,20 +101,27 @@ def _game_version_impl(name, visibility, version, client_mappings, client, serve
             visibility = visibility,
         )
 
-    extract_jar(
-        name = server_jar_file,
-        entry_path = "META-INF/versions/%s/server-%s.jar" % (version, version),
-        filename = "_minecraft/server.jar",
-        input = server,
-    )
+    if server_legacy:
+        native.alias(
+            name = server_jar,
+            actual = server,
+            visibility = visibility,
+        )
+    else:
+        extract_jar(
+            name = server_jar_file,
+            entry_path = "META-INF/versions/%s/server-%s.jar" % (version, version),
+            filename = "_minecraft/server.jar",
+            input = server,
+        )
 
-    java_import(
-        name = server_jar,
-        jars = [
-            ":" + server_jar_file,
-        ],
-        visibility = visibility,
-    )
+        java_import(
+            name = server_jar,
+            jars = [
+                ":" + server_jar_file,
+            ],
+            visibility = visibility,
+        )
 
     remap_jar(
         name = server_named,
@@ -177,6 +184,11 @@ game_version = macro(
             mandatory = True,
             allow_single_file = True,
             doc = "Server JAR file",
+        ),
+        "server_legacy": attr.bool(
+            mandatory = False,
+            default = False,
+            doc = "Mark the version's server JAR as legacy JARs that directly shadows libraries into main JAR",
         ),
         "neoforge": attr.label(
             mandatory = False,

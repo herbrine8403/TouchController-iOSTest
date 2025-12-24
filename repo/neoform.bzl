@@ -5,7 +5,10 @@ load("@//private:pin_file.bzl", _parse_pin_file = "parse_pin_file")
 load("@//private:snake_case.bzl", _camel_case_to_snake_case = "camel_case_to_snake_case")
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_jar")
 
-_neoform_repository_url = "https://maven.neoforged.net/releases"
+_neoforge_repository_url = "https://maven.neoforged.net/releases"
+_minecraftforge_repository_url = "https://maven.minecraftforge.net/releases"
+_config_link = "%s/net/neoforged/neoform/%s/neoform-%s.zip"
+_config_link_legacy = "%s/de/oceanlabs/mcp/mcp_config/%s/mcp_config-%s.zip"
 
 def _neoform_repo_impl(rctx):
     pin_content = {}
@@ -14,12 +17,17 @@ def _neoform_repo_impl(rctx):
 
     version_name = rctx.attr.version
     version_sha256 = rctx.attr.sha256
+    version_legacy = rctx.attr.legacy
     neoform_zip = "neoform.zip"
     output_prefix = "neoform/%s" % version_name
 
+    repository_url = _minecraftforge_repository_url if version_legacy else _neoforge_repository_url
+    repository_prefix = "mcp" if version_legacy else "neoform"
+    config_link = _config_link_legacy if version_legacy else _config_link
+
     rctx.report_progress("Downloading NeoForm JAR %s" % version_name)
     rctx.download(
-        url = "%s/net/neoforged/neoform/%s/neoform-%s.zip" % (_neoform_repository_url, version_name, version_name),
+        url = config_link % (repository_url, version_name, version_name),
         sha256 = version_sha256,
         output = neoform_zip,
     )
@@ -63,9 +71,9 @@ def _neoform_repo_impl(rctx):
         version = function["version"]
 
         token = rctx.download(
-            url = _convert_maven_coordinate_to_url(_neoform_repository_url, version),
+            url = _convert_maven_coordinate_to_url(repository_url, version),
             output = "function_jars/%s.jar" % function_name,
-            sha256 = pin_content.get(_convert_maven_coordinate_to_url(_neoform_repository_url, version), ""),
+            sha256 = pin_content.get(_convert_maven_coordinate_to_url(repository_url, version), ""),
             block = False,
         )
         function_jar_tokens[function_name] = token
@@ -116,7 +124,7 @@ def _neoform_repo_impl(rctx):
             '    visibility = ["//visibility:public"],',
             '    main_class = "DecompilerWrapper",',
             '    runtime_deps = [',
-            '        "@%s//jar",' % _convert_maven_coordinate_to_repo("neoform", version),
+            '        "@%s//jar",' % _convert_maven_coordinate_to_repo(repository_prefix, version),
             '        "@//repo/neoform/rule/decompiler_wrapper",',
             '    ],',
             "    jvm_flags = [%s]," % ", ".join(jvm_flags),
@@ -128,7 +136,7 @@ def _neoform_repo_impl(rctx):
             '    name = "%s",' % function_name,
             '    visibility = ["//visibility:public"],',
             '    main_class = "%s",' % main_class,
-            '    runtime_deps = ["@%s//jar"],' % _convert_maven_coordinate_to_repo("neoform", version),
+            '    runtime_deps = ["@%s//jar"],' % _convert_maven_coordinate_to_repo(repository_prefix, version),
             "    jvm_flags = [%s]," % ", ".join(jvm_flags),
             ")",
         ]
@@ -347,7 +355,7 @@ def _neoform_repo_impl(rctx):
                         elif output_task == "downloadServerMappings":
                             task_def.append('    %s = "%s",' % (item_key, rctx.attr.server_mapping))
                         elif output_task == "listLibraries":
-                            sided_libraries = ['"@%s//jar"' % _convert_maven_coordinate_to_repo("neoform", library) for library in config_data["libraries"][side_name]]
+                            sided_libraries = ['"@%s//jar"' % _convert_maven_coordinate_to_repo(repository_prefix, library) for library in config_data["libraries"][side_name]]
                             sided_libraries = ", ".join(sided_libraries)
                             if side_name == "client":
                                 task_def.append('    %s = ["%s", %s],' % (item_key, rctx.attr.client_libraries, sided_libraries))
@@ -379,6 +387,11 @@ _neoform_repo = repository_rule(
         "sha256": attr.string(
             doc = "SHA-256 of the NeoForm JAR file",
             mandatory = True,
+        ),
+        "legacy": attr.bool(
+            doc = "Use legacy minecraftforge(lexforge) instead neoforged repository.",
+            mandatory = False,
+            default = False,
         ),
         "client_jar": attr.label(
             doc = "Client JAR file",
@@ -414,9 +427,7 @@ _neoform_repo = repository_rule(
 )
 
 def _neoform_pin_impl(rctx):
-    url_lines = []
-    for coordinate in rctx.attr.libraries:
-        url_lines.append('"%s"' % _convert_maven_coordinate_to_url(_neoform_repository_url, coordinate))
+    url_lines = ['"%s"' % url for url in rctx.attr.urls]
     rctx.template("PinGenerator.java", rctx.attr._pinner_source, {
         "/*INJECT HERE*/": ", ".join(url_lines),
         "/*OUTPUT NAME*/": "neoform_pin",
@@ -437,8 +448,8 @@ def _neoform_pin_impl(rctx):
 neoform_pin = repository_rule(
     implementation = _neoform_pin_impl,
     attrs = {
-        "libraries": attr.string_list(
-            doc = "List of library coordinates to pin",
+        "urls": attr.string_list(
+            doc = "List of URLs to pin",
         ),
         "_pinner_source": attr.label(
             allow_single_file = [".java"],
@@ -456,6 +467,11 @@ version = tag_class(
         "sha256": attr.string(
             doc = "SHA-256 of the NeoForm JAR file",
             mandatory = True,
+        ),
+        "legacy": attr.bool(
+            doc = "Use legacy minecraftforge(lexforge) instead neoforged repository.",
+            mandatory = False,
+            default = False,
         ),
         "client_jar": attr.label(
             doc = "Client JAR file",
@@ -516,12 +532,15 @@ def _neoform_impl(mctx):
                     fail("NeoForm version %s already exists with a different client mapping" % version.version)
                 elif versions[version.version].server_mapping != version.server_mapping:
                     fail("NeoForm version %s already exists with a different server mapping" % version.version)
+                elif versions[version.version].legacy != version.legacy:
+                    fail("NeoForm version %s already exists with a different legacy flag" % version.version)
                 elif versions[version.version].client_libraries != version.client_libraries:
                     fail("NeoForm version %s already exists with a different client libraries" % version.version)
             else:
                 versions[version.version] = {
                     "version": version.version,
                     "sha256": version.sha256,
+                    "legacy": version.legacy,
                     "client_jar": version.client_jar,
                     "server_jar": version.server_jar,
                     "client_mapping": version.client_mapping,
@@ -532,18 +551,26 @@ def _neoform_impl(mctx):
 
     libraries = []
 
-    def append_library(coordinate):
-        if coordinate not in libraries:
-            libraries.append(coordinate)
+    def append_library(coordinate, legacy = False):
+        item = {
+            "coordinate": coordinate,
+            "legacy": legacy,
+        }
+        if item not in libraries:
+            libraries.append(item)
 
     for version in versions:
         version_name = version["version"]
+        version_legacy = version["legacy"]
         version_sha256 = version["sha256"]
         output_prefix = "neoform/%s" % version_name
 
+        config_link = _config_link_legacy if version_legacy else _config_link
+        repository_url = _minecraftforge_repository_url if version_legacy else _neoforge_repository_url
+
         mctx.report_progress("Downloading NeoForm JAR %s" % version_name)
         mctx.download_and_extract(
-            url = "%s/net/neoforged/neoform/%s/neoform-%s.zip" % (_neoform_repository_url, version_name, version_name),
+            url = config_link % (repository_url, version_name, version_name),
             type = "zip",
             sha256 = version_sha256,
             output = output_prefix,
@@ -552,15 +579,16 @@ def _neoform_impl(mctx):
         config_data = json.decode(mctx.read("%s/config.json" % output_prefix))
         for function_name in config_data["functions"]:
             function = config_data["functions"][function_name]
-            append_library(function["version"])
+            append_library(function["version"], version_legacy)
         for libraries_side in config_data["libraries"]:
             for library in config_data["libraries"][libraries_side]:
-                append_library(library)
+                append_library(library, version_legacy)
 
-        repo_name = _convert_maven_coordinate_to_repo("neoform", version_name)
+        repo_name = ("mcp_%s" if version_legacy else "neoform_%s") % _convert_maven_coordinate(version_name)
         _neoform_repo(
             name = repo_name,
             version = version_name,
+            legacy = version_legacy,
             sha256 = version_sha256,
             client_jar = version["client_jar"],
             server_jar = version["server_jar"],
@@ -574,15 +602,25 @@ def _neoform_impl(mctx):
     if pin_file != None:
         pin_content = _parse_pin_file(mctx.read(pin_file))
     for library in libraries:
+        coordinate = library["coordinate"]
+        legacy = library["legacy"]
+        repository_url = _minecraftforge_repository_url if legacy else _neoforge_repository_url
+        repository_prefix = "mcp" if legacy else "neoform"
         http_jar(
-            name = _convert_maven_coordinate_to_repo("neoform", library),
-            url = _convert_maven_coordinate_to_url(_neoform_repository_url, library),
-            sha256 = pin_content.get(_convert_maven_coordinate_to_url(_neoform_repository_url, library), None),
+            name = _convert_maven_coordinate_to_repo(repository_prefix, coordinate),
+            url = _convert_maven_coordinate_to_url(repository_url, coordinate),
+            sha256 = pin_content.get(_convert_maven_coordinate_to_url(repository_url, coordinate), None),
         )
 
     neoform_pin(
         name = "neoform_pin",
-        libraries = libraries,
+        urls = [
+            _convert_maven_coordinate_to_url(
+                _minecraftforge_repository_url if library["legacy"] else _neoforge_repository_url,
+                library["coordinate"],
+            )
+            for library in libraries
+        ],
     )
 
 neoform = module_extension(
