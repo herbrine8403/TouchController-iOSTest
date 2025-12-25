@@ -10,6 +10,14 @@ maven.install(
 )
 
 lexforge_versions = {
+    "1.16.5": {
+        "mcp_version": "1.16.5-20210115.111550",
+        "mcp_sha256": "80216a0f4ae79d81a5e11ceccaa97582a1f6a2cf079b7703b88a99a26547b342",
+        "forge_version": "1.16.5-36.2.34",
+        "forge_userdev_sha256": "33d84a704fcef300b37696d2f0a8beb69f4f398d879db1f48425a30e49406a4d",
+        "forge_sources_sha256": "f67acaa73376b148a7b6c359c90aa4585b37bea75752086d8fda0c43c996fecc",
+        "forge_universal_sha256": "56e31f331e70597f791227dd368670c634ece32691a7ff1b0df1acf89c676adb",
+    },
     "1.20.1": {
         "mcp_version": "1.20.1-20230612.114412",
         "mcp_sha256": "f46d1050d8bed9046886b90a0d2fb80b4c6b5120fc35d32e5d37498dbe0a6d2a",
