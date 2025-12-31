@@ -16,6 +16,8 @@ maven.install(
         "de.swiesend:secret-service:2.0.1-alpha",
         "ch.qos.logback:logback-classic:1.5.18",
         "com.github.mizosoft.methanol:methanol:1.8.3",
+        "net.java.dev.jna:jna:5.18.0",
+        "net.java.dev.jna:jna-platform:5.18.0",
         "net.neoforged:srgutils:1.0.10",
         "io.codechicken:DiffPatch:2.0.0.36:all",
         "net.neoforged.jst:jst-cli-bundle:1.0.74",
