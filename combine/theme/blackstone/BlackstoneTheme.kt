@@ -72,6 +72,12 @@ val BlackstoneTheme = run {
                 active = textures.widget_switch_switch_active,
                 disabled = textures.widget_switch_switch_disabled,
             ),
+            switchHandle = DrawableSet(
+                normal = textures.widget_handle_handle,
+                hover = textures.widget_handle_handle_hover,
+                active = textures.widget_handle_handle_active,
+                disabled = textures.widget_handle_handle_disabled,
+            ),
 
             editText = DrawableSet(
                 normal = textures.widget_textfield_textfield,
@@ -114,8 +120,8 @@ val BlackstoneTheme = run {
             ),
 
             selectFloatPanel = textures.widget_background_float_window,
-            selectIconUp = textures.widget_handle_handle,
-            selectIconDown = textures.widget_handle_handle,
+            selectIconUp = textures.icon_up,
+            selectIconDown = textures.icon_down,
 
             radioBoxBorder = textures.widget_handle_handle,
 
@@ -153,7 +159,7 @@ val BlackstoneTheme = run {
                 disabled = textures.widget_color_picker_hollow_handle_disabled,
             ),
 
-            alertDialogBackground = textures.widget_background_float_window,
+            alertDialogBackground = textures.widget_background_background_gray,
 
             itemGridBackground = textures.background_backpack,
         ),
