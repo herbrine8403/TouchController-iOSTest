@@ -309,7 +309,7 @@
   "moduleExtensions": {
     "//repo:minecraft.bzl%minecraft": {
       "general": {
-        "bzlTransitiveDigest": "5ZPNfpnK3M7B4TBlM0i/9TOWr6M0ZlF78bABAYYB5gY=",
+        "bzlTransitiveDigest": "iNGV8kraL8UTX3sedv2M+4dWH3t0RTI9qb9r1CNrD08=",
         "usagesDigest": "MZivYgDGY+pExIaRJG8aldCi8jCwKP9DTHGzi9FRSe4=",
         "recordedFileInputs": {},
         "recordedDirentsInputs": {},

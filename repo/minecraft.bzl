@@ -94,15 +94,16 @@ def _minecraft_repo_impl(rctx):
         ]
 
         # Platform mapping for select statements
+        # TODO: add cpu mapping
         platform_mapping = {
-            "windows": "//conditions:default",
+            "windows": "@platforms//os:windows",
             "linux": "@platforms//os:linux",
             "osx": "@platforms//os:macos",
-            "windows-32": "@platforms//os:windows:x86_32",
-            "windows-64": "//conditions:default",
-            "linux-32": "@platforms//os:linux:x86_32",
-            "linux-64": "@platforms//os:linux:x86_64",
-            "osx-64": "@platforms//os:macos:x86_64",
+            "windows-32": "@platforms//os:windows",
+            "windows-64": "@platforms//os:windows",
+            "linux-32": "@platforms//os:linux",
+            "linux-64": "@platforms//os:linux",
+            "osx-64": "@platforms//os:macos",
         }
 
         for entry in entries:
@@ -164,12 +165,18 @@ def _minecraft_repo_impl(rctx):
 
                 if platform_libs_dict:
                     build_content.append("+ select({")
+                    constraint_libs_dict = {}
                     for platform, libs in platform_libs_dict.items():
                         if libs:
-                            condition_libs = ",\n".join(['            "%s"' % lib for lib in libs])
                             platform_constraint = platform_mapping.get(platform)
                             if platform_constraint:
-                                build_content.append('        "%s": [\n%s\n        ],' % (platform_constraint, condition_libs))
+                                if platform_constraint not in constraint_libs_dict:
+                                    constraint_libs_dict[platform_constraint] = []
+                                constraint_libs_dict[platform_constraint] += libs
+                    for constraint, libs in constraint_libs_dict.items():
+                        condition_libs = ",\n".join(['            "%s"' % lib for lib in libs])
+                        build_content.append('        "%s": [\n%s\n        ],' % (constraint, condition_libs))
+
                     build_content.append("})")
 
                 build_content.append(",\n")
