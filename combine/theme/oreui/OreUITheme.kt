@@ -46,9 +46,19 @@ val OreUITheme = run {
                 hover = textures.widget_button_button_hover,
                 focus = OutlineDrawable(textures.widget_button_button_focus),
                 active = textures.widget_button_button_active,
+                disabled = textures.widget_button_button_disabled,
             ),
             guideButton = DrawableSet(
                 normal = textures.widget_button_button_guide,
+                hover = textures.widget_button_button_guide_hover,
+                focus = OutlineDrawable(textures.widget_button_button_guide), // TODO
+                active = textures.widget_button_button_guide_active,
+            ),
+            warningButton = DrawableSet(
+                normal = textures.widget_button_button_warning,
+                hover = textures.widget_button_button_warning_hover,
+                focus = OutlineDrawable(textures.widget_button_button_warning), // TODO
+                active = textures.widget_button_button_warning_active,
             ),
             itemGridBackground = textures.background_backpack,
         ),
