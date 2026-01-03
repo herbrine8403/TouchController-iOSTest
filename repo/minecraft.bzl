@@ -207,47 +207,56 @@ minecraft_repo = repository_rule(
 )
 
 def _minecraft_assets_repo_impl(rctx):
-    asset_objects = rctx.attr.asset_objects
-    asset_manifests = rctx.attr.asset_manifests
+    asset_sha1 = rctx.attr.asset_sha1
+    asset_urls = rctx.attr.asset_urls
     version_assets = rctx.attr.version_assets
-
-    download_tokens = []
 
     build_content = [
         'package(default_visibility = ["//visibility:public"])',
         "",
     ]
 
-    for object_hash in asset_objects.keys():
-        object_path = asset_objects[object_hash]
-        download_tokens.append(rctx.download(
+    manifest_tokens = []
+    for index_id, asset_url in asset_urls.items():
+        manifest_tokens.append(rctx.download(
+            url = asset_url,
+            output = "indexes/%s.json" % index_id,
+            integrity = hex_sha1_to_sri(asset_sha1[index_id]),
+            block = False,
+        ))
+    for token in manifest_tokens:
+        token.wait()
+
+    object_hashes = {}
+    for manifest_id in asset_sha1.keys():
+        manifest_path = "indexes/%s.json" % manifest_id
+        manifest_text = rctx.read(manifest_path)
+        asset_manifest = json.decode(manifest_text)
+        manifest_paths = {}
+        for asset_item in asset_manifest["objects"].values():
+            asset_hash = asset_item["hash"]
+            asset_path = "{}/{}".format(asset_hash[0:2], asset_hash)
+            object_hashes[asset_hash] = asset_path
+            manifest_paths[asset_hash] = asset_path
+        build_content.append("filegroup(")
+        build_content.append('    name = "objects_%s",' % manifest_id)
+        build_content.append("    srcs = [")
+        for asset_hash, asset_path in manifest_paths.items():
+            build_content.append('        "objects/%s",' % asset_path)
+        build_content.append("    ],")
+        build_content.append(")")
+
+    object_tokens = []
+    for object_hash, object_path in object_hashes.items():
+        object_path = object_hashes[object_hash]
+        object_tokens.append(rctx.download(
             url = "https://resources.download.minecraft.net/%s" % object_path,
             output = "objects/%s" % object_path,
             integrity = hex_sha1_to_sri(object_hash),
             block = False,
         ))
-
-    manifests = {}
-    for manifest_id in asset_manifests.keys():
-        manifest_text = asset_manifests[manifest_id]
-        rctx.file(
-            "indexes/%s.json" % manifest_id,
-            content = manifest_text,
-        )
-        manifest = json.decode(manifest_text)
-        manifests[manifest_id] = manifest
-        build_content.append("filegroup(")
-        build_content.append('    name = "objects_%s",' % manifest_id)
-        build_content.append("    srcs = [")
-        asset_pathes = {}
-        for asset_item in manifest["objects"].values():
-            asset_hash = asset_item["hash"]
-            asset_path = asset_objects[asset_hash]
-            asset_pathes[asset_hash] = asset_path
-        for asset_hash, asset_path in asset_pathes.items():
-            build_content.append('        "objects/%s",' % asset_path)
-        build_content.append("    ],")
-        build_content.append(")")
+    for token in object_tokens:
+        token.wait()
 
     for version_id in version_assets.keys():
         version_manifest = version_assets[version_id]
@@ -289,16 +298,13 @@ def _minecraft_assets_repo_impl(rctx):
         content = "\n".join(build_content),
     )
 
-    for token in download_tokens:
-        token.wait()
-
     return None
 
 minecraft_assets_repo = repository_rule(
     implementation = _minecraft_assets_repo_impl,
     attrs = {
-        "asset_objects": attr.string_dict(),
-        "asset_manifests": attr.string_dict(),
+        "asset_sha1": attr.string_dict(),
+        "asset_urls": attr.string_dict(),
         "version_assets": attr.string_dict(),
     },
 )
@@ -348,7 +354,8 @@ def _minecraft_impl(mctx):
     library_paths = {}
     library_urls = {}
     library_sha1 = {}
-    asset_entries = {}
+    asset_sha1 = {}
+    asset_urls = {}
 
     for version, entry in version_entries.items():
         target_assets = entry["assets"]
@@ -481,31 +488,9 @@ def _minecraft_impl(mctx):
                 fail("No assets for version %s" % version)
             asset_id = asset_info["id"]
             target_version_assets[version] = asset_id
-            if asset_id not in asset_entries:
-                asset_entries[asset_id] = {
-                    "sha1": asset_info["sha1"],
-                    "url": asset_info["url"],
-                }
-
-    # Download asset manifests
-    asset_objects = {}
-    asset_manifests = {}
-    for asset_id in asset_entries.keys():
-        asset_entry = asset_entries[asset_id]
-        asset_manifest_path = "indexes/version_{}.json".format(asset_id)
-        mctx.report_progress("Downloading asset %s manifest" % asset_id)
-        mctx.download(
-            url = asset_entry["url"],
-            output = asset_manifest_path,
-            integrity = hex_sha1_to_sri(asset_entry["sha1"]),
-        )
-        asset_manifest_text = mctx.read(asset_manifest_path)
-        asset_manifests[asset_id] = asset_manifest_text
-        asset_manifest = json.decode(asset_manifest_text)
-        for asset_item in asset_manifest["objects"].values():
-            asset_hash = asset_item["hash"]
-            asset_path = "{}/{}".format(asset_hash[0:2], asset_hash)
-            asset_objects[asset_hash] = asset_path
+            if asset_id not in asset_sha1:
+                asset_sha1[asset_id] = asset_info["sha1"]
+                asset_urls[asset_id] = asset_info["url"]
 
     minecraft_repo(
         name = "minecraft",
@@ -520,8 +505,8 @@ def _minecraft_impl(mctx):
 
     minecraft_assets_repo(
         name = "minecraft_assets",
-        asset_objects = asset_objects,
-        asset_manifests = asset_manifests,
+        asset_sha1 = asset_sha1,
+        asset_urls = asset_urls,
         version_assets = target_version_assets,
     )
 
