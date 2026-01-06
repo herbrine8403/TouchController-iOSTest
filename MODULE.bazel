@@ -50,6 +50,7 @@ include("//module:mdbook.MODULE.bazel")
 # rules
 include("//module:rules.MODULE.bazel")
 include("//module:minecraft.MODULE.bazel")
+include("//module:parchment.MODULE.bazel")
 include("//module:modrinth.MODULE.bazel")
 
 # loaders

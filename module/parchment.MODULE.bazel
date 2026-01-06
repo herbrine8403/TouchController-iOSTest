@@ -1,0 +1,93 @@
+"MODULE.bazel Parchment part"
+
+parchment = use_extension("//repo:parchment.bzl", "parchment")
+
+parchment_versions = {
+    "1.16.5": {
+        "version": "2022.03.06",
+        "sha256": "1fcadd764c05c4d01ea201cca8fdb1a501ed178e0622049dca6ee6a86b787606",
+    },
+    "1.17.1": {
+        "version": "2021.12.12",
+        "sha256": "9fc2e4434af8dbb70b6dabe9617938d4e222530b49b5f0c53c3645d64cd9f8bd",
+    },
+    "1.18.2": {
+        "version": "2022.11.06",
+        "sha256": "2eb9294f9c4b0024290728a796e1e72298c8b388b38113fc475797af66572a00",
+    },
+    "1.19.2": {
+        "version": "2022.11.27",
+        "sha256": "52cfb5f6c62c04a9cc870a8eaa937f3952b5076529400c633d0248217812ec9c",
+    },
+    "1.20.1": {
+        "version": "2023.09.03",
+        "sha256": "08ef3e88cc3ea07029f86c69aff30da13b252b513945b78dba231e6df09e86b1",
+    },
+    "1.20.4": {
+        "version": "2024.04.14",
+        "sha256": "9b232873ddc3c3920c6c715d72ee2d9d2010df271daa8d1283ffc00e7e0a27c7",
+    },
+    "1.20.6": {
+        "version": "2024.06.16",
+        "sha256": "7c812a97d9957b4293888e24d29aa46a51fdc2de1eafcc1b3fc981173285de76",
+    },
+    "1.21.1": {
+        "version": "2024.11.17",
+        "sha256": "7c240a37ab432213033b1113d75cb80dc22bffa631d979818b2da1585fa24a08",
+    },
+    "1.21.3": {
+        "version": "2024.12.07",
+        "sha256": "fc7d8acc0142b7610915c9266b51ffc26be73416d8d774bf76bf86edaa96a39f",
+    },
+    "1.21.4": {
+        "version": "2025.03.23",
+        "sha256": "2ceb5f4228416f4a359ff9eeb4b2bb150e4c89e50d9075d74a44eba78b2ef774",
+    },
+    "1.21.5": {
+        "version": "2025.06.15",
+        "sha256": "4239553657908ce235a7a1d4c7f732e7790abed6598c924d28e2df6c97710da0",
+    },
+    "1.21.6": {
+        "version": "2025.06.29",
+        "sha256": "966c3acca7b574eebf2d910ed519c2c36eef906cb6f5107fcea7265d594177a7",
+    },
+    "1.21.7": {
+        "version": "2025.07.18",
+        "sha256": "bda93f57152c72b2aac1043867237b843515c799c5427ed956ddbc7cb2ddc00a",
+    },
+    "1.21.8": {
+        "version": "2025.09.14",
+        "sha256": "558fb7654ed6c994840dd9d634563d4d6a2a47b92e097b03a605450f3e3ce904",
+    },
+    "1.21.9": {
+        "version": "2025.10.05",
+        "sha256": "ae3ba20082f31c02d82fb384c491ee0bb061b0d8e5c2d97d0ff0b4496abf6a28",
+    },
+    "1.21.10": {
+        "version": "2025.10.12",
+        "sha256": "a831b5767dc2142f9129e6e2da8539a1568448aaefc746f1e3228994670ffb08",
+    },
+    "1.21.11": {
+        "version": "2025.12.20",
+        "sha256": "fd4f985d59bbb0104080a27ecfdd7f3067fbdfa8488fc16413c4a060f1964af6",
+    },
+}
+
+[
+    (
+        parchment.version(
+            mc_version = version,
+            parchment_version = entry["version"],
+            sha256 = entry["sha256"],
+        ),
+        use_repo(
+            parchment,
+            **{
+                ("parchment_%s" % version.replace(".", "_")): ("parchment_%s" % (
+                    version.replace(".", "_") + "_" + entry["version"].replace(".", "_").replace("-", "_")
+                )),
+            }
+        ),
+    )
+    for version, entry in parchment_versions.items()
+]
