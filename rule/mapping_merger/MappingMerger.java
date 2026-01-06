@@ -13,8 +13,6 @@ import net.fabricmc.mappingio.tree.MemoryMappingTree;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.Reader;
 import java.nio.file.Files;
@@ -26,7 +24,8 @@ public class MappingMerger {
     private enum MappingFormat {
         TINY_FILE("tiny"),
         TINY_2_FILE("tinyv2"),
-        PROGUARD_FILE("proguard");
+        PROGUARD_FILE("proguard"),
+        PARCHMENT_JSON("parchment");
 
         private final String name;
 
@@ -44,6 +43,9 @@ public class MappingMerger {
                     break;
                 case PROGUARD_FILE:
                     ProGuardFileReader.read(reader, visitor);
+                    break;
+                case PARCHMENT_JSON:
+                    ParchmentFileReader.read(reader, visitor);
                     break;
             }
         }

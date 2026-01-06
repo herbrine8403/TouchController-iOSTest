@@ -3,7 +3,7 @@ MappingInfo = provider(
 )
 
 def _merge_mapping_input_impl(ctx):
-    valid_formats = ["tiny", "tinyv2", "proguard"]
+    valid_formats = ["tiny", "tinyv2", "proguard", "parchment"]
     if ctx.attr.format not in valid_formats:
         fail("Invalid format: {}. Valid formats are: {}".format(
             ctx.attr.format,
@@ -21,7 +21,7 @@ merge_mapping_input = rule(
     implementation = _merge_mapping_input_impl,
     attrs = {
         "file": attr.label(
-            allow_single_file = [".tiny", ".txt"],
+            allow_single_file = [".tiny", ".txt", ".json"],
             mandatory = True,
             doc = "Input mapping file",
         ),
