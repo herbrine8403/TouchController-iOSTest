@@ -20,9 +20,19 @@ import top.fifthlight.blazerod.model.animation.*
 import top.fifthlight.blazerod.model.loader.LoadContext
 import top.fifthlight.blazerod.model.loader.LoadParam
 import top.fifthlight.blazerod.model.loader.LoadResult
+import top.fifthlight.blazerod.model.loader.util.readToBuffer
+import java.io.IOException
+import java.nio.channels.FileChannel
+import java.nio.file.StandardOpenOption
 import kotlin.collections.buildList
+import kotlin.io.path.extension
+import kotlin.math.min
 
 class AssimpLoadException(message: String) : Exception(message)
+
+private fun Path.read() = FileChannel.open(this, StandardOpenOption.READ).use { channel ->
+    channel.readToBuffer(readSizeLimit = 256 * 1024 * 1024)
+}
 
 class AssimpLoader : ModelFileLoader {
     companion object {
@@ -186,7 +196,7 @@ class AssimpLoader : ModelFileLoader {
                     )
                 )
             } catch (ex: Exception) {
-                logger.warn("Failed to load PMX texture", ex)
+                logger.warn("Failed to load texture", ex)
                 return Optional.empty<Texture>()
             }
         }
@@ -830,6 +840,137 @@ class AssimpLoader : ModelFileLoader {
         }
     }
 
+    private class BufferBackedFile private constructor(
+        address: Long,
+        private val readProc: AIFileReadProc,
+        private val tellProc: AIFileTellProc,
+        private val fileSizeProc: AIFileTellProc,
+        private val seekProc: AIFileSeek,
+    ) : AIFile(address, null) {
+        companion object {
+            fun create(buffer: ByteBuffer) = MemoryUtil.memAllocPointer(SIZEOF).let {
+                val readProc = AIFileReadProc.create { _, dstAddress, size, count ->
+                    val availableItems = buffer.remaining() / size
+                    val readItems = min(availableItems, count)
+                    if (readItems == 0L) {
+                        return@create 0
+                    }
+                    val readSize = readItems * size
+                    if (buffer.isDirect) {
+                        val srcAddress = MemoryUtil.memAddress(buffer)
+                        MemoryUtil.memCopy(srcAddress, dstAddress, readSize)
+                        buffer.position(buffer.position() + readSize.toInt())
+                    } else {
+                        // Byte to byte copy
+                        for (i in 0 until readSize) {
+                            MemoryUtil.memPutByte(dstAddress + i, buffer.get())
+                        }
+                    }
+                    readItems
+                }
+                val tellProc = AIFileTellProc.create { _ ->
+                    buffer.position().toLong()
+                }
+                val fileSizeProc = AIFileTellProc.create { _ ->
+                    buffer.limit().toLong()
+                }
+                val seekProc = AIFileSeek.create { _, offset, origin ->
+                    val newPosition = when (origin) {
+                        Assimp.aiOrigin_SET -> offset.toInt()
+                        Assimp.aiOrigin_CUR -> buffer.position() + offset.toInt()
+                        Assimp.aiOrigin_END -> buffer.limit() + offset.toInt()
+                        else -> return@create Assimp.aiReturn_FAILURE
+                    }
+                    if (newPosition !in 0..buffer.limit()) {
+                        return@create Assimp.aiReturn_FAILURE
+                    }
+                    buffer.position(newPosition)
+                    Assimp.aiReturn_SUCCESS
+                }
+                BufferBackedFile(it.address(), readProc, tellProc, fileSizeProc, seekProc)
+            }
+        }
+
+        init {
+            ReadProc(readProc)
+            TellProc(tellProc)
+            FileSizeProc(fileSizeProc)
+            SeekProc(seekProc)
+        }
+
+        override fun free() {
+            super.free()
+            readProc.free()
+            tellProc.free()
+            fileSizeProc.free()
+            seekProc.free()
+        }
+    }
+
+    private class ContextFileIO private constructor(
+        address: Long,
+        private val openProc: AIFileOpenProc,
+        private val closeProc: AIFileCloseProc,
+    ) : AIFileIO(address, null) {
+        companion object {
+            fun create(context: LoadContext) = MemoryUtil.memAllocPointer(SIZEOF).let {
+                // FIXME: get away from this map
+                val files = mutableMapOf<Long, BufferBackedFile>()
+                val openProc = AIFileOpenProc.create { _, fileNameAddress, _ ->
+                    val fileName = MemoryUtil.memUTF8(fileNameAddress)
+                    val buffer = try {
+                        context.loadExternalResource(
+                            fileName,
+                            LoadContext.ResourceType.PLAIN_DATA,
+                            true,
+                            256 * 1024 * 1024
+                        )
+                    } catch (ex: IOException) {
+                        logger.warn("Failed to load resource $fileName")
+                        return@create 0L
+                    }
+                    val file = BufferBackedFile.create(buffer)
+                    file.address().also {
+                        files[it] = file
+                    }
+                }
+                val closeProc = AIFileCloseProc.create { _, fileAddress ->
+                    files.remove(fileAddress)?.close()
+                }
+                ContextFileIO(it.address(), openProc, closeProc)
+            }
+        }
+
+        init {
+            OpenProc(openProc)
+            CloseProc(closeProc)
+        }
+
+        override fun free() {
+            super.free()
+            openProc.free()
+            closeProc.free()
+            MemoryUtil.nmemFree(address)
+        }
+    }
+
+    private class LoadContextWrapper(
+        private val plainPath: Path,
+        private val realPath: Path,
+        private val inner: LoadContext,
+    ) : LoadContext {
+        override fun loadExternalResource(
+            path: String,
+            type: LoadContext.ResourceType,
+            caseInsensitive: Boolean,
+            maxSize: Int,
+        ): ByteBuffer = if (plainPath.toString() == path) {
+            realPath.read()
+        } else {
+            inner.loadExternalResource(path, type, caseInsensitive, maxSize)
+        }
+    }
+
     override fun load(
         path: Path,
         context: LoadContext,
@@ -839,13 +980,30 @@ class AssimpLoader : ModelFileLoader {
                 Assimp.aiProcess_FlipUVs or
                 Assimp.aiProcess_LimitBoneWeights or
                 Assimp.aiProcess_PopulateArmatureData
-        return Context(
-            scene = Assimp.aiImportFile(path.toString(), flags)
-                ?: throw AssimpLoadException(Assimp.aiGetErrorString() ?: "Unknown error"),
-            context = context,
-            param = param,
-        ).use {
-            it.load()
+        return if (context != LoadContext.Empty) {
+            val plainPath = path.last()
+            val context = LoadContextWrapper(plainPath, path, context)
+            val fileIO = ContextFileIO.create(context)
+            fileIO.use {
+                Context(
+                    scene = Assimp.aiImportFileEx(plainPath.toString(), flags, fileIO) ?: throw AssimpLoadException(
+                        Assimp.aiGetErrorString() ?: "Unknown error"
+                    ),
+                    context = context,
+                    param = param,
+                ).use {
+                    it.load()
+                }
+            }
+        } else {
+            Context(
+                scene = Assimp.aiImportFileFromMemory(path.read(), flags, path.extension)
+                    ?: throw AssimpLoadException(Assimp.aiGetErrorString() ?: "Unknown error"),
+                context = context,
+                param = param,
+            ).use {
+                it.load()
+            }
         }
     }
 }
