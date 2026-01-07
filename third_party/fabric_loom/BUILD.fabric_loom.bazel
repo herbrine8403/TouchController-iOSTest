@@ -1,0 +1,11 @@
+load("@rules_java//java:defs.bzl", "java_library")
+
+java_library(
+    name = "vineflower_tiny_javadoc_provider",
+    srcs = ["src/decompilers/vineflower/net/fabricmc/loom/decompilers/vineflower/TinyJavadocProvider.java"],
+    visibility = ["//visibility:public"],
+    deps = [
+        "@maven//:org_vineflower_vineflower",
+        "@maven//:net_fabricmc_mapping_io",
+    ],
+)

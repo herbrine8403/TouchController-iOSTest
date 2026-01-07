@@ -63,6 +63,7 @@ include("//module/third_party:iris.MODULE.bazel")
 include("//module/third_party:mocha.MODULE.bazel")
 include("//module/third_party:wayland.MODULE.bazel")
 include("//module/third_party:saba.MODULE.bazel")
+include("//module/third_party:fabric_loom.MODULE.bazel")
 
 # projects
 include("//module:blazerod.MODULE.bazel")

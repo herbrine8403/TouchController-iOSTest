@@ -5,11 +5,17 @@ def _decompile_jar_impl(ctx):
     merged_input = java_common.merge([dep[JavaInfo] for dep in ctx.attr.inputs])
 
     args = ctx.actions.args()
-    args.add_all(merged_input.full_compile_jars.to_list())
+    if ctx.file.mappings:
+        args.add("-m", ctx.file.mappings)
     args.add(output_file)
+    args.add_all(merged_input.full_compile_jars)
+
+    inputs = merged_input.full_compile_jars
+    if ctx.file.mappings:
+        inputs = depset([ctx.file.mappings], transitive = [inputs])
 
     ctx.actions.run(
-        inputs = merged_input.full_compile_jars,
+        inputs = inputs,
         outputs = [output_file],
         executable = ctx.executable._vineflower_bin,
         arguments = [args],
@@ -24,6 +30,11 @@ decompile_jar = rule(
         "inputs": attr.label_list(
             mandatory = True,
             doc = "Input JAR files",
+        ),
+        "mappings": attr.label(
+            allow_single_file = [".tiny"],
+            mandatory = False,
+            doc = "Mapping file",
         ),
         "_vineflower_bin": attr.label(
             default = Label("//rule/vineflower"),

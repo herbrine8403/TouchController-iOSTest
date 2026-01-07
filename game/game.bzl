@@ -126,6 +126,7 @@ def _game_version_impl(
         decompile_jar(
             name = client_named_source,
             inputs = [":" + client_named],
+            mappings = ":" + merged_mapping,
         )
 
     if neoforge:
