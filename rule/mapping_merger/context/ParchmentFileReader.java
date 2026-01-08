@@ -1,4 +1,4 @@
-package top.fifthlight.fabazel.mappingmerger;
+package top.fifthlight.fabazel.mappingmerger.context;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;

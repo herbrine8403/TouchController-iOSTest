@@ -53,7 +53,6 @@ def _game_version_impl(
             name = intermediary_input,
             file = ":" + intermediary_mapping,
             format = "tinyv2",
-            source_namespace = "official",
         )
 
     if client_mappings:
@@ -65,7 +64,6 @@ def _game_version_impl(
                 "source": "named",
                 "target": "official",
             },
-            source_namespace = "official",
         )
 
     if client_parchment:
@@ -73,7 +71,6 @@ def _game_version_impl(
             name = parchment_input,
             file = client_parchment,
             format = "parchment",
-            source_namespace = "named",
         )
 
     decompile_jar(
@@ -82,18 +79,30 @@ def _game_version_impl(
     )
 
     if intermediary or client_mappings:
-        intermediary_input_item = [":" + intermediary_input] if intermediary else []
-        named_input_item = [":" + named_input] if client_mappings else []
-        parchment_input_item = [":" + parchment_input] if client_parchment else []
+        inputs = {}
+        if intermediary:
+            inputs["intermediary"] = ":" + intermediary_input
+        if client_mappings:
+            inputs["mojmap"] = ":" + named_input
+        if client_parchment:
+            inputs["parchment"] = ":" + parchment_input
+
+        operations = []
+        if client_mappings:
+            operations.append(">mojmap")
+            if client_parchment:
+                operations.append(">parchment")
+            operations.append("changeSrc(official)")
+
+        if intermediary:
+            operations.append(">intermediary")
+            operations.append("completeNamespace(named -> intermediary)")
 
         merge_mapping(
             name = merged_mapping,
-            complete_namespace = {
-                "named": "intermediary",
-            },
-            inputs = intermediary_input_item + named_input_item + parchment_input_item,
+            inputs = inputs,
             output = "merged.tiny",
-            output_source_namespace = "official",
+            operations = operations,
             visibility = visibility,
         )
 

@@ -1,5 +1,5 @@
 MappingInfo = provider(
-    fields = ["format", "namespace_mappings", "source_namespace", "file"],
+    fields = ["format", "namespace_mappings", "file"],
 )
 
 def _merge_mapping_input_impl(ctx):
@@ -13,7 +13,6 @@ def _merge_mapping_input_impl(ctx):
     return [MappingInfo(
         format = ctx.attr.format,
         namespace_mappings = ctx.attr.namespace_mappings,
-        source_namespace = ctx.attr.source_namespace,
         file = ctx.file.file,
     )]
 
@@ -29,10 +28,6 @@ merge_mapping_input = rule(
             mandatory = True,
             doc = "Mapping format (tiny / tinyv2 / proguard)",
         ),
-        "source_namespace": attr.string(
-            mandatory = False,
-            doc = "Source namespace",
-        ),
         "namespace_mappings": attr.string_dict(
             default = {},
             doc = "Namespace mappings for this input file",
@@ -47,20 +42,21 @@ def _merge_mapping_impl(ctx):
     args = ctx.actions.args()
     inputs = []
 
-    for from_ns, to_ns in ctx.attr.complete_namespace.items():
-        args.add("--complete_namespace", "{}:{}".format(from_ns, to_ns))
-
-    for target in ctx.attr.inputs:
+    for name, target in ctx.attr.inputs.items():
         info = target[MappingInfo]
-        args.add("--format", info.format)
-        if info.source_namespace:
-            args.add("--source-namespace", info.source_namespace)
+        args.add("--mapping")
+        args.add("name=" + name)
+        args.add("format=" + info.format)
         for from_ns, to_ns in info.namespace_mappings.items():
-            args.add("--namespace-mapping", "{}:{}".format(from_ns, to_ns))
-        args.add(info.file.path)
+            args.add("namespace-mapping={}:{}".format(from_ns, to_ns))
+        args.add(info.file, format = "path=%s")
         inputs.append(info.file)
 
-    args.add(output_file.path)
+    args.add("--output", output_file.path)
+    args.add("--")
+
+    for operation in ctx.attr.operations:
+        args.add(operation)
 
     ctx.actions.run(
         inputs = inputs,
@@ -75,17 +71,15 @@ def _merge_mapping_impl(ctx):
         "MappingInfo": MappingInfo(
             format = "tinyv2",
             namespace_mappings = {},
-            source_namespace = ctx.attr.output_source_namespace,
             file = output_file,
         ),
     }
-
     return target.values()
 
 merge_mapping = rule(
     implementation = _merge_mapping_impl,
     attrs = {
-        "inputs": attr.label_list(
+        "inputs": attr.string_keyed_label_dict(
             providers = [MappingInfo],
             mandatory = True,
             doc = "List of mapping inputs to merge",
@@ -94,14 +88,9 @@ merge_mapping = rule(
             mandatory = True,
             doc = "Output file name",
         ),
-        "complete_namespace": attr.string_dict(
-            default = {},
-            doc = "Complete missing for namespace",
-        ),
-        "output_source_namespace": attr.string(
-            mandatory = False,
-            doc = """Output source namespace. This is not used in remapping,
-just a metadata of output which is used as other tasks' input""",
+        "operations": attr.string_list(
+            mandatory = True,
+            doc = "Operation list. Using > to import a mapping, and name(args) to call an operation.",
         ),
         "_mapping_merger": attr.label(
             default = Label("//rule/mapping_merger"),

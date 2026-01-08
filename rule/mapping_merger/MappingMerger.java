@@ -1,204 +1,230 @@
 package top.fifthlight.fabazel.mappingmerger;
 
-import net.fabricmc.mappingio.MappingVisitor;
-import net.fabricmc.mappingio.adapter.MappingNsCompleter;
-import net.fabricmc.mappingio.adapter.MappingNsRenamer;
-import net.fabricmc.mappingio.adapter.MappingSourceNsSwitch;
-import net.fabricmc.mappingio.adapter.OuterClassNamePropagator;
-import net.fabricmc.mappingio.format.proguard.ProGuardFileReader;
-import net.fabricmc.mappingio.format.tiny.Tiny1FileReader;
-import net.fabricmc.mappingio.format.tiny.Tiny2FileReader;
 import net.fabricmc.mappingio.format.tiny.Tiny2FileWriter;
 import net.fabricmc.mappingio.tree.MemoryMappingTree;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import top.fifthlight.fabazel.mappingmerger.context.InputEntry;
+import top.fifthlight.fabazel.mappingmerger.context.MappingFormat;
+import top.fifthlight.fabazel.mappingmerger.context.MergeContext;
+import top.fifthlight.fabazel.mappingmerger.operation.ChangeSourceNamespaceOperation;
+import top.fifthlight.fabazel.mappingmerger.operation.CompleteNamespaceOperation;
+import top.fifthlight.fabazel.mappingmerger.operation.ImportMappingOperation;
+import top.fifthlight.fabazel.mappingmerger.operation.Operation;
 
-import java.io.IOException;
-import java.io.Reader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Collectors;
 
 public class MappingMerger {
-    private enum MappingFormat {
-        TINY_FILE("tiny"),
-        TINY_2_FILE("tinyv2"),
-        PROGUARD_FILE("proguard"),
-        PARCHMENT_JSON("parchment");
+    private static class CliContext {
+        private final MergeContext.Builder contextBuilder = new MergeContext.Builder();
+        private Path outputPath = null;
+        private final List<Operation> operations = new ArrayList<>();
+        private boolean insideMapping = false;
+        private Path mappingPath = null;
+        private String mappingName = null;
+        private MappingFormat mappingFormat = null;
+        private final Map<String, String> namespaceMappings = new HashMap<>();
 
-        private final String name;
-
-        MappingFormat(String name) {
-            this.name = name;
+        public void setOutputPath(Path outputPath) {
+            if (this.outputPath != null) {
+                throw new IllegalArgumentException("Output path is already specified: " + this.outputPath);
+            }
+            this.outputPath = outputPath;
         }
 
-        public void read(Reader reader, MappingVisitor visitor) throws IOException {
-            switch (this) {
-                case TINY_FILE:
-                    Tiny1FileReader.read(reader, visitor);
-                    break;
-                case TINY_2_FILE:
-                    Tiny2FileReader.read(reader, visitor);
-                    break;
-                case PROGUARD_FILE:
-                    ProGuardFileReader.read(reader, visitor);
-                    break;
-                case PARCHMENT_JSON:
-                    ParchmentFileReader.read(reader, visitor);
-                    break;
+        private void clearMapping() {
+            mappingPath = null;
+            mappingName = null;
+            mappingFormat = null;
+            namespaceMappings.clear();
+        }
+
+        public void finishMapping() {
+            if (!insideMapping) {
+                return;
             }
+            insideMapping = false;
+            if (mappingPath == null) {
+                throw new IllegalArgumentException("No path specified for mapping");
+            }
+            if (mappingFormat == null) {
+                throw new IllegalArgumentException("No format specified for mapping");
+            }
+            if (mappingName == null) {
+                throw new IllegalArgumentException("No name specified for mapping");
+            }
+            contextBuilder.addInputEntry(mappingName, new InputEntry(
+                    mappingPath,
+                    mappingFormat,
+                    new HashMap<>(namespaceMappings)
+            ));
+            clearMapping();
+        }
+
+        public void enterMapping() {
+            if (insideMapping) {
+                finishMapping();
+            }
+            insideMapping = true;
+            clearMapping();
+        }
+
+        public boolean isInsideMapping() {
+            return insideMapping;
+        }
+
+        public void setMappingPath(Path path) {
+            if (mappingPath != null) {
+                throw new IllegalArgumentException("Mapping path is already specified: " + mappingPath);
+            }
+            mappingPath = path;
+        }
+
+        public void setMappingName(String name) {
+            if (mappingName != null) {
+                throw new IllegalArgumentException("Mapping name is already specified: " + mappingName);
+            }
+            mappingName = name;
+        }
+
+        public void setMappingFormat(MappingFormat format) {
+            if (mappingFormat != null) {
+                throw new IllegalArgumentException("Mapping format is already specified: " + mappingFormat);
+            }
+            mappingFormat = format;
+        }
+
+        public void addNamespaceMapping(String from, String to) {
+            namespaceMappings.put(from, to);
+        }
+
+        public void addOperation(Operation operation) {
+            finishMapping();
+            operations.add(operation);
+        }
+
+        public Result build() {
+            finishMapping();
+            return new Result(contextBuilder.build(), outputPath, operations);
+        }
+
+        public record Result(MergeContext context, Path outputPath, List<Operation> operations) {
         }
     }
 
-    private record NamespacePair(@NotNull String from, @NotNull String to) {
-
-        public static NamespacePair parse(String mapping) {
-            var index = mapping.indexOf(":");
-                if (index == -1) {
-                    throw new IllegalArgumentException("Bad namespace pair: " + mapping);
-                }
-            var from = mapping.substring(0, index);
-            var to = mapping.substring(index + 1);
-                if (from.isEmpty()) {
-                    throw new IllegalArgumentException("Empty from namespace");
-                }
-                if (to.isEmpty()) {
-                    throw new IllegalArgumentException("Empty to namespace");
-                }
-                return new NamespacePair(from, to);
-            }
-
-        @Override
-            public String toString() {
-                return from + ":" + to;
-            }
-        }
-
-    private record InputEntry(@NotNull Path path, @NotNull MappingMerger.MappingFormat format,
-                              @NotNull Map<String, String> namespaceMapping, @Nullable String sourceNamespace) {
-
-        @Override
-            public boolean equals(Object o) {
-                if (o == null || getClass() != o.getClass()) return false;
-            var that = (InputEntry) o;
-                return Objects.equals(path, that.path) && format == that.format && Objects.equals(namespaceMapping, that.namespaceMapping) && Objects.equals(sourceNamespace, that.sourceNamespace);
-            }
-
-        @Override
-            public String toString() {
-                return "InputEntry{" +
-                        "path=" + path +
-                        ", format=" + format +
-                        ", namespaceMapping=" + namespaceMapping +
-                        ", sourceNamespace='" + sourceNamespace + '\'' +
-                        '}';
-            }
-        }
-
-    public static void main(String[] args) throws IOException {
-        MappingFormat format = null;
-        var namespaceMappings = new HashMap<String, String>();
-        var completeNamespace = new HashMap<String, String>();
-        List<InputEntry> inputEntries = new ArrayList<>();
-        Path outputPath = null;
-        String sourceNamespace = null;
+    public static void main(String[] args) throws Exception {
+        var context = new CliContext();
+        var enterOperation = false;
         for (var argIndex = 0; argIndex < args.length; argIndex++) {
             var arg = args[argIndex];
-            if (arg.startsWith("--")) {
-                var name = arg.substring(2);
-                if (argIndex >= args.length - 1) {
-                    throw new IllegalArgumentException("No value for argument: " + arg);
+
+            if (enterOperation) {
+                if (arg.startsWith(">")) {
+                    context.addOperation(new ImportMappingOperation(arg.substring(1)));
+                } else {
+                    var leftIndex = arg.indexOf('(');
+                    var rightIndex = arg.indexOf(')');
+                    if (leftIndex == -1 || rightIndex == -1) {
+                        throw new IllegalArgumentException("Bad operation: " + arg);
+                    }
+                    var operationName = arg.substring(0, leftIndex);
+                    var operationArg = arg.substring(leftIndex + 1, rightIndex).trim();
+                    switch (operationName) {
+                        case "changeSrc":
+                            context.addOperation(new ChangeSourceNamespaceOperation(operationArg));
+                            break;
+                        case "completeNamespace":
+                            var entries = operationArg.split(",");
+                            var namespaceMappings = new HashMap<String, String>();
+                            for (var entry : entries) {
+                                var separatorIndex = entry.indexOf("->");
+                                if (separatorIndex == -1) {
+                                    throw new IllegalArgumentException("Bad operation argument: " + operationArg);
+                                }
+                                var from = entry.substring(0, separatorIndex).trim();
+                                var to = entry.substring(separatorIndex + 2).trim();
+                                namespaceMappings.put(from, to);
+                            }
+                            context.addOperation(new CompleteNamespaceOperation(namespaceMappings));
+                            break;
+                        default:
+                            throw new IllegalArgumentException("Bad operation: " + operationName);
+                    }
                 }
-                var value = args[argIndex + 1];
-                argIndex++;
-                switch (name) {
-                    case "format":
-                        if (format != null) {
-                            throw new IllegalArgumentException("Mapping format is already specified: " + format);
+            } else if (arg.startsWith("--")) {
+                var option = arg.substring(2);
+                switch (option) {
+                    case "mapping":
+                        context.enterMapping();
+                        break;
+                    case "output":
+                        context.finishMapping();
+                        if (argIndex >= args.length - 1) {
+                            throw new IllegalArgumentException("No value for argument: " + arg);
                         }
-                        format = Arrays.stream(MappingFormat.values())
-                                .filter(type -> type.name.equals(value))
+                        context.setOutputPath(Path.of(args[argIndex + 1]));
+                        argIndex++;
+                        break;
+                    case "":
+                        context.finishMapping();
+                        enterOperation = true;
+                        break;
+                    default:
+                        throw new IllegalArgumentException("Bad option: " + option);
+                }
+            } else if (context.isInsideMapping()) {
+                var equalsIndex = arg.indexOf('=');
+                if (equalsIndex == -1) {
+                    throw new IllegalArgumentException("Bad argument: " + arg);
+                }
+                var key = arg.substring(0, equalsIndex);
+                var value = arg.substring(equalsIndex + 1);
+                switch (key) {
+                    case "path":
+                        context.setMappingPath(Path.of(value));
+                        break;
+                    case "name":
+                        context.setMappingName(value);
+                        break;
+                    case "format":
+                        var format = Arrays.stream(MappingFormat.values())
+                                .filter(type -> type.getName().equals(value))
                                 .findAny()
                                 .orElseThrow(() -> {
                                     var availableMappingTypes = Arrays.stream(MappingFormat.values())
-                                            .map(type -> type.name)
+                                            .map(MappingFormat::getName)
                                             .collect(Collectors.joining("\n"));
                                     return new IllegalArgumentException(
                                             "Bad mapping type: " + value + "\n" + "Available mappings type:" + "\n" + availableMappingTypes
                                     );
                                 });
-                        break;
-                    case "source-namespace":
-                        if (sourceNamespace != null) {
-                            throw new IllegalArgumentException("Source Namespace is already specified: " + sourceNamespace);
-                        }
-                        sourceNamespace = value;
-                        break;
-                    case "complete_namespace":
-                        var completePair = NamespacePair.parse(value);
-                        if (completeNamespace.containsKey(completePair.from())) {
-                            throw new IllegalArgumentException("Complete namespace is already specified: " + completePair);
-                        }
-                        completeNamespace.put(completePair.from(), completePair.to());
+                        context.setMappingFormat(format);
                         break;
                     case "namespace-mapping":
-                        var namespacePair = NamespacePair.parse(value);
-                        if (namespaceMappings.containsKey(namespacePair.from())) {
-                            throw new IllegalArgumentException("Namespace mapping is already specified: " + namespacePair);
+                        var separatorIndex = value.indexOf(':');
+                        if (separatorIndex == -1) {
+                            throw new IllegalArgumentException("Bad argument: " + arg);
                         }
-                        namespaceMappings.put(namespacePair.from(), namespacePair.to());
+                        var from = value.substring(0, separatorIndex);
+                        var to = value.substring(separatorIndex + 1);
+                        context.addNamespaceMapping(from, to);
                         break;
                     default:
-                        throw new IllegalArgumentException("Bad argument: " + name);
+                        throw new IllegalArgumentException("Bad argument: " + arg);
                 }
-            } else if (argIndex == args.length - 1) {
-                outputPath = Path.of(arg);
             } else {
-                if (format == null) {
-                    throw new IllegalArgumentException("No format specified for mapping: " + arg);
-                }
-                var path = Path.of(arg);
-                inputEntries.add(new InputEntry(path,
-                        format,
-                        Collections.unmodifiableMap(namespaceMappings),
-                        sourceNamespace));
-                format = null;
-                namespaceMappings = new HashMap<>();
-                sourceNamespace = null;
+                throw new IllegalArgumentException("Bad argument: " + arg);
             }
         }
 
-        if (inputEntries.isEmpty() || outputPath == null) {
-            System.out.println("Usage: MappingMerger [--source-namespace <namespace>]... <--format=<mapping type> [--namespace-mapping <from:to>]... [--completeNamespace <from:to>]... <mapping path>>... <output file>");
-            return;
+        var contextResult = context.build();
+        var tree = new MemoryMappingTree();
+        for (var operation : contextResult.operations()) {
+            tree = operation.run(tree, contextResult.context());
         }
-
-        var destinationTree = new MemoryMappingTree();
-        for (var entry : inputEntries) {
-            var visitor = getMappingVisitor(entry, destinationTree);
-            try (var reader = Files.newBufferedReader(entry.path())) {
-                entry.format().read(reader, visitor);
-            }
+        try (var writer = Files.newBufferedWriter(contextResult.outputPath()); var visitor = new Tiny2FileWriter(writer, false)) {
+            tree.accept(visitor);
         }
-        try (var writer = Files.newBufferedWriter(outputPath)) {
-            MappingVisitor visitor = new Tiny2FileWriter(writer, false);
-            if (!completeNamespace.isEmpty()) {
-                visitor = new MappingNsCompleter(visitor, completeNamespace);
-            }
-            visitor = new OuterClassNamePropagator(visitor);
-            destinationTree.accept(visitor);
-        }
-    }
-
-    private static MappingVisitor getMappingVisitor(InputEntry entry, MemoryMappingTree destinationTree) {
-        MappingVisitor visitor = destinationTree;
-        if (entry.sourceNamespace() != null) {
-            visitor = new MappingSourceNsSwitch(visitor, entry.sourceNamespace());
-        }
-        if (!entry.namespaceMapping().isEmpty()) {
-            visitor = new MappingNsRenamer(visitor, entry.namespaceMapping());
-        }
-        return visitor;
     }
 }
