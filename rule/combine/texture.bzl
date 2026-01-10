@@ -4,15 +4,72 @@ TextureInfo = provider(fields = ["identifier", "metadata", "texture", "backgroun
 NinePatchTextureInfo = provider(fields = ["identifier", "metadata", "texture"])
 TextureGroupInfo = provider(fields = ["textures", "ninepatch_textures", "files"])
 
-def _path_to_identifier(path):
+def path_to_identifier(path):
     # Strip leading "/" if present
     path = path.removeprefix("/")
+
     # Remove extension
     path = path.split(".")[0]
+
     # Replace all non-alphanumeric characters with underscores
     path = "".join([path[index] if path[index].isalnum() else "_" for index in range(len(path))])
+
     # Make all letters lowercase
     return path.lower()
+
+def generate_ninepatch_texture(actions, texture_generator, src):
+    input_filename = src.basename.split(".")[0]
+    metadata_file = actions.declare_file("%s.json" % input_filename, sibling = src)
+    compressed_file = actions.declare_file("%s.compressed.9.png" % input_filename, sibling = src)
+
+    args = actions.args()
+    args.add("ninepatch")
+    args.add(src)
+    args.add(metadata_file)
+    args.add(compressed_file)
+
+    args.use_param_file("@%s", use_always = True)
+
+    actions.run(
+        inputs = [src],
+        outputs = [compressed_file, metadata_file],
+        executable = texture_generator,
+        execution_requirements = {
+            "supports-workers": "1",
+            "requires-worker-protocol": "json",
+        },
+        arguments = [args],
+        mnemonic = "CombineTexture",
+    )
+
+    return metadata_file, compressed_file
+
+def generate_texture(actions, texture_generator, src, background = False):
+    input_filename = src.basename.split(".")[0]
+    metadata_file = actions.declare_file("%s.json" % input_filename, sibling = src)
+
+    args = actions.args()
+    args.add("texture")
+    if background:
+        args.add("--background")
+    args.add(src)
+    args.add(metadata_file)
+
+    args.use_param_file("@%s", use_always = True)
+
+    actions.run(
+        inputs = [src],
+        outputs = [metadata_file],
+        executable = texture_generator,
+        execution_requirements = {
+            "supports-workers": "1",
+            "requires-worker-protocol": "json",
+        },
+        arguments = [args],
+        mnemonic = "CombineTexture",
+    )
+
+    return metadata_file, src
 
 def _ninepatch_texture_impl(ctx):
     strip_prefix = ctx.attr.strip_prefix
@@ -22,36 +79,14 @@ def _ninepatch_texture_impl(ctx):
     output_textures = []
     output_files = []
     for src in ctx.files.srcs:
-        input_filename = src.basename.split(".")[0]
-        metadata_file = ctx.actions.declare_file("%s.json" % input_filename, sibling = src)
-        compressed_file = ctx.actions.declare_file("%s.compressed.9.png" % input_filename, sibling = src)
+        metadata_file, compressed_file = generate_ninepatch_texture(ctx.actions, ctx.executable._texture_generator, src)
         output_files.append(metadata_file)
         output_files.append(compressed_file)
 
         if not src.short_path.startswith(strip_prefix):
             fail("Bad strip_prefix: want to strip %s from %s" % (strip_prefix, src.short_path))
-        identifier = _path_to_identifier(src.short_path.removeprefix(strip_prefix))
 
-        args = ctx.actions.args()
-        args.add("ninepatch")
-        args.add(src)
-        args.add(metadata_file)
-        args.add(compressed_file)
-
-        args.use_param_file("@%s", use_always = True)
-
-        ctx.actions.run(
-            inputs = [src],
-            outputs = [compressed_file, metadata_file],
-            executable = ctx.executable._texture_generator,
-            execution_requirements = {
-                "supports-workers": "1",
-                "requires-worker-protocol": "json",
-            },
-            arguments = [args],
-            mnemonic = "CombineTexture",
-        )
-
+        identifier = path_to_identifier(src.short_path.removeprefix(strip_prefix))
         output_textures.append(NinePatchTextureInfo(
             identifier = identifier,
             metadata = metadata_file,
@@ -95,40 +130,18 @@ def _texture_impl(ctx):
     output_files = []
     for src in ctx.files.srcs:
         background = ctx.attr.background
-        input_filename = src.basename.split(".")[0]
-        metadata_file = ctx.actions.declare_file("%s.json" % input_filename, sibling = src)
-        output_files.append(src)
+        metadata_file, texture_file = generate_texture(ctx.actions, ctx.executable._texture_generator, src, background)
+        output_files.append(texture_file)
         output_files.append(metadata_file)
 
         if not src.short_path.startswith(strip_prefix):
             fail("Bad strip_prefix: want to strip %s from %s" % (strip_prefix, src.short_path))
-        identifier = _path_to_identifier(src.short_path.removeprefix(strip_prefix))
-
-        args = ctx.actions.args()
-        args.add("texture")
-        if background:
-            args.add("--background")
-        args.add(src)
-        args.add(metadata_file)
-
-        args.use_param_file("@%s", use_always = True)
-
-        ctx.actions.run(
-            inputs = [src],
-            outputs = [metadata_file],
-            executable = ctx.executable._texture_generator,
-            execution_requirements = {
-                "supports-workers": "1",
-                "requires-worker-protocol": "json",
-            },
-            arguments = [args],
-            mnemonic = "CombineTexture",
-        )
+        identifier = path_to_identifier(src.short_path.removeprefix(strip_prefix))
 
         output_textures.append(TextureInfo(
             identifier = identifier,
             metadata = metadata_file,
-            texture = src,
+            texture = texture_file,
             background = background,
         ))
 
@@ -165,7 +178,7 @@ texture = rule(
     },
 )
 
-def _merge_texture_group_info(groups):
+def merge_texture_group_info(groups):
     files_depsets = []
     textures = []
     ninepatch_textures = []
@@ -182,7 +195,7 @@ def _merge_texture_group_info(groups):
 
 def _texture_group_impl(ctx):
     groups_infos = [dep[TextureGroupInfo] for dep in ctx.attr.deps]
-    merged_group = _merge_texture_group_info(groups_infos)
+    merged_group = merge_texture_group_info(groups_infos)
     return [merged_group, DefaultInfo(files = merged_group.files)]
 
 texture_group = rule(
@@ -201,7 +214,7 @@ TextureLibraryInfo = provider(fields = ["package", "class_name", "prefix", "text
 
 def _texture_lib_impl(ctx):
     groups_infos = [dep[TextureGroupInfo] for dep in ctx.attr.deps]
-    merged_group = _merge_texture_group_info(groups_infos)
+    merged_group = merge_texture_group_info(groups_infos)
     return [
         TextureLibraryInfo(
             package = ctx.attr.package,

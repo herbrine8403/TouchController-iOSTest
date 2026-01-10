@@ -1,19 +1,18 @@
-package top.fifthlight.touchcontroller.common.ext
+package top.fifthlight.touchcontroller.common.serializer
 
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.descriptors.buildClassSerialDescriptor
-import kotlinx.serialization.descriptors.element
-import kotlinx.serialization.encoding.*
+import kotlinx.serialization.encoding.CompositeDecoder
+import kotlinx.serialization.encoding.Decoder
+import kotlinx.serialization.encoding.Encoder
+import kotlinx.serialization.encoding.decodeStructure
+import kotlinx.serialization.encoding.encodeStructure
 import kotlinx.serialization.serializer
-import org.koin.core.component.KoinComponent
-import org.koin.core.component.inject
-import top.fifthlight.combine.data.*
+import top.fifthlight.combine.data.Identifier
 
-class ItemSerializer : KSerializer<Item>, KoinComponent {
-    private val itemFactory: ItemFactory by inject()
-
+class ItemSerializer : KSerializer<Item> {
     override val descriptor: SerialDescriptor = buildClassSerialDescriptor("top.fifthlight.combine.data.Item") {
         element<Identifier>("id")
         element<Int?>("metadata")

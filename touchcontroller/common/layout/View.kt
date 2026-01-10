@@ -2,7 +2,7 @@ package top.fifthlight.touchcontroller.common.layout
 
 import org.koin.core.component.get
 import top.fifthlight.data.Offset
-import top.fifthlight.touchcontroller.common.ext.fastRandomUuid
+import top.fifthlight.touchcontroller.common.util.uuid.fastRandomUuid
 import top.fifthlight.touchcontroller.common.gal.CrosshairTarget
 import top.fifthlight.touchcontroller.common.gal.DefaultKeyBindingType
 import top.fifthlight.touchcontroller.common.gal.PlayerHandleFactory

@@ -17,7 +17,7 @@ import top.fifthlight.data.IntPadding
 import top.fifthlight.data.IntRect
 import top.fifthlight.data.IntSize
 import top.fifthlight.touchcontroller.assets.Texts
-import top.fifthlight.touchcontroller.common.ext.fastRandomUuid
+import top.fifthlight.touchcontroller.common.util.uuid.fastRandomUuid
 import top.fifthlight.touchcontroller.common.helper.ColorHelper
 import top.fifthlight.touchcontroller.common.layout.Align
 import top.fifthlight.touchcontroller.common.layout.Button

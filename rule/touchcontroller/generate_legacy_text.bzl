@@ -9,7 +9,7 @@ def _generate_legacy_text_impl(ctx):
         args.add(output_file)
 
         ctx.actions.run(
-            inputs = depset([file]),
+            inputs = [file],
             outputs = [output_file],
             executable = ctx.executable._generator_bin,
             arguments = [args],
@@ -27,7 +27,7 @@ generate_legacy_text = rule(
             mandatory = True,
         ),
         "_generator_bin": attr.label(
-            default = Label("//touchcontroller/resources/generator:legacy_text_generator"),
+            default = Label("//rule/touchcontroller/legacy_text_generator"),
             executable = True,
             cfg = "exec",
         ),

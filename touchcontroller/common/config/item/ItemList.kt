@@ -1,4 +1,4 @@
-package top.fifthlight.touchcontroller.common.config
+package top.fifthlight.touchcontroller.common.config.item
 
 import androidx.compose.runtime.Immutable
 import kotlinx.collections.immutable.*

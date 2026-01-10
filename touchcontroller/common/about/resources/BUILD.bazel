@@ -1,14 +1,15 @@
 load("//rule:merge_library.bzl", "kt_merge_library")
 
 kt_merge_library(
-    name = "about",
+    name = "resources",
     srcs = glob(["*.kt"]),
+    actual = True,
     merge_deps = [
+        "//touchcontroller/common/about",
         "//touchcontroller/buildinfo",
     ],
-    expect = True,
     visibility = ["//touchcontroller:__subpackages__"],
     deps = [
-        "//:kotlin_serialization",
+        "@maven//:org_jetbrains_kotlinx_kotlinx_serialization_json_jvm",
     ],
 )

@@ -1,4 +1,4 @@
-package top.fifthlight.touchcontroller.common.ext
+package top.fifthlight.touchcontroller.common.util.uuid
 
 import kotlin.random.Random
 import kotlin.uuid.Uuid
