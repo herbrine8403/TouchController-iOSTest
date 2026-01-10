@@ -1,9 +1,9 @@
 package top.fifthlight.combine.item.data
 
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import top.fifthlight.combine.data.Identifier
 import top.fifthlight.combine.data.Text
+import top.fifthlight.mergetools.api.ExpectFactory
 
 @Immutable
 interface ItemStack {
@@ -15,8 +15,9 @@ interface ItemStack {
 
     fun withAmount(amount: Int): ItemStack
 
-    companion object {
-        @Composable
-        fun of(id: Identifier, amount: Int = 1) = LocalItemFactory.current.createItemStack(id, amount)
+    @ExpectFactory
+    interface Factory {
+        fun create(item: Item, amount: Int): ItemStack
+        fun create(id: Identifier, amount: Int): ItemStack?
     }
 }

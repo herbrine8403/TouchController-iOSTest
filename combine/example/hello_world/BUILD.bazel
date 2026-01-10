@@ -18,6 +18,8 @@ kt_jvm_library(
         "//combine/data",
         "//combine/example:remapped_client_access_widened_named",
         "//combine/example:remapped_deps",
+        "//combine/item/data",
+        "//combine/item/widget",
         "//combine/theme/base",
         "//combine/theme/vanilla",
         "//combine/widget",

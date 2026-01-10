@@ -3,6 +3,7 @@ load("//rule:merge_library.bzl", "kt_merge_library")
 kt_merge_library(
     name = "data",
     srcs = glob(["*.kt"]),
+    expect = True,
     merge_deps = [
         "//combine/core/data",
     ],
