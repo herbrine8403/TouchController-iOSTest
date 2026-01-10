@@ -8072,8 +8072,8 @@
     },
     "//repo:neoform.bzl%neoform": {
       "general": {
-        "bzlTransitiveDigest": "TiQNhVs48A8aMLd2PKujs1tZa4uiWbl0pi/fe2XHe6U=",
-        "usagesDigest": "IXtTqOnKF6n0HPORl2xqfsJZFMPVGiKejoj6KWniad4=",
+        "bzlTransitiveDigest": "8++RWPusOy9JvqJo/lBEYwv3MYTKiQtVFYr3yrNJZRE=",
+        "usagesDigest": "XX0TPfq3K2A+83EK1C9CFINSEfZl9LCtqKMTQ4l/8a4=",
         "recordedFileInputs": {
           "@@//neoform_pin.txt": "f5f349c33255eb0173480b40bd5ae23a8309aac7342a8267bffb9294168be7c6"
         },
@@ -8211,7 +8211,7 @@
             "attributes": {
               "version": "1.21-20240613.152323",
               "legacy": false,
-              "sha256": "fc03b4e32b879a109ec78abeebb002df4231cff03fab4f0bffeb03c63cbb590c",
+              "sha256": "33bbf6d5dc922c081521b745d73f262a5738f7c6ff7c1e98b4ceef9068398857",
               "client_jar": "@@+minecraft+minecraft//1.21:client",
               "server_jar": "@@+minecraft+minecraft//1.21:server",
               "client_mapping": "@@+minecraft+minecraft//1.21:client_mappings",
