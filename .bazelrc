@@ -17,5 +17,3 @@ build --cxxopt=-std=c++17 --host_cxxopt=-std=c++17
 # Zig CC
 build:linux --sandbox_add_mount_pair=/tmp
 build:macos --sandbox_add_mount_pair=/var/tmp
-
-build --worker_max_multiplex_instances=KotlinKsp=1

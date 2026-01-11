@@ -1,5 +1,8 @@
 load("@rules_kotlin//kotlin:android.bzl", "kt_android_library")
 
+# TODO: Seems there is no easy way to publish it as AAR
+# Tracking: https://github.com/bazel-contrib/rules_jvm_external/pull/1049
+# So, we need to publish it in an external script
 kt_android_library(
     name = "android",
     srcs = glob(["**/*.kt"]),

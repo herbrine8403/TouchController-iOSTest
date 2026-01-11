@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>{groupId}</groupId>
+    <artifactId>{artifactId}</artifactId>
+    <version>{version}</version>
+    <name>Proxy client library of TouchController</name>
+    <description>A library for connecting to the Minecraft mod TouchController.</description>
+    <url>https://github.com/TouchController/TouchController</url>
+    <inceptionYear>2024</inceptionYear>
+    <licenses>
+        <license>
+            <name>GNU Lesser General Public License v3.0</name>
+            <url>https://www.gnu.org/licenses/lgpl-3.0.html</url>
+            <distribution>https://www.gnu.org/licenses/lgpl-3.0.html</distribution>
+        </license>
+    </licenses>
+    <developers>
+        <developer>
+            <id>fifth_light</id>
+            <name>fifth_light</name>
+            <url>https://github.com/fifth-light/</url>
+        </developer>
+    </developers>
+    <scm>
+        <connection>scm:git:https://github.com/TouchController/TouchController.git</connection>
+        <developerConnection>scm:git:ssh://git@github.com:TouchController/TouchController.git</developerConnection>
+        <url>https://github.com/TouchController/TouchController</url>
+    </scm>
+    <dependencies>
+        {dependencies}
+    </dependencies>
+</project>

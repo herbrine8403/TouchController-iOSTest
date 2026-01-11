@@ -4,6 +4,6 @@ zig_cc = use_extension("@hermetic_cc_toolchain//toolchain:ext.bzl", "toolchains"
 use_repo(zig_cc, "zig_sdk")
 
 register_toolchains(
-    "@zig_sdk//toolchain:linux_amd64_gnu.2.25",
-    "@zig_sdk//toolchain:aarch64-linux-gnu.2.25",
+    "@zig_sdk//toolchain:linux_amd64_gnu.2.31",
+    "@zig_sdk//toolchain:aarch64-linux-gnu.2.31",
 )

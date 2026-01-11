@@ -1,4 +1,7 @@
+load("@rules_java//java:defs.bzl", "java_library")
+load("@rules_jvm_external//:defs.bzl", "maven_export")
 load("//rule:merge_library.bzl", "kt_merge_library")
+load("//touchcontroller/proxy/client:properties.bzl", "proxy_client_version")
 
 kt_merge_library(
     name = "core",
@@ -8,4 +11,32 @@ kt_merge_library(
         "//touchcontroller/proxy/message/input",
     ],
     visibility = ["//touchcontroller:__subpackages__"],
+)
+
+maven_coordinates = "top.fifthlight.touchcontroller:proxy-client:%s" % proxy_client_version
+
+java_library(
+    name = "core_fake_deps",
+    tags = ["maven_coordinates=%s" % maven_coordinates],
+    runtime_deps = [
+        "@maven//:org_jetbrains_kotlin_kotlin_stdlib",
+        "@maven//:org_jetbrains_kotlinx_kotlinx_serialization_core_jvm",
+        "//touchcontroller/proxy/message",
+        "//touchcontroller/proxy/message/input",
+        ":core",
+    ],
+)
+
+# Kotlin stdlib should'nt be merged in exported JAR
+maven_export(
+    name = "core_export",
+    excluded_workspaces = {"rules_kotlin": None},
+    lib_name = "core_fake_deps",
+    maven_coordinates = maven_coordinates,
+    pom_template = "proxy-client.pom",
+)
+
+alias(
+    name = "core_publish",
+    actual = ":core_export.publish",
 )
