@@ -2,15 +2,6 @@ when:
   - event: push
     branch: master
 
-clone:
-  git:
-    image: woodpeckerci/plugin-git
-    environment:
-      http_proxy:
-        from_secret: GIT_PROXY
-      https_proxy:
-        from_secret: GIT_PROXY
-
 steps:
   - name: build
     image: docker.io/peaceiris/mdbook:v0.5.0
