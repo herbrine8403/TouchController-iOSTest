@@ -7,7 +7,6 @@ import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.screens.Screen
 import net.minecraft.network.chat.Component
 import org.lwjgl.glfw.GLFW
-import top.fifthlight.combine.data.LocalTextFactory
 import top.fifthlight.combine.input.key.KeyEvent
 import top.fifthlight.combine.input.pointer.PointerButton
 import top.fifthlight.combine.input.pointer.PointerEvent
@@ -41,7 +40,6 @@ class CombineScreen(
         owner.setContent {
             CompositionLocalProvider(
                 LocalSoundManager provides soundManager,
-                LocalTextFactory provides TextFactoryImpl,
                 LocalClipboard provides ClipboardHandlerImpl,
                 LocalScreenFactory provides ScreenFactoryImpl,
                 LocalOnDismissRequestDispatcher provides dismissDispatcher,

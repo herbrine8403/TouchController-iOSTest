@@ -2,8 +2,8 @@ package top.fifthlight.combine.widget.ui
 
 import androidx.compose.runtime.*
 import kotlinx.coroutines.delay
-import top.fifthlight.combine.data.LocalTextFactory
 import top.fifthlight.combine.data.Text
+import top.fifthlight.combine.data.TextFactory
 import top.fifthlight.combine.input.MutableInteractionSource
 import top.fifthlight.combine.input.key.Key
 import top.fifthlight.combine.input.pointer.PointerIcon
@@ -47,7 +47,7 @@ fun EditText(
 ) {
     val clipboard = LocalClipboard.current
     val textMeasurer = LocalTextMeasurer.current
-    val textFactory = LocalTextFactory.current
+    val textFactory: TextFactory = TextFactory.current
     val inputManager = LocalInputHandler.current
     var textInputState by remember { mutableStateOf(TextInputState(value)) }
 
