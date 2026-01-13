@@ -22,6 +22,7 @@ def _game_version_impl(
         server_legacy,
         neoforge,
         intermediary,
+        yarn,
         sodium_intermediary,
         iris_intermediary):
     intermediary_mapping = name + "_intermediary_mapping"
@@ -99,21 +100,20 @@ def _game_version_impl(
         tags = ["manual"],
     )
 
-    if intermediary or client_mappings:
-        inputs = {}
+    if client_mappings:
+        inputs = {
+            "mojmap": ":" + named_input
+        }
         if intermediary:
             inputs["intermediary"] = ":" + intermediary_input
-        if client_mappings:
-            inputs["mojmap"] = ":" + named_input
         if client_parchment:
             inputs["parchment"] = ":" + parchment_input
 
         operations = []
-        if client_mappings:
-            operations.append(">mojmap")
-            if client_parchment:
-                operations.append(">parchment")
-            operations.append("changeSrc(official)")
+        operations.append(">mojmap")
+        if client_parchment:
+            operations.append(">parchment")
+        operations.append("changeSrc(official)")
 
         if intermediary:
             operations.append(">intermediary")
@@ -135,14 +135,15 @@ def _game_version_impl(
             visibility = visibility,
         )
 
-        remap_jar(
-            name = client_intermediary,
-            from_namespace = "official",
-            inputs = [client],
-            mapping = ":" + merged_mapping,
-            to_namespace = "intermediary",
-            visibility = visibility,
-        )
+        if intermediary:
+            remap_jar(
+                name = client_intermediary,
+                from_namespace = "official",
+                inputs = [client],
+                mapping = ":" + merged_mapping,
+                to_namespace = "intermediary",
+                visibility = visibility,
+            )
 
         remap_jar(
             name = client_named,
@@ -190,7 +191,7 @@ def _game_version_impl(
                 visibility = visibility,
             )
 
-    if server and intermediary:
+    if server and client_mappings:
         remap_jar(
             name = server_named,
             from_namespace = "official",
@@ -316,6 +317,11 @@ game_version = macro(
         "intermediary": attr.label(
             mandatory = False,
             doc = "Intermediary mappings",
+            configurable = False,
+        ),
+        "yarn": attr.label(
+            mandatory = False,
+            doc = "Yarn mappings. For those versions without official mapping.",
             configurable = False,
         ),
         "sodium_intermediary": attr.label(
