@@ -12,6 +12,7 @@ def _game_version_impl(
         name,
         visibility,
         version,
+        split_source_namespace,
         client,
         client_legacy,
         client_mappings,
@@ -43,6 +44,9 @@ def _game_version_impl(
     iris_named = name + "_iris_named"
     vanilla_client = name + "_vanilla_client"
     parchment_input = name + "_parchment_input"
+
+    client_namespace = "client" if split_source_namespace else "official"
+    server_namespace = "server" if split_source_namespace else "official"
 
     if intermediary:
         extract_jar(
@@ -143,7 +147,7 @@ def _game_version_impl(
             operations.append("changeSrc(intermediary)")
             operations.append(">yarn")
             operations.append("completeNamespace(named -> intermediary)")
-            operations.append("changeSrc(official)")
+            operations.append("changeSrc(%s)" % client_namespace)
 
         merge_mapping(
             name = merged_mapping,
@@ -164,7 +168,7 @@ def _game_version_impl(
         if intermediary:
             remap_jar(
                 name = client_intermediary,
-                from_namespace = "official",
+                from_namespace = client_namespace,
                 inputs = [client],
                 mapping = ":" + merged_mapping,
                 to_namespace = "intermediary",
@@ -173,7 +177,7 @@ def _game_version_impl(
 
         remap_jar(
             name = client_named,
-            from_namespace = "official",
+            from_namespace = client_namespace,
             inputs = [client],
             mapping = ":" + merged_mapping,
             to_namespace = "named",
@@ -220,7 +224,7 @@ def _game_version_impl(
     if server and (client_mappings or yarn):
         remap_jar(
             name = server_named,
-            from_namespace = "official",
+            from_namespace = server_namespace,
             inputs = [":" + server_jar],
             mapping = ":" + merged_mapping,
             to_namespace = "named",
@@ -288,6 +292,12 @@ game_version = macro(
         "version": attr.string(
             mandatory = True,
             doc = "Minecraft version",
+            configurable = False,
+        ),
+        "split_source_namespace": attr.bool(
+            mandatory = False,
+            doc = "Use 'client' and 'server' source namespace in mappings. Used by babric.",
+            default = False,
             configurable = False,
         ),
         "client": attr.label(
