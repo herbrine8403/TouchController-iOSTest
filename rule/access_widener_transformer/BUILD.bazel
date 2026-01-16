@@ -6,6 +6,7 @@ java_binary(
     main_class = "top.fifthlight.fabazel.accesswidenertransformer.AccessWidenerTransformer",
     visibility = ["//visibility:public"],
     deps = [
+        "//rule/worker_api",
         "@maven//:net_fabricmc_access_widener",
         "@maven//:org_ow2_asm_asm",
     ],

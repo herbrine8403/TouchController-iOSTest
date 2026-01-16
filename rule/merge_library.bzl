@@ -203,6 +203,9 @@ def _merge_library_jar_impl(ctx):
         args.add(key)
         args.add(value)
 
+    args.use_param_file("@%s", use_always = True)
+    args.set_param_file_format("multiline")
+
     ctx.actions.run(
         inputs = depset(
             direct = resource_files,
@@ -210,6 +213,11 @@ def _merge_library_jar_impl(ctx):
         ),
         outputs = [output_jar],
         executable = ctx.executable._merge_jar_executable,
+        execution_requirements = {
+            "supports-workers": "1",
+            "supports-multiplex-workers": "1",
+            "requires-worker-protocol": "proto",
+        },
         arguments = [args],
         progress_message = "Merging JAR %s" % ctx.label.name,
         toolchain = "@bazel_tools//tools/jdk:toolchain_type",

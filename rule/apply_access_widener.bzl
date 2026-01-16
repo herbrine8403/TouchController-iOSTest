@@ -12,10 +12,18 @@ def _apply_access_widener_impl(ctx):
     ])
     args.add_all(ctx.files.srcs)
 
+    args.use_param_file("@%s", use_always = True)
+    args.set_param_file_format("multiline")
+
     ctx.actions.run(
         inputs = [ctx.file.input] + ctx.files.srcs,
         outputs = [output_file],
         executable = ctx.executable._transformer_bin,
+        execution_requirements = {
+            "supports-workers": "1",
+            "supports-multiplex-workers": "1",
+            "requires-worker-protocol": "proto",
+        },
         arguments = [args],
         progress_message = "Applying access wideners for %s" % ctx.label.name,
     )

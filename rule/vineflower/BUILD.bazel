@@ -2,10 +2,11 @@ load("@rules_java//java:defs.bzl", "java_binary")
 
 java_binary(
     name = "vineflower",
-    srcs = ["DecompilerWrapper.java"],
-    main_class = "DecompilerWrapper",
+    srcs = glob(["*.java"]),
+    main_class = "top.fifthlight.fabazel.decompiler.DecompilerWrapper",
     visibility = ["//visibility:public"],
     deps = [
+        "//rule/worker_api",
         "//:picocli",
         "@fabric_loom//:vineflower_tiny_javadoc_provider",
         "@maven//:org_vineflower_vineflower",

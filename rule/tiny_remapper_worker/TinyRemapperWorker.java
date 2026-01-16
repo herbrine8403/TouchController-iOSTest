@@ -6,18 +6,18 @@ import net.fabricmc.tinyremapper.NonClassCopyMode;
 import net.fabricmc.tinyremapper.OutputConsumerPath;
 import net.fabricmc.tinyremapper.TinyRemapper;
 import net.fabricmc.tinyremapper.extension.mixin.MixinExtension;
-import top.fifthlight.bazel.worker.api.WorkRequest;
 import top.fifthlight.bazel.worker.api.Worker;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.ByteBuffer;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
 import java.util.jar.JarEntry;
 import java.util.jar.JarOutputStream;
 import java.util.regex.Pattern;
@@ -25,34 +25,42 @@ import java.util.regex.Pattern;
 public class TinyRemapperWorker extends Worker implements AutoCloseable {
     public static void main(String[] args) throws Exception {
         try (var worker = new TinyRemapperWorker()) {
-            worker.run();
+            worker.run(args);
         }
     }
 
     private final MappingManager mappings = new MappingManager();
     private static final Pattern MC_LV_PATTERN = Pattern.compile("\\$\\$\\d+");
 
-    @Override
-    protected int handleRequest(WorkRequest request, PrintWriter out) {
-        Map<String, WorkRequest.Input> inputs = new HashMap<>();
-        for (var input : request.inputs()) {
-            inputs.put(input.path(), input);
+    private static String bytesToHex(byte[] bytes) {
+        var sb = new StringBuilder();
+        for (var b : bytes) {
+            sb.append(String.format("%02x", b));
         }
+        return sb.toString();
+    }
 
-        Function<String, String> getInputFileHash = (file) -> {
-            var inputInfo = inputs.get(file);
-            if (inputInfo != null) {
-                return inputInfo.digest();
-            } else {
-                throw new RuntimeException("Bad input file: " + file);
+    private static String hashFile(Path file) throws NoSuchAlgorithmException, IOException {
+        var digest = MessageDigest.getInstance("SHA-256");
+        try (var channel = Files.newByteChannel(file)) {
+            var buffer = ByteBuffer.allocate(4096);
+            while (channel.read(buffer) >= 0) {
+                buffer.flip();
+                var array = buffer.array();
+                digest.update(array, 0, buffer.limit());
+                buffer.clear();
             }
-        };
+        }
+        return bytesToHex(digest.digest());
+    }
 
+    @Override
+    protected int handleRequest(PrintWriter out, Path sandboxDir, String... args) {
         try {
             List<String> parameters = new ArrayList<>();
             List<String> arguments = new ArrayList<>();
 
-            for (var arg : request.arguments()) {
+            for (var arg : args) {
                 if (arg.startsWith("--")) {
                     parameters.add(arg);
                 } else {
@@ -96,13 +104,13 @@ public class TinyRemapperWorker extends Worker implements AutoCloseable {
 
             var inputJar = arguments.get(0);
             var outputJar = arguments.get(1);
-            var mappingPath = arguments.get(2);
+            var mappingPath = sandboxDir.resolve(Paths.get(arguments.get(2)));
             var fromNamespace = arguments.get(3);
             var toNamespace = arguments.get(4);
 
             var classpath = arguments.subList(5, arguments.size())
                     .stream()
-                    .map(Paths::get)
+                    .map(first -> sandboxDir.resolve(sandboxDir.resolve(Paths.get(first))))
                     .toList();
 
             if (accessWidenerSourceNamespace == null || accessWidenerSourceNamespace.isEmpty()) {
@@ -110,8 +118,8 @@ public class TinyRemapperWorker extends Worker implements AutoCloseable {
             }
 
             var mappingArgument = new MappingManager.Argument(
-                    Paths.get(mappingPath),
-                    getInputFileHash.apply(mappingPath),
+                    mappingPath,
+                    hashFile(mappingPath),
                     fromNamespace,
                     toNamespace
             );
@@ -137,7 +145,7 @@ public class TinyRemapperWorker extends Worker implements AutoCloseable {
 
             var remapper = builder.build();
 
-            var input = Paths.get(inputJar);
+            var input = sandboxDir.resolve(Paths.get(inputJar));
             var outputTempFs = Jimfs.newFileSystem(Configuration.unix());
             var outputTempRoot = outputTempFs.getPath("/");
             try {
@@ -171,7 +179,7 @@ public class TinyRemapperWorker extends Worker implements AutoCloseable {
                 remapper.finish();
             }
 
-            try (var outputJarStream = new JarOutputStream(Files.newOutputStream(Paths.get(outputJar)));
+            try (var outputJarStream = new JarOutputStream(Files.newOutputStream(sandboxDir.resolve(Paths.get(outputJar))));
                  var outputFilePaths = Files.walk(outputTempRoot)) {
                 outputFilePaths
                         .sorted()

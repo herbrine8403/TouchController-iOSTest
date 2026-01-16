@@ -5,33 +5,51 @@ import net.fabricmc.accesswidener.AccessWidenerWriter;
 import net.fabricmc.mappingio.extras.MappingTreeRemapper;
 import net.fabricmc.mappingio.format.tiny.Tiny2FileReader;
 import net.fabricmc.mappingio.tree.MemoryMappingTree;
+import top.fifthlight.bazel.worker.api.Worker;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-public class AccessWidenerRemapper {
-    public static void main(String[] args) throws IOException {
-        var inputFile = Path.of(args[0]);
-        var outputFile = Path.of(args[1]);
-        var mappingFile = Path.of(args[2]);
-        var fromNamespace = args[3];
-        var toNamespace = args[4];
+public class AccessWidenerRemapper extends Worker {
+    public static void main(String[] args) throws Exception {
+        new AccessWidenerRemapper().run(args);
+    }
 
-        var mappingTree = new MemoryMappingTree();
-        try (var reader = Files.newBufferedReader(mappingFile)) {
-            Tiny2FileReader.read(reader, mappingTree);
-        }
-        var remapper = new MappingTreeRemapper(mappingTree, fromNamespace, toNamespace);
-
-        try (var writer = Files.newOutputStream(outputFile)) {
-            var accessWidenerWriter = new AccessWidenerWriter();
-            var accessWidenerRemapper = new net.fabricmc.accesswidener.AccessWidenerRemapper(accessWidenerWriter, remapper, fromNamespace, toNamespace);
-            var accessWidenerReader = new AccessWidenerReader(accessWidenerRemapper);
-            try (var reader = Files.newBufferedReader(inputFile)) {
-                accessWidenerReader.read(reader);
+    @Override
+    protected int handleRequest(PrintWriter out, Path sandboxDir, String... args) {
+        try {
+            if (args.length < 5) {
+                out.println("Usage: AccessWidenerRemapper <input> <output> <mapping> <fromNamespace> <toNamespace>");
+                return 1;
             }
-            writer.write(accessWidenerWriter.write());
+
+            var inputFile = sandboxDir.resolve(Path.of(args[0]));
+            var outputFile = sandboxDir.resolve(Path.of(args[1]));
+            var mappingFile = sandboxDir.resolve(Path.of(args[2]));
+            var fromNamespace = args[3];
+            var toNamespace = args[4];
+
+            var mappingTree = new MemoryMappingTree();
+            try (var reader = Files.newBufferedReader(mappingFile)) {
+                Tiny2FileReader.read(reader, mappingTree);
+            }
+            var remapper = new MappingTreeRemapper(mappingTree, fromNamespace, toNamespace);
+
+            try (var writer = Files.newOutputStream(outputFile)) {
+                var accessWidenerWriter = new AccessWidenerWriter();
+                var accessWidenerRemapper = new net.fabricmc.accesswidener.AccessWidenerRemapper(accessWidenerWriter, remapper, fromNamespace, toNamespace);
+                var accessWidenerReader = new AccessWidenerReader(accessWidenerRemapper);
+                try (var reader = Files.newBufferedReader(inputFile)) {
+                    accessWidenerReader.read(reader);
+                }
+                writer.write(accessWidenerWriter.write());
+            }
+            return 0;
+        } catch (Exception e) {
+            e.printStackTrace(out);
+            return 1;
         }
     }
 }

@@ -13,6 +13,7 @@ kt_jvm_library(
     kotlinc_opts = "kotlinc_opts",
     deps = [
         "//:kotlin_serialization",
+        "//rule/worker_api",
         "@maven//:net_fabricmc_access_widener",
         "@maven//:org_jetbrains_kotlinx_kotlinx_serialization_json_jvm",
     ],

@@ -21,12 +21,18 @@ def _extract_access_widener_impl(ctx):
     for input_jar in input_jars.to_list():
         args.add(input_jar.path)
 
-    args.use_param_file("@%s")
+    args.use_param_file("@%s", use_always = True)
+    args.set_param_file_format("multiline")
 
     ctx.actions.run(
         inputs = input_jars,
         outputs = [output_file],
         executable = ctx.executable._extractor_bin,
+        execution_requirements = {
+            "supports-workers": "1",
+            "supports-multiplex-workers": "1",
+            "requires-worker-protocol": "proto",
+        },
         arguments = [args],
         progress_message = "Extracting access widener for %s" % ctx.label.name,
     )

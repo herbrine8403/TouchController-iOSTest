@@ -2,13 +2,15 @@ package top.fifthlight.armorstand;
 
 import net.fabricmc.accesswidener.AccessWidenerReader;
 import net.fabricmc.accesswidener.AccessWidenerVisitor;
+import top.fifthlight.bazel.worker.api.Worker;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.io.Writer;
 import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.nio.file.Path;
 
-public class AccessWidenerConvertor {
+public class AccessWidenerConvertor extends Worker {
     private record AccessTransformerWriter(Writer writer) implements AccessWidenerVisitor, AutoCloseable {
         @Override
         public void visitClass(String name, AccessWidenerReader.AccessType access, boolean transitive) {
@@ -69,15 +71,31 @@ public class AccessWidenerConvertor {
         }
     }
 
-    public static void main(String[] args) throws IOException {
-        var inputFile = Paths.get(args[0]);
-        var outputFile = Paths.get(args[1]);
+    public static void main(String[] args) throws Exception {
+        new AccessWidenerConvertor().run(args);
+    }
 
-        try (var writer = Files.newBufferedWriter(outputFile); var accessTransformerWriter = new AccessTransformerWriter(writer)) {
-            var accessWidenerReader = new AccessWidenerReader(accessTransformerWriter);
-            try (var reader = Files.newBufferedReader(inputFile)) {
-                accessWidenerReader.read(reader);
+    @Override
+    protected int handleRequest(PrintWriter out, Path sandboxDir, String... args) {
+        try {
+            if (args.length < 2) {
+                out.println("Usage: AccessWidenerConvertor <input> <output>");
+                return 1;
             }
+
+            var inputFile = sandboxDir.resolve(Path.of(args[0]));
+            var outputFile = sandboxDir.resolve(Path.of(args[1]));
+
+            try (var writer = Files.newBufferedWriter(outputFile); var accessTransformerWriter = new AccessTransformerWriter(writer)) {
+                var accessWidenerReader = new AccessWidenerReader(accessTransformerWriter);
+                try (var reader = Files.newBufferedReader(inputFile)) {
+                    accessWidenerReader.read(reader);
+                }
+            }
+            return 0;
+        } catch (Exception e) {
+            e.printStackTrace(out);
+            return 1;
         }
     }
 }

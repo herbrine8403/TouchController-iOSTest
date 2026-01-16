@@ -1,76 +1,46 @@
 package top.fifthlight.bazel.worker.api;
 
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.devtools.build.lib.worker.ProtoWorkerMessageProcessor;
+import com.google.devtools.build.lib.worker.WorkRequestHandler;
 
 import java.io.*;
-import java.util.LinkedList;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executors;
-import java.util.concurrent.locks.ReentrantLock;
+import java.nio.file.Path;
+import java.time.Duration;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 public abstract class Worker {
-    public void run(String... args) throws Exception {
-        try (var executor = Executors.newFixedThreadPool(4)) {
-            var mapper = new ObjectMapper().configure(JsonGenerator.Feature.AUTO_CLOSE_TARGET, false);
-            var reader = new BufferedReader(new InputStreamReader(System.in));
-            var requests = new LinkedList<CompletableFuture<Void>>();
-            var outputLock = new ReentrantLock();
-            while (true) {
-                var line = reader.readLine();
-                if (line == null) {
-                    break;
-                }
-                if (line.isEmpty()) {
-                    continue;
-                }
-                var request = mapper.readValue(line, WorkRequest.class);
-                if (request.requestId() != 0) {
-                    requests.add(CompletableFuture.runAsync(() -> {
-                        var output = new StringWriter();
-                        try {
-                            var exitCode = handleRequest(request, new PrintWriter(output));
-                            var response = new WorkResponse(exitCode, output.toString(), request.requestId());
-                            outputLock.lock();
-                            mapper.writeValue(System.out, response);
-                            System.out.println();
-                        } catch (Exception e) {
-                            e.printStackTrace(new PrintWriter(output));
-                            var response = new WorkResponse(1, output.toString(), 0);
-                            outputLock.lock();
-                            try {
-                                mapper.writeValue(System.out, response);
-                            } catch (IOException ex) {
-                                throw new RuntimeException(ex);
-                            }
-                        } finally {
-                            outputLock.unlock();
-                        }
-                    }, executor));
-                } else {
-                    for (var future : requests) {
-                        future.join();
+    private static class WorkRequestCallbackWrapper extends WorkRequestHandler.WorkRequestCallback {
+        public WorkRequestCallbackWrapper(Worker worker) {
+            super((request, out) -> {
+                try {
+                    var sandboxDir = request.getSandboxDir();
+                    if (!sandboxDir.isEmpty()) {
+                        return worker.handleRequest(out, Path.of(request.getSandboxDir()), request.getArgumentsList().toArray(new String[0]));
+                    } else {
+                        return worker.handleRequest(out, Path.of("."), request.getArgumentsList().toArray(new String[0]));
                     }
-                    outputLock.lock();
-                    var output = new StringWriter();
-                    try {
-                        var exitCode = handleRequest(request, new PrintWriter(output));
-                        var response = new WorkResponse(exitCode, output.toString(), 0);
-                        mapper.writeValue(System.out, response);
-                        System.out.println();
-                    } catch (Exception e) {
-                        e.printStackTrace(new PrintWriter(output));
-                        var response = new WorkResponse(1, output.toString(), 0);
-                        mapper.writeValue(System.out, response);
-                    } finally {
-                        outputLock.unlock();
-                        System.out.flush();
-                    }
+                } catch (Exception e) {
+                    e.printStackTrace(out);
+                    return 1;
                 }
-            }
-            System.gc();
+            });
         }
     }
 
-    protected abstract int handleRequest(WorkRequest request, PrintWriter out);
+    public final void run(String... args) throws Exception {
+        var argsList = new ArrayList<>(Arrays.asList(args));
+        var index = argsList.indexOf("--persistent_worker");
+        if (index == -1) {
+            System.exit(handleRequest(new PrintWriter(System.out), Path.of("."), args));
+        }
+        var handlerBuilder = new WorkRequestHandler.WorkRequestHandlerBuilder(new WorkRequestCallbackWrapper(this), System.err, new ProtoWorkerMessageProcessor(System.in, System.out));
+        handlerBuilder.setCpuUsageBeforeGc(Duration.ofSeconds(10));
+        handlerBuilder.setIdleTimeBeforeGc(Duration.ofSeconds(30));
+        try (var handler = handlerBuilder.build()) {
+            handler.processRequests();
+        }
+    }
+
+    protected abstract int handleRequest(PrintWriter out, Path sandboxDir, String... args) throws Exception;
 }

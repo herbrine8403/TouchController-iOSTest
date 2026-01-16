@@ -48,6 +48,7 @@ def generate_ninepatch_texture(actions, texture_generator, src):
     args.add(compressed_file)
 
     args.use_param_file("@%s", use_always = True)
+    args.set_param_file_format("multiline")
 
     actions.run(
         inputs = [src],
@@ -55,10 +56,11 @@ def generate_ninepatch_texture(actions, texture_generator, src):
         executable = texture_generator,
         execution_requirements = {
             "supports-workers": "1",
-            "requires-worker-protocol": "json",
+            "supports-multiplex-workers": "1",
+            "requires-worker-protocol": "proto",
         },
         arguments = [args],
-        mnemonic = "CombineTexture",
+        mnemonic = "CombineNinepatchTexture",
     )
 
     return metadata_file, compressed_file
@@ -86,6 +88,7 @@ def generate_texture(actions, texture_generator, src, background = False):
     args.add(metadata_file)
 
     args.use_param_file("@%s", use_always = True)
+    args.set_param_file_format("multiline")
 
     actions.run(
         inputs = [src],
@@ -93,7 +96,8 @@ def generate_texture(actions, texture_generator, src, background = False):
         executable = texture_generator,
         execution_requirements = {
             "supports-workers": "1",
-            "requires-worker-protocol": "json",
+            "supports-multiplex-workers": "1",
+            "requires-worker-protocol": "proto",
         },
         arguments = [args],
         mnemonic = "CombineTexture",

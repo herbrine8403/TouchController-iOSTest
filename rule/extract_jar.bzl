@@ -10,10 +10,18 @@ def _extract_jar_impl(ctx):
         output_file.path,
     ])
 
+    args.use_param_file("@%s", use_always = True)
+    args.set_param_file_format("multiline")
+
     ctx.actions.run(
         inputs = [ctx.file.input],
         outputs = [output_file],
         executable = ctx.executable._extract_bin,
+        execution_requirements = {
+            "supports-workers": "1",
+            "supports-multiplex-workers": "1",
+            "requires-worker-protocol": "proto",
+        },
         arguments = [args],
         progress_message = "Extracting %s" % ctx.label.name,
     )

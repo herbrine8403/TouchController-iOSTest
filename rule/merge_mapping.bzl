@@ -61,10 +61,18 @@ def _merge_mapping_impl(ctx):
     for operation in ctx.attr.operations:
         args.add(operation)
 
+    args.use_param_file("@%s", use_always = True)
+    args.set_param_file_format("multiline")
+
     ctx.actions.run(
         inputs = inputs,
         outputs = [output_file],
         executable = ctx.executable._mapping_merger,
+        execution_requirements = {
+            "supports-workers": "1",
+            "supports-multiplex-workers": "1",
+            "requires-worker-protocol": "proto",
+        },
         arguments = [args],
         progress_message = "Merging mapping files to %s" % output_file.short_path,
     )

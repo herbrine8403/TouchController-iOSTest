@@ -1,7 +1,6 @@
 package top.fifthlight.combine.resources.generator
 
 import kotlinx.serialization.json.Json
-import top.fifthlight.bazel.worker.api.WorkRequest
 import top.fifthlight.bazel.worker.api.Worker
 import top.fifthlight.combine.resources.Metadata
 import top.fifthlight.combine.resources.NinePatchMetadata
@@ -16,14 +15,14 @@ object MetadataGeneratorWorker: Worker() {
     fun main(vararg args: String) = run(*args)
 
     override fun handleRequest(
-        request: WorkRequest,
         out: PrintWriter,
+        sandboxDir: Path,
+        args: Array<String>,
     ): Int {
-        val args = request.arguments
         val mode = args[0]
         val (options, arguments) = args.partition { it.startsWith("--") }
-        val inputFile = Path.of(arguments[1])
-        val outputFile = Path.of(arguments[2])
+        val inputFile = sandboxDir.resolve(Path.of(arguments[1]))
+        val outputFile = sandboxDir.resolve(Path.of(arguments[2]))
         val image = ImageIO.read(inputFile.toFile())
         val imageSize = IntSize(image.width, image.height)
         when (mode) {
@@ -40,7 +39,7 @@ object MetadataGeneratorWorker: Worker() {
                 val ninePatch = NinePatch(image)
                 val croppedImage = image.getSubimage(1, 1, image.width - 2, image.height - 2)
                 val (compressedNinePatch, compressedImage) = compressNinePatch(ninePatch, croppedImage)
-                val compressedOutputFile = Path.of(arguments[3])
+                val compressedOutputFile = sandboxDir.resolve(Path.of(arguments[3]))
                 val metadata = NinePatchMetadata(
                     size = imageSize,
                     ninePatch = compressedNinePatch,

@@ -10,10 +10,18 @@ def _remap_access_widener_impl(ctx):
     args.add(ctx.attr.from_namespace)
     args.add(ctx.attr.to_namespace)
 
+    args.use_param_file("@%s", use_always = True)
+    args.set_param_file_format("multiline")
+
     ctx.actions.run(
         inputs = [ctx.file.src, ctx.file.mapping],
         outputs = [output_file],
         executable = ctx.executable._remapper_bin,
+        execution_requirements = {
+            "supports-workers": "1",
+            "supports-multiplex-workers": "1",
+            "requires-worker-protocol": "proto",
+        },
         arguments = [args],
         progress_message = "Remapping access widener %s" % ctx.label.name,
     )

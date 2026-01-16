@@ -2,15 +2,10 @@ load("@rules_java//java:defs.bzl", "java_library")
 
 java_library(
     name = "worker_api",
-    srcs = [
-        "WorkRequest.java",
-        "WorkResponse.java",
-        "Worker.java",
-    ],
+    srcs = ["Worker.java"],
     visibility = ["//visibility:public"],
     deps = [
-        "@maven//:com_fasterxml_jackson_core_jackson_annotations",
-        "@maven//:com_fasterxml_jackson_core_jackson_core",
-        "@maven//:com_fasterxml_jackson_core_jackson_databind",
+        "@bazel_worker_java//:worker_protocol_java_proto",
+        "@bazel_worker_java//src/main/java/com/google/devtools/build/lib/worker:work_request_handlers",
     ],
 )

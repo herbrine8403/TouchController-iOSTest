@@ -16,10 +16,18 @@ def _decompile_jar_impl(ctx):
     if ctx.file.mappings:
         inputs = depset([ctx.file.mappings], transitive = [inputs])
 
+    args.use_param_file("@%s", use_always = True)
+    args.set_param_file_format("multiline")
+
     ctx.actions.run(
         inputs = inputs,
         outputs = [output_file],
         executable = ctx.executable._vineflower_bin,
+        execution_requirements = {
+            "supports-workers": "1",
+            "supports-multiplex-workers": "1",
+            "requires-worker-protocol": "proto",
+        },
         arguments = [args],
         progress_message = "Decompiling %s" % ctx.label.name,
     )
