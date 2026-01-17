@@ -1,6 +1,8 @@
 package top.fifthlight.fabazel.jarmerger;
 
-import java.io.IOException;
+import top.fifthlight.bazel.worker.api.Worker;
+
+import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.FileTime;
@@ -9,10 +11,14 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarInputStream;
 import java.util.jar.JarOutputStream;
 
-// Pool man's shadow
-public class JarMerger {
-    public static void main(String[] args) throws IOException {
-        var outputPath = Path.of(args[0]);
+public class JarMerger extends Worker {
+    public static void main(String[] args) throws Exception {
+        new JarMerger().run(args);
+    }
+
+    @Override
+    protected int handleRequest(PrintWriter out, Path sandboxDir, String... args) throws Exception {
+        var outputPath = sandboxDir.resolve(Path.of(args[0]));
         var processedEntryNames = new HashSet<String>();
         try (var outputStream = new JarOutputStream(Files.newOutputStream(outputPath))) {
             String currentStrip = null;
@@ -41,7 +47,7 @@ public class JarMerger {
                         entry.setLastAccessTime(FileTime.fromMillis(0));
                         entry.setLastModifiedTime(FileTime.fromMillis(0));
                         outputStream.putNextEntry(entry);
-                        try (var inputStream = Files.newInputStream(Path.of(filePath))) {
+                        try (var inputStream = Files.newInputStream(sandboxDir.resolve(Path.of(filePath)))) {
                             inputStream.transferTo(outputStream);
                         }
                         processedEntryNames.add(entryPath);
@@ -66,5 +72,6 @@ public class JarMerger {
                 }
             }
         }
+        return 0;
     }
 }

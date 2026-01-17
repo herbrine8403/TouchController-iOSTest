@@ -6,13 +6,19 @@ load("@rules_java//java/common:java_info.bzl", "JavaInfo")
 load("@rules_kotlin//kotlin:jvm.bzl", _kt_jvm_library = "kt_jvm_library")
 load("@rules_kotlin//src/main/starlark/core/compile:common.bzl", _KtJvmInfo = "KtJvmInfo")
 
-def _merge_library_info_init(*, merge_jars = [], deps = []):
+def _merge_library_info_init(*, merge_jars = [], merge_source_jars = [], deps = []):
     if type(merge_jars) != "depset":
         fail("merge_jars must be type of depset, but it is %s" % type(merge_jars))
+    if type(merge_source_jars) != "depset":
+        fail("merge_source_jars must be type of depset, but it is %s" % type(merge_source_jars))
     return {
         "merge_jars": merge_jars,
+        "merge_source_jars": merge_source_jars,
         "transitive_merge_jars": depset(
             transitive = [dep.transitive_merge_jars for dep in deps] + [merge_jars],
+        ),
+        "transitive_merge_source_jars": depset(
+            transitive = [dep.transitive_merge_source_jars for dep in deps] + [merge_source_jars],
         ),
     }
 
@@ -20,18 +26,19 @@ MergeLibraryInfo, _ = provider(
     doc = "A structure for storing libraries to be merged.",
     fields = [
         "merge_jars",
+        "merge_source_jars",
         "transitive_merge_jars",
+        "transitive_merge_source_jars",
     ],
     init = _merge_library_info_init,
 )
 
 def _merge_library_group_impl(ctx):
-    return [
-        MergeLibraryInfo(
-            merge_jars = depset(),
-            deps = [dep[MergeLibraryInfo] for dep in ctx.attr.deps],
-        ),
-    ]
+    return [MergeLibraryInfo(
+        merge_jars = depset(),
+        merge_source_jars = depset(),
+        deps = [dep[MergeLibraryInfo] for dep in ctx.attr.deps],
+    )]
 
 merge_library_group = rule(
     implementation = _merge_library_group_impl,
@@ -73,6 +80,7 @@ def _java_merge_library_import_impl(ctx):
     return [
         MergeLibraryInfo(
             merge_jars = ctx.attr.src[_JavaInfo].full_compile_jars,
+            merge_source_jars = depset(ctx.attr.src[_JavaInfo].source_jars),
             deps = [dep[MergeLibraryInfo] for dep in ctx.attr.deps],
         ),
         ctx.attr.src[_JavaInfo],
@@ -96,6 +104,7 @@ def _java_merge_library_impl(ctx):
     return [
         MergeLibraryInfo(
             merge_jars = java_info.full_compile_jars,
+            merge_source_jars = depset(java_info.source_jars),
             deps = [dep[MergeLibraryInfo] for dep in ctx.attr.merge_deps] +
                    [dep[MergeLibraryInfo] for dep in ctx.attr.merge_only_deps],
         ),
@@ -127,6 +136,7 @@ def _kt_merge_library_import_impl(ctx):
     return [
         MergeLibraryInfo(
             merge_jars = ctx.attr.src[_JavaInfo].full_compile_jars,
+            merge_source_jars = ctx.attr.src[_JavaInfo].source_jars,
             deps = [dep[MergeLibraryInfo] for dep in ctx.attr.merge_deps] +
                    [dep[MergeLibraryInfo] for dep in ctx.attr.merge_only_deps],
         ),
@@ -148,10 +158,12 @@ kt_merge_library_import = rule(
 
 def _kt_merge_library_impl(ctx):
     target = ctx.super()
+    java_info = target[0]
     kt_info = target[1]
     return [
         MergeLibraryInfo(
             merge_jars = depset(kt_info.all_output_jars),
+            merge_source_jars = depset(java_info.source_jars),
             deps = [dep[MergeLibraryInfo] for dep in ctx.attr.merge_deps],
         ),
     ] + target
@@ -183,6 +195,8 @@ def _merge_library_jar_impl(ctx):
 
     merged_deps_depset = depset(transitive = [dep[MergeLibraryInfo].transitive_merge_jars for dep in ctx.attr.deps])
     merged_deps = merged_deps_depset.to_list()
+    merged_srcs_depset = depset(transitive = [dep[MergeLibraryInfo].transitive_merge_source_jars for dep in ctx.attr.deps])
+    merged_srcs = merged_srcs_depset.to_list()
 
     args = ctx.actions.args()
     args.add(output_jar)
@@ -212,7 +226,7 @@ def _merge_library_jar_impl(ctx):
             transitive = [merged_deps_depset],
         ),
         outputs = [output_jar],
-        executable = ctx.executable._merge_jar_executable,
+        executable = ctx.executable._merge_expect_actual_jar_executable,
         execution_requirements = {
             "supports-workers": "1",
             "supports-multiplex-workers": "1",
@@ -220,6 +234,27 @@ def _merge_library_jar_impl(ctx):
         },
         arguments = [args],
         progress_message = "Merging JAR %s" % ctx.label.name,
+        toolchain = "@bazel_tools//tools/jdk:toolchain_type",
+    )
+
+    source_args = ctx.actions.args()
+    source_args.add(ctx.outputs.sources_jar)
+    source_args.add_all(merged_srcs)
+
+    source_args.use_param_file("@%s", use_always = True)
+    source_args.set_param_file_format("multiline")
+
+    ctx.actions.run(
+        inputs = depset(merged_srcs),
+        outputs = [ctx.outputs.sources_jar],
+        executable = ctx.executable._merge_jar_executable,
+        execution_requirements = {
+            "supports-workers": "1",
+            "supports-multiplex-workers": "1",
+            "requires-worker-protocol": "proto",
+        },
+        arguments = [source_args],
+        progress_message = "Merging sources JAR %s" % ctx.label.name,
         toolchain = "@bazel_tools//tools/jdk:toolchain_type",
     )
 
@@ -231,7 +266,7 @@ def _merge_library_jar_impl(ctx):
         DefaultInfo(files = depset([output_jar])),
     ]
 
-merge_library_jar = rule(
+_merge_library_jar = rule(
     implementation = _merge_library_jar_impl,
     attrs = {
         "deps": attr.label_list(
@@ -250,11 +285,24 @@ merge_library_jar = rule(
             default = {},
             doc = "Manifest entries to be include in final JAR.",
         ),
-        "_merge_jar_executable": attr.label(
+        "sources_jar": attr.output(),
+        "_merge_expect_actual_jar_executable": attr.label(
             default = Label("@//rule/merge_expect_actual_jar"),
+            executable = True,
+            cfg = "exec",
+        ),
+        "_merge_jar_executable": attr.label(
+            default = Label("@//rule/merge_jar"),
             executable = True,
             cfg = "exec",
         ),
     },
     doc = "Merge libraries into a single JAR",
 )
+
+def merge_library_jar(**kwargs):
+    name = kwargs["name"]
+    _merge_library_jar(
+        sources_jar = "%s_sources.jar" % name,
+        **kwargs
+    )
