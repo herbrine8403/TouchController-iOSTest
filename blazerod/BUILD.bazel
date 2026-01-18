@@ -1,6 +1,7 @@
 load("@rules_java//java:defs.bzl", "java_library")
 load("@rules_kotlin//kotlin:jvm.bzl", "kt_jvm_library")
 load("//blazerod:properties.bzl", "blazerod_version", "home_page", "issue_tracker", "license")
+load("//rule:maven_publish.bzl", "kt_jvm_export")
 load("//rule/fabric:merge_jij.bzl", "fabric_merge_jij")
 load("//rule/fabric:mod_json_jar.bzl", "fabric_mod_json_jar")
 load("//rule/neoforge:merge_jij.bzl", "neoforge_merge_jij")
@@ -20,6 +21,7 @@ alias(
 
 java_library(
     name = "license_jar",
+    resource_strip_prefix = "blazerod",
     resources = [":license"],
 )
 
@@ -44,9 +46,10 @@ neoforge_mod_toml_jar(
     },
 )
 
-kt_jvm_library(
+kt_jvm_export(
     name = "blazerod_fabric_without_jij",
     srcs = ["src/Dummy.kt"],
+    coordinates = "top.fifthlight.blazerod:blazerod-fabric:%s" % blazerod_version,
     resource_jars = [
         ":fabric_mod_json",
         ":license_jar",
@@ -60,7 +63,7 @@ kt_jvm_library(
         ],
     ),
     visibility = ["//visibility:public"],
-    exports = [
+    runtime_deps = [
         "//blazerod/model/model-base",
         "//blazerod/model/model-formats",
         "//blazerod/model/model-loader",

@@ -7,3 +7,4 @@ do
     publish //blazerod/model/$module:$module.publish
 done
 publish //blazerod/render:render_fabric.publish
+publish //blazerod:blazerod_fabric_without_jij.publish
