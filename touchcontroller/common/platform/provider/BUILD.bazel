@@ -11,6 +11,7 @@ kt_merge_library(
         "//touchcontroller/common/platform/proxy",
         "//touchcontroller/common/platform/wayland",
         "//touchcontroller/common/platform/win32",
+        "//touchcontroller/common/platform/ios",
         "//touchcontroller/proxy/server/udp",
     ],
     visibility = ["//touchcontroller:__subpackages__"],

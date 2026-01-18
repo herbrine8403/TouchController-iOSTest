@@ -1,0 +1,12 @@
+load("//rule:merge_library.bzl", "kt_merge_library")
+
+kt_merge_library(
+    name = "ios",
+    srcs = glob(["*.kt"]),
+    visibility = ["//touchcontroller:__subpackages__"],
+    deps = [
+        "//touchcontroller/common/platform",
+        "//touchcontroller/proxy/message",
+        "@maven//:org_slf4j_slf4j_api",
+    ],
+)

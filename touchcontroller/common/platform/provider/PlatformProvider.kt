@@ -9,6 +9,7 @@ import top.fifthlight.touchcontroller.common.gal.library.NativeLibraryPathGetter
 import top.fifthlight.touchcontroller.common.gal.window.PlatformWindowProvider
 import top.fifthlight.touchcontroller.common.platform.Platform
 import top.fifthlight.touchcontroller.common.platform.android.AndroidPlatform
+import top.fifthlight.touchcontroller.common.platform.ios.IosPlatform
 import top.fifthlight.touchcontroller.common.platform.proxy.ProxyPlatform
 import top.fifthlight.touchcontroller.common.platform.wayland.WaylandPlatform
 import top.fifthlight.touchcontroller.common.platform.win32.Win32Platform
@@ -30,6 +31,9 @@ object PlatformProvider {
     private val nativeLibraryPathGetter: NativeLibraryPathGetter = NativeLibraryPathGetterFactory.of()
     private val logger = LoggerFactory.getLogger(PlatformProvider::class.java)
 
+    private val systemName by lazy { System.getProperty("os.name") }
+    private val systemArch by lazy { System.getProperty("os.arch") }
+
     val isAndroid: Boolean by lazy {
         // Detect the existence of /system/build.prop
         val path = Paths.get("/", "system", "build.prop")
@@ -40,6 +44,20 @@ object PlatformProvider {
             true
         } catch (ex: IOException) {
             logger.info("Failed to access $path, may running on Android", ex)
+            true
+        }
+    }
+
+    val isIos: Boolean by lazy {
+        if (systemName.contains("iOS", ignoreCase = true)) {
+            return@lazy true
+        }
+        // Check if running on iOS by detecting /var/mobile (iOS-specific path)
+        val iosPath = Paths.get("/", "var", "mobile")
+        try {
+            iosPath.exists()
+        } catch (ex: Exception) {
+            logger.info("Failed to check iOS path, assuming iOS", ex)
             true
         }
     }
@@ -81,14 +99,8 @@ object PlatformProvider {
     }
 
     private fun probeNativeLibraryInfo(windowProvider: PlatformWindowProvider): NativeLibraryInfo? {
-        val systemName = System.getProperty("os.name")
-        val systemArch = System.getProperty("os.arch")
-        logger.info("System name: $systemName, system arch: $systemArch")
-
-        if ((systemName.startsWith("Linux", ignoreCase = true) && isAndroid) || systemName.contains(
-                "Android",
-                ignoreCase = true
-            )
+        if ((systemName.startsWith("Linux", ignoreCase = true) && isAndroid) ||
+            systemName.contains("Android", ignoreCase = true)
         ) {
             logger.info("Android detected")
 
@@ -232,6 +244,22 @@ object PlatformProvider {
             val proxy = localhostLauncherSocketProxyServer(socketPort) ?: return null
             @OptIn(DelicateCoroutinesApi::class)
             return ProxyPlatform(GlobalScope, proxy)
+        }
+
+        logger.info("System name: $systemName, system arch: $systemArch")
+        if (isIos) {
+            // iOS: native library is statically linked into the launcher app
+            // No need to load it dynamically - JNI symbols are already available
+            val socketPath = System.getenv("TOUCH_CONTROLLER_PROXY_SOCKET")
+            if (socketPath.isNullOrEmpty()) {
+                logger.info("TOUCH_CONTROLLER_PROXY_SOCKET not set")
+                logger.info("Please enable TouchController in launcher settings and restart the game")
+                return null
+            }
+
+            val platform = IosPlatform(socketPath)
+            platform.resize(windowProvider.windowWidth, windowProvider.windowHeight)
+            return platform
         }
 
         val info = probeNativeLibraryInfo(windowProvider) ?: return null
