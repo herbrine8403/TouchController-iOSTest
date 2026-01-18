@@ -1,0 +1,38 @@
+load("@rules_java//java:defs.bzl", "java_binary")
+
+java_binary(
+    name = "maven_publisher",
+    srcs = ["MavenPublisher.java"],
+    main_class = "top.fifthlight.fabazel.mavenpublisher.MavenPublisher",
+    visibility = ["//visibility:public"],
+    runtime_deps = [
+        "@maven//:org_apache_maven_maven_resolver_provider",
+        "@maven//:org_apache_maven_resolver_maven_resolver_connector_basic",
+        "@maven//:org_apache_maven_resolver_maven_resolver_impl",
+        "@maven//:org_apache_maven_resolver_maven_resolver_transport_apache",
+        "@maven//:org_apache_maven_resolver_maven_resolver_transport_file",
+    ],
+    deps = [
+        "//:picocli",
+        "@maven//:ch_qos_logback_logback_classic",
+        "@maven//:com_google_inject_guice",
+        "@maven//:javax_inject_javax_inject",
+        "@maven//:org_apache_maven_resolver_maven_resolver_api",
+        "@maven//:org_apache_maven_resolver_maven_resolver_spi",
+        "@maven//:org_apache_maven_resolver_maven_resolver_util",
+        "@maven//:org_eclipse_sisu_org_eclipse_sisu_inject",
+        "@maven//:org_slf4j_slf4j_api",
+    ],
+)
+
+filegroup(
+    name = "maven_publisher_wrapper",
+    srcs = ["maven_publisher_wrapper.bash"],
+    visibility = ["//visibility:public"],
+)
+
+filegroup(
+    name = "pom_template",
+    srcs = ["pom_template.xml"],
+    visibility = ["//visibility:public"],
+)

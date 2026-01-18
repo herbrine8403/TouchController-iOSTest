@@ -5,6 +5,7 @@ load("@rules_java//java/bazel/rules:bazel_java_library.bzl", _java_library = "ja
 load("@rules_java//java/common:java_info.bzl", "JavaInfo")
 load("@rules_kotlin//kotlin:jvm.bzl", _kt_jvm_library = "kt_jvm_library")
 load("@rules_kotlin//src/main/starlark/core/compile:common.bzl", _KtJvmInfo = "KtJvmInfo")
+load("//rule:merge_jar.bzl", "merge_jar_action")
 
 def _merge_library_info_init(*, merge_jars = [], merge_source_jars = [], deps = []):
     if type(merge_jars) != "depset":
@@ -196,7 +197,6 @@ def _merge_library_jar_impl(ctx):
     merged_deps_depset = depset(transitive = [dep[MergeLibraryInfo].transitive_merge_jars for dep in ctx.attr.deps])
     merged_deps = merged_deps_depset.to_list()
     merged_srcs_depset = depset(transitive = [dep[MergeLibraryInfo].transitive_merge_source_jars for dep in ctx.attr.deps])
-    merged_srcs = merged_srcs_depset.to_list()
 
     args = ctx.actions.args()
     args.add(output_jar)
@@ -237,31 +237,18 @@ def _merge_library_jar_impl(ctx):
         toolchain = "@bazel_tools//tools/jdk:toolchain_type",
     )
 
-    source_args = ctx.actions.args()
-    source_args.add(ctx.outputs.sources_jar)
-    source_args.add_all(merged_srcs)
-
-    source_args.use_param_file("@%s", use_always = True)
-    source_args.set_param_file_format("multiline")
-
-    ctx.actions.run(
-        inputs = depset(merged_srcs),
-        outputs = [ctx.outputs.sources_jar],
-        executable = ctx.executable._merge_jar_executable,
-        execution_requirements = {
-            "supports-workers": "1",
-            "supports-multiplex-workers": "1",
-            "requires-worker-protocol": "proto",
-        },
-        arguments = [source_args],
-        progress_message = "Merging sources JAR %s" % ctx.label.name,
-        toolchain = "@bazel_tools//tools/jdk:toolchain_type",
+    merge_jar_action(
+        ctx.actions,
+        ctx.executable._merge_expect_actual_jar_executable,
+        ctx.outputs.sources_jar,
+        merged_srcs_depset,
     )
 
     return [
         JavaInfo(
             output_jar = output_jar,
             compile_jar = output_jar,
+            source_jar = ctx.outputs.sources_jar,
         ),
         DefaultInfo(files = depset([output_jar])),
     ]

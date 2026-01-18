@@ -1,4 +1,6 @@
 load("//rule:remap_jar.bzl", "remap_jar")
+load("//rule:maven_publish.bzl", "maven_publish")
+load("//blazerod:properties.bzl", "blazerod_version")
 
 alias(
     name = "render_fabric_unmapped",
@@ -21,6 +23,15 @@ remap_jar(
     mixin = True,
     to_namespace = "intermediary",
     visibility = ["//visibility:public"],
+)
+
+maven_publish(
+    name = "render_fabric_publish",
+    coordinate = "top.fifthlight.blazerod:render-fabric:%s" % blazerod_version,
+    src = ":render_fabric_merged",
+    artifacts = {
+        "sources": "//blazerod/render/fabric:fabric_unmapped_merged_sources",
+    },
 )
 
 alias(

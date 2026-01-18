@@ -2,37 +2,52 @@
 
 load("@rules_java//java:defs.bzl", "JavaInfo", "java_common")
 
-def _merge_jar_impl(ctx):
-    output_jar = ctx.actions.declare_file(ctx.label.name + ".jar")
-
-    merged_deps = java_common.merge([dep[JavaInfo] for dep in ctx.attr.deps])
-
-    args = ctx.actions.args()
+def merge_jar_action(actions, executable, output_jar, jars = depset(), resources = {}):
+    args = actions.args()
     args.add(output_jar)
+
     resource_files = []
-    for resource in ctx.attr.resources.keys():
-        strip = ctx.attr.resources[resource]
-        files = resource.files.to_list()
+    for key, resource in resources.items():
+        files = key.files.to_list()
         resource_files = resource_files + files
         args.add("--strip")
-        args.add(strip)
+        args.add(key)
         if len(files) == 0:
             fail("Resource label without resource: " + str(resource.label))
         for file in files:
             args.add("--resource")
             args.add(file)
-    args.add_all(merged_deps.full_compile_jars.to_list())
+    args.add_all(jars)
 
-    ctx.actions.run(
+    args.use_param_file("@%s", use_always = True)
+    args.set_param_file_format("multiline")
+
+    actions.run(
         inputs = depset(
             direct = resource_files,
-            transitive = [merged_deps.full_compile_jars],
+            transitive = [jars],
         ),
         outputs = [output_jar],
-        executable = ctx.executable._merge_jar_executable,
+        executable = executable,
+        execution_requirements = {
+            "supports-workers": "1",
+            "supports-multiplex-workers": "1",
+            "requires-worker-protocol": "proto",
+        },
         arguments = [args],
-        progress_message = "Merging JAR %s" % ctx.label.name,
         toolchain = "@bazel_tools//tools/jdk:toolchain_type",
+    )
+
+def _merge_jar_impl(ctx):
+    merged_deps = java_common.merge([dep[JavaInfo] for dep in ctx.attr.deps])
+
+    output_jar = ctx.actions.declare_file(ctx.label.name + ".jar")
+    merge_jar_action(
+        ctx.actions,
+        ctx.executable._merge_jar_executable,
+        output_jar,
+        merged_deps.full_compile_jars,
+        ctx.attr.resources,
     )
 
     return [

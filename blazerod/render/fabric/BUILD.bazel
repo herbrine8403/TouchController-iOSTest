@@ -72,3 +72,9 @@ merge_library_jar(
     visibility = ["//blazerod/render:__subpackages__"],
     deps = [":fabric_unmapped"],
 )
+
+filegroup(
+    name = "fabric_unmapped_merged_sources",
+    srcs = [":fabric_unmapped_merged_sources.jar"],
+    visibility = ["//blazerod/render:__subpackages__"],
+)
