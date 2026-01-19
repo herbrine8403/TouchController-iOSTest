@@ -15140,7 +15140,7 @@
     "@@rules_android+//bzlmod_extensions:apksig.bzl%apksig_extension": {
       "general": {
         "bzlTransitiveDigest": "xeN+uPP1PKslnv5h3+uyhGaFXC4IIzcFwX/nQHlNwZk=",
-        "usagesDigest": "rHfA6bMg3ctHXSOf9PtupLLie0fpKjh4zfajt3dbw9k=",
+        "usagesDigest": "cA1Wk5yoyQsIRsLGvdZzfjvLKcLSnALtZoC2AOdr2mg=",
         "recordedFileInputs": {},
         "recordedDirentsInputs": {},
         "envVariables": {},

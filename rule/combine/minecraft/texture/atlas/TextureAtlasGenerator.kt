@@ -1,6 +1,11 @@
 package top.fifthlight.combine.resources.altas
 
 import kotlinx.serialization.json.Json
+import org.lwjgl.stb.STBRPContext
+import org.lwjgl.stb.STBRPNode
+import org.lwjgl.stb.STBRPRect
+import org.lwjgl.stb.STBRectPack
+import org.lwjgl.system.MemoryStack
 import top.fifthlight.combine.resources.Metadata
 import top.fifthlight.combine.resources.NinePatch
 import top.fifthlight.combine.resources.NinePatchMetadata
@@ -17,7 +22,6 @@ import kotlin.io.path.inputStream
 import kotlin.io.path.outputStream
 import kotlin.io.path.readText
 import kotlin.io.path.writeText
-import kotlin.math.max
 import kotlin.system.exitProcess
 
 private data class Texture(
@@ -124,29 +128,54 @@ fun main(vararg args: String) {
         }
 
         val outputImage = BufferedImage(atlasWidth, atlasHeight, TYPE_INT_ARGB)
-        val outputGraphics = outputImage.createGraphics()
-        var cursorPosition = IntOffset(0, 0)
-        var maxLineHeight = 0
-        for (texture in textures) {
-            if (texture.size.width > atlasWidth) {
-                error("Texture ${texture.identifier} too big: ${texture.size}")
+
+        MemoryStack.stackPush().use { stack ->
+            val context = STBRPContext.malloc(stack)
+            val nodes = STBRPNode.malloc(atlasWidth, stack)
+            STBRectPack.stbrp_init_target(context, atlasWidth, atlasHeight, nodes)
+
+            val rectangles = STBRPRect.malloc(textures.size, stack)
+            for ((index, texture) in textures.withIndex()) {
+                rectangles[index].set(index, texture.size.width, texture.size.height, 0, 0, false)
             }
-            if (texture.size.height + cursorPosition.y > atlasHeight) {
-                error("No space left for texture ${texture.identifier}")
-            }
-            if (cursorPosition.x + texture.size.width > atlasWidth) {
-                if (maxLineHeight == 0) {
-                    error("Texture ${texture.identifier} too big: ${texture.size}")
+
+            STBRectPack.stbrp_pack_rects(context, rectangles)
+
+            val outputGraphics = outputImage.createGraphics()
+            for ((index, rect) in rectangles.withIndex()) {
+                val texture = textures[index]
+
+                if (!rect.was_packed()) {
+                    outputGraphics.dispose()
+                    error(
+                        """Failed to pack texture '${texture.identifier}' 
+                            |(size: ${texture.size.width}x${texture.size.height}) into atlas 
+                            |(size: ${atlasWidth}x${atlasHeight}). 
+                            |The texture does not fit or the atlas is too small.""".trimMargin(),
+                    )
                 }
-                cursorPosition = IntOffset(0, cursorPosition.y + maxLineHeight)
-                maxLineHeight = 0
+
+                val position = IntOffset(
+                    x = rect.x(),
+                    y = rect.y(),
+                )
+
+                if (position.x < 0 || position.y < 0 ||
+                    position.x + texture.size.width > atlasWidth ||
+                    position.y + texture.size.height > atlasHeight
+                ) {
+                    error(
+                        """Texture '${texture.identifier}' placed at invalid position: $position 
+                            |with size: ${texture.size} in atlas: ${atlasWidth}x${atlasHeight}""".trimMargin(),
+                    )
+                }
+
+                placedTextures[texture.identifier] = texture.place(position)
+                outputGraphics.drawImage(texture.image, position.x, position.y, null)
             }
-            maxLineHeight = max(maxLineHeight, texture.size.height)
-            placedTextures[texture.identifier] = texture.place(cursorPosition)
-            outputGraphics.drawImage(texture.image, cursorPosition.x, cursorPosition.y, null)
-            cursorPosition = IntOffset(cursorPosition.x + texture.size.width, cursorPosition.y)
+
+            outputGraphics.dispose()
         }
-        outputGraphics.dispose()
 
         out.putNextEntry(entry("assets/$namespace/textures/gui/$prefix/atlas.png"))
         ImageIO.write(outputImage, "png", out)
@@ -159,7 +188,7 @@ fun main(vararg args: String) {
                 width = atlasWidth,
                 height = atlasHeight,
                 textures = placedTextures,
-            )
-        )
+            ),
+        ),
     )
 }
