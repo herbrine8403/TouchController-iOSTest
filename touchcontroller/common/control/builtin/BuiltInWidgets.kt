@@ -3,14 +3,22 @@ package top.fifthlight.touchcontroller.common.control.builtin
 import top.fifthlight.combine.data.Identifier
 import top.fifthlight.data.IntOffset
 import top.fifthlight.data.IntPadding
+import top.fifthlight.touchcontroller.assets.EmptyTexture
 import top.fifthlight.touchcontroller.assets.Texts
 import top.fifthlight.touchcontroller.assets.TextureSet
 import top.fifthlight.touchcontroller.common.control.ControllerWidget
+import top.fifthlight.touchcontroller.common.control.action.ButtonTrigger
+import top.fifthlight.touchcontroller.common.control.action.WidgetTriggerAction
 import top.fifthlight.touchcontroller.common.control.property.ButtonActiveTexture
 import top.fifthlight.touchcontroller.common.control.property.ButtonTexture
+import top.fifthlight.touchcontroller.common.control.property.DPadExtraButton
+import top.fifthlight.touchcontroller.common.control.property.TextureCoordinate
+import top.fifthlight.touchcontroller.common.control.widget.custom.CustomWidget
+import top.fifthlight.touchcontroller.common.control.widget.dpad.DPad
 import top.fifthlight.touchcontroller.common.gal.key.DefaultKeyBindingType
 import top.fifthlight.touchcontroller.common.gal.key.KeyBindingHandler
 import top.fifthlight.touchcontroller.common.gal.key.KeyBindingHandlerFactory
+import top.fifthlight.touchcontroller.common.layout.align.Align
 import java.util.concurrent.ConcurrentHashMap
 
 @ConsistentCopyVisibility
@@ -52,7 +60,7 @@ data class BuiltInWidgets private constructor(
         action: ButtonTrigger = ButtonTrigger(),
         name: Identifier,
         align: Align,
-        offset: IntOffset = IntOffset.Companion.ZERO,
+        offset: IntOffset = IntOffset.ZERO,
     ) = CustomWidget(
         normalTexture = texture,
         activeTexture = if (grayOnClassic && classic) {

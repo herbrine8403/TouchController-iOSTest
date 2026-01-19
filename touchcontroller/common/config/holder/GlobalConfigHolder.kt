@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory
 import top.fifthlight.touchcontroller.common.config.GlobalConfig
 import top.fifthlight.touchcontroller.common.config.PresetConfig
 import top.fifthlight.touchcontroller.common.config.preset.PresetManager
+import top.fifthlight.touchcontroller.common.config.preset.builtin.BuiltinPresets
 import top.fifthlight.touchcontroller.common.config.preset.builtin.key.BuiltinPresetKey
 import top.fifthlight.touchcontroller.common.config.widget.WidgetPresetManager
 import top.fifthlight.touchcontroller.common.ext.combineStates
@@ -44,8 +45,8 @@ object GlobalConfigHolder {
 
     val currentPreset = combineStates(config, PresetManager.presets) { config, presets ->
         when (val preset = config.preset) {
-            is PresetConfig.BuiltIn -> preset.key.preset
-            is PresetConfig.Custom -> presets[preset.uuid] ?: BuiltinPresetKey.DEFAULT.preset
+            is PresetConfig.BuiltIn -> BuiltinPresets.generate(preset.key)
+            is PresetConfig.Custom -> presets[preset.uuid] ?: BuiltinPresetKey.DEFAULT
         }
     }
     val currentPresetUuid = config.mapState { (it.preset as? PresetConfig.Custom)?.uuid }

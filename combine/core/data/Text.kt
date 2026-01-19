@@ -26,9 +26,8 @@ interface TextFactory {
     }
 
     companion object {
-        val current: TextFactory by lazy {
-            TextFactoryFactory.of()
-        }
+        val current: TextFactory
+            get() = TextFactoryFactory.of()
     }
 }
 

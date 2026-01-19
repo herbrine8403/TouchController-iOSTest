@@ -1,11 +1,11 @@
 package top.fifthlight.touchcontroller.common.config.preset
 
 import androidx.compose.runtime.Immutable
-import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.serialization.Serializable
-import top.fifthlight.touchcontroller.common.config.ControllerLayout
-import top.fifthlight.touchcontroller.common.config.LayoutLayer
+import top.fifthlight.touchcontroller.common.config.layout.ControllerLayout
+import top.fifthlight.touchcontroller.common.config.layout.LayoutLayer
+import top.fifthlight.touchcontroller.common.config.preset.info.PresetControlInfo
 import top.fifthlight.touchcontroller.common.control.ControllerWidget
 
 @Immutable

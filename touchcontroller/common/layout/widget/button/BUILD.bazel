@@ -1,0 +1,18 @@
+load("//rule:merge_library.bzl", "kt_merge_library")
+
+kt_merge_library(
+    name = "button",
+    srcs = glob(["*.kt"]),
+    kotlinc_opts = "//touchcontroller/common:kotlinc_opts",
+    merge_deps = [
+        "//touchcontroller/common/layout",
+        "//touchcontroller/common/util/offset",
+        "//touchcontroller/common/config/data",
+        "//touchcontroller/common/layout/data",
+        "//touchcontroller/common/state",
+    ],
+    visibility = ["//touchcontroller:__subpackages__"],
+    deps = [
+        "//combine/data",
+    ],
+)

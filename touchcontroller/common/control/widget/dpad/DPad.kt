@@ -1,23 +1,39 @@
-package top.fifthlight.touchcontroller.common.control.widget
+package top.fifthlight.touchcontroller.common.control.widget.dpad
 
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.plus
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import org.koin.core.component.KoinComponent
-import org.koin.core.component.inject
+import top.fifthlight.combine.data.Text
 import top.fifthlight.combine.paint.Color
 import top.fifthlight.data.IntOffset
 import top.fifthlight.data.IntPadding
 import top.fifthlight.data.IntSize
 import top.fifthlight.touchcontroller.assets.Texts
 import top.fifthlight.touchcontroller.assets.TextureSet
-import top.fifthlight.touchcontroller.common.util.uuid.fastRandomUuid
-import top.fifthlight.touchcontroller.common.gal.DefaultKeyBindingType
-import top.fifthlight.touchcontroller.common.gal.KeyBindingHandler
-import top.fifthlight.touchcontroller.common.layout.*
+import top.fifthlight.touchcontroller.common.control.BooleanProperty
+import top.fifthlight.touchcontroller.common.control.ControllerWidget
+import top.fifthlight.touchcontroller.common.control.DPadExtraButtonProperty
+import top.fifthlight.touchcontroller.common.control.FloatProperty
+import top.fifthlight.touchcontroller.common.control.IntProperty
+import top.fifthlight.touchcontroller.common.control.TextureSetProperty
+import top.fifthlight.touchcontroller.common.control.action.ButtonTrigger
+import top.fifthlight.touchcontroller.common.control.action.WidgetTriggerAction
+import top.fifthlight.touchcontroller.common.control.property.DPadExtraButton
+import top.fifthlight.touchcontroller.common.control.property.TextureCoordinate
+import top.fifthlight.touchcontroller.common.gal.key.DefaultKeyBindingType
+import top.fifthlight.touchcontroller.common.gal.key.KeyBindingHandler
+import top.fifthlight.touchcontroller.common.gal.key.KeyBindingHandlerFactory
+import top.fifthlight.touchcontroller.common.layout.Context
+import top.fifthlight.touchcontroller.common.layout.align.Align
+import top.fifthlight.touchcontroller.common.layout.data.DPadDirection
+import top.fifthlight.touchcontroller.common.layout.widget.Texture
+import top.fifthlight.touchcontroller.common.layout.widget.button.Button
+import top.fifthlight.touchcontroller.common.layout.widget.button.SwipeButton
+import top.fifthlight.touchcontroller.common.layout.withAlign
 import top.fifthlight.touchcontroller.common.state.PointerState
+import top.fifthlight.touchcontroller.common.util.uuid.fastRandomUuid
 import kotlin.math.round
 import kotlin.uuid.Uuid
 
@@ -42,33 +58,31 @@ data class DPad private constructor(
     override val id: Uuid = fastRandomUuid(),
     override val name: Name = Name.Translatable(Texts.WIDGET_DPAD_NAME),
     override val align: Align = Align.LEFT_BOTTOM,
-    override val offset: IntOffset = IntOffset.ZERO,
+    override val offset: IntOffset = IntOffset.Companion.ZERO,
     override val opacity: Float = 1f,
     override val lockMoving: Boolean = false,
 ) : ControllerWidget() {
-    companion object : KoinComponent {
-        private val textFactory:  = TextFactoryFactory.of()
-        private val keyBindingHandler: KeyBindingHandler by inject()
+    companion object {
+        private val keyBindingHandler: KeyBindingHandler = KeyBindingHandlerFactory.of()
 
         @Suppress("UNCHECKED_CAST")
         private val _properties = properties + persistentListOf<Property<DPad, *>>(
             TextureSetProperty(
-                textFactory = textFactory,
                 getValue = { it.textureSet },
                 setValue = { config, value -> config.copy(textureSet = value) },
-                name = textFactory.of(Texts.WIDGET_DPAD_PROPERTY_TEXTURE_SET),
+                name = Text.Companion.translatable(Texts.WIDGET_DPAD_PROPERTY_TEXTURE_SET),
             ),
             BooleanProperty(
                 getValue = { it.showBackwardButton },
                 setValue = { config, value -> config.copy(showBackwardButton = value) },
-                name = textFactory.of(Texts.WIDGET_DPAD_PROPERTY_SHOW_BACKWARD_BUTTON),
+                name = Text.Companion.translatable(Texts.WIDGET_DPAD_PROPERTY_SHOW_BACKWARD_BUTTON),
             ),
             FloatProperty(
                 getValue = { it.size },
                 setValue = { config, value -> config.copy(size = value) },
                 range = .5f..4f,
                 messageFormatter = {
-                    textFactory.format(
+                    Text.Companion.format(
                         Texts.WIDGET_DPAD_PROPERTY_SIZE,
                         round(it * 100f).toString()
                     )
@@ -78,7 +92,7 @@ data class DPad private constructor(
                 getValue = { it.padding },
                 setValue = { config, value -> config.copy(padding = value) },
                 range = -1..16,
-                messageFormatter = { textFactory.format(Texts.WIDGET_DPAD_PROPERTY_PADDING, it) }
+                messageFormatter = { Text.Companion.format(Texts.WIDGET_DPAD_PROPERTY_PADDING, it) }
             ),
             DPadExtraButtonProperty(
                 getValue = { it.extraButton },
@@ -114,7 +128,7 @@ data class DPad private constructor(
             extraButton: DPadExtraButton = DPadExtraButton.None,
             name: Name = Name.Translatable(Texts.WIDGET_DPAD_NAME),
             align: Align = Align.LEFT_BOTTOM,
-            offset: IntOffset = IntOffset.ZERO,
+            offset: IntOffset = IntOffset.Companion.ZERO,
             opacity: Float = 1f,
             lockMoving: Boolean = false,
         ) = default.copy(
@@ -502,6 +516,7 @@ data class DPad private constructor(
                                 texture = config.textureSet.textureSet.downRight,
                                 padding = padding,
                             )
+
                             Pair(false, true) -> Texture(
                                 texture = config.textureSet.textureSet.downRightActive,
                                 padding = padding,
@@ -546,7 +561,7 @@ data class DPad private constructor(
                 size = IntSize((info.size * this@DPad.size).toInt()),
             ) {
                 if (clicked) {
-                    when (info.activeTexture) {
+                    when (val activeTexture = info.activeTexture) {
                         DPadExtraButton.ActiveTexture.Gray -> {
                             Texture(
                                 texture = info.texture.texture,
@@ -555,7 +570,7 @@ data class DPad private constructor(
                         }
 
                         DPadExtraButton.ActiveTexture.Same -> Texture(texture = info.texture.texture)
-                        is DPadExtraButton.ActiveTexture.Texture -> Texture(texture = info.activeTexture.texture.texture)
+                        is DPadExtraButton.ActiveTexture.Texture -> Texture(texture = activeTexture.texture.texture)
                     }
                 } else {
                     Texture(texture = info.texture.texture)

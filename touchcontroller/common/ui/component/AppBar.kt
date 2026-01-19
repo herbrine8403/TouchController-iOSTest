@@ -8,6 +8,7 @@ import top.fifthlight.combine.modifier.drawing.border
 import top.fifthlight.combine.modifier.placement.fillMaxHeight
 import top.fifthlight.combine.modifier.placement.height
 import top.fifthlight.combine.modifier.placement.padding
+import top.fifthlight.combine.theme.blackstone.BlackstoneTextures
 import top.fifthlight.combine.widget.layout.Box
 import top.fifthlight.combine.widget.layout.Row
 import top.fifthlight.combine.widget.layout.RowScope
@@ -22,7 +23,7 @@ fun AppBar(
     Box(
         modifier = Modifier
             .height(20)
-            .border(Textures.WIDGET_BACKGROUND_BACKGROUND_GRAY_TITLE)
+            .border(BlackstoneTextures.widget_background_background_gray_title)
             .then(modifier),
     ) {
         Row(

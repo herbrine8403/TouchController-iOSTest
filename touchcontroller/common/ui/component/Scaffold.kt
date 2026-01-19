@@ -4,8 +4,8 @@ import androidx.compose.runtime.Composable
 import top.fifthlight.combine.modifier.Modifier
 import top.fifthlight.combine.modifier.placement.fillMaxHeight
 import top.fifthlight.combine.modifier.placement.fillMaxSize
-import top.fifthlight.combine.widget.base.layout.Column
-import top.fifthlight.combine.widget.base.layout.Row
+import top.fifthlight.combine.widget.layout.Column
+import top.fifthlight.combine.widget.layout.Row
 
 @Composable
 fun Scaffold(

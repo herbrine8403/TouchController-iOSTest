@@ -4,8 +4,7 @@ import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.serialization.Serializable
-import top.fifthlight.touchcontroller.common.config.layout.LayoutLayer
-import top.fifthlight.touchcontroller.common.config.serializer.ControllerLayoutSerializer
+import top.fifthlight.touchcontroller.common.config.layout.serializer.ControllerLayoutSerializer
 
 @JvmInline
 @Serializable(with = ControllerLayoutSerializer::class)

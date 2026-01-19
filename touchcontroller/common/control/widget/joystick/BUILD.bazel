@@ -1,24 +1,29 @@
 load("//rule:merge_library.bzl", "kt_merge_library")
 
 kt_merge_library(
-    name = "action",
+    name = "joystick",
     srcs = glob(["*.kt"]),
     kotlinc_opts = "//touchcontroller/common:kotlinc_opts",
     merge_deps = [
-        "//touchcontroller/common/layout",
-        "//touchcontroller/common/layout/widget/button",
-        "//touchcontroller/common/gal/action",
-        "//touchcontroller/common/model",
-        "//touchcontroller/common/layout/data",
-        "//touchcontroller/common/gal/player",
-        "//touchcontroller/common/layout/click",
+        "//touchcontroller/common/control/property",
+        "//touchcontroller/common/control",
+        "//touchcontroller/common/layout/widget",
         "//touchcontroller/common/gal/key",
+        "//touchcontroller/common/layout",
+        "//touchcontroller/common/layout/align",
+        "//touchcontroller/common/layout/data",
+        "//touchcontroller/common/layout/queue",
+        "//touchcontroller/common/state",
+        "//touchcontroller/common/util/uuid",
         "//touchcontroller/resources/lang:text_binding",
+        "//touchcontroller/resources/texture:texture_set_lib",
     ],
     visibility = ["//touchcontroller:__subpackages__"],
     deps = [
         "//:kotlin_serialization",
         "//combine/core/data",
+        "//combine/core/paint",
+        "//combine/data",
         "@maven//:org_jetbrains_kotlinx_kotlinx_collections_immutable_jvm",
     ],
 )

@@ -1,25 +1,28 @@
-package top.fifthlight.touchcontroller.common.control.widget
+package top.fifthlight.touchcontroller.common.control.widget.joystick
 
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.plus
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import org.koin.core.component.KoinComponent
-import org.koin.core.component.inject
-import top.fifthlight.combine.data.TextFactory
+import top.fifthlight.combine.data.Text
 import top.fifthlight.combine.paint.Color
 import top.fifthlight.data.IntOffset
+import top.fifthlight.data.IntRect
 import top.fifthlight.data.IntSize
 import top.fifthlight.data.Offset
 import top.fifthlight.data.Rect
 import top.fifthlight.touchcontroller.assets.Texts
 import top.fifthlight.touchcontroller.assets.TextureSet
-import top.fifthlight.touchcontroller.common.util.uuid.fastRandomUuid
-import top.fifthlight.touchcontroller.common.gal.DefaultKeyBindingType
-import top.fifthlight.touchcontroller.common.layout.Align
+import top.fifthlight.touchcontroller.common.control.BooleanProperty
+import top.fifthlight.touchcontroller.common.control.ControllerWidget
+import top.fifthlight.touchcontroller.common.control.FloatProperty
+import top.fifthlight.touchcontroller.common.control.TextureSetProperty
+import top.fifthlight.touchcontroller.common.gal.key.DefaultKeyBindingType
 import top.fifthlight.touchcontroller.common.layout.Context
+import top.fifthlight.touchcontroller.common.layout.align.Align
 import top.fifthlight.touchcontroller.common.state.PointerState
+import top.fifthlight.touchcontroller.common.util.uuid.fastRandomUuid
 import kotlin.math.round
 import kotlin.math.sqrt
 import kotlin.uuid.Uuid
@@ -39,9 +42,7 @@ data class Joystick(
     override val opacity: Float = 1f,
     override val lockMoving: Boolean = false,
 ) : ControllerWidget() {
-    companion object : KoinComponent {
-        private val textFactory:  = TextFactoryFactory.of()
-
+    companion object {
         @Suppress("UNCHECKED_CAST")
         private val _properties = properties + persistentListOf<Property<Joystick, *>>(
             FloatProperty(
@@ -49,24 +50,23 @@ data class Joystick(
                 setValue = { config, value -> config.copy(size = value) },
                 range = .5f..4f,
                 messageFormatter = {
-                    textFactory.format(
+                    Text.Companion.format(
                         Texts.WIDGET_JOYSTICK_PROPERTY_SIZE,
                         round(it * 100f).toString()
                     )
                 },
             ),
             TextureSetProperty(
-                textFactory = textFactory,
                 getValue = { it.textureSet },
                 setValue = { config, value -> config.copy(textureSet = value) },
-                name = textFactory.of(Texts.WIDGET_JOYSTICK_PROPERTY_TEXTURE_SET),
+                name = Text.Companion.translatable(Texts.WIDGET_JOYSTICK_PROPERTY_TEXTURE_SET),
             ),
             FloatProperty(
                 getValue = { it.stickSize },
                 setValue = { config, value -> config.copy(stickSize = value) },
                 range = .5f..4f,
                 messageFormatter = {
-                    textFactory.format(
+                    Text.Companion.format(
                         Texts.WIDGET_JOYSTICK_PROPERTY_STICK_SIZE,
                         round(it * 100f).toString()
                     )
@@ -75,12 +75,12 @@ data class Joystick(
             BooleanProperty(
                 getValue = { it.triggerSprint },
                 setValue = { config, value -> config.copy(triggerSprint = value) },
-                name = textFactory.of(Texts.WIDGET_JOYSTICK_PROPERTY_TRIGGER_SPRINT),
+                name = Text.Companion.translatable(Texts.WIDGET_JOYSTICK_PROPERTY_TRIGGER_SPRINT),
             ),
             BooleanProperty(
                 getValue = { it.increaseOpacityWhenActive },
                 setValue = { config, value -> config.copy(increaseOpacityWhenActive = value) },
-                name = textFactory.of(Texts.WIDGET_JOYSTICK_PROPERTY_INCREASE_OPACITY_WHEN_ACTIVE),
+                name = Text.Companion.translatable(Texts.WIDGET_JOYSTICK_PROPERTY_INCREASE_OPACITY_WHEN_ACTIVE),
             )
         ) as PersistentList<Property<ControllerWidget, *>>
     }
@@ -167,22 +167,24 @@ data class Joystick(
         withOpacity(opacityMultiplier) {
             drawQueue.enqueue { canvas ->
                 val color = Color(((0xFF * opacity).toInt() shl 24) or 0xFFFFFF)
-                canvas.drawTexture(
-                    texture = layout.textureSet.textureSet.pad,
-                    dstRect = Rect(size = size.toSize()),
-                    tint = color
-                )
-                val drawOffset = normalizedOffset ?: Offset.ZERO
+                with(layout.textureSet.textureSet.pad) {
+                    canvas.draw(
+                        dstRect = IntRect(size = size),
+                        tint = color
+                    )
+                }
+                val drawOffset = normalizedOffset ?: Offset.Companion.ZERO
                 val stickSize = layout.stickSize()
                 val actualOffset = ((drawOffset + 1f) / 2f * size) - stickSize.toSize() / 2f
-                canvas.drawTexture(
-                    texture = layout.textureSet.textureSet.stick,
-                    dstRect = Rect(
-                        offset = actualOffset,
-                        size = stickSize.toSize()
-                    ),
-                    tint = color
-                )
+                with(layout.textureSet.textureSet.stick) {
+                    canvas.draw(
+                        dstRect = Rect(
+                            offset = actualOffset,
+                            size = stickSize.toSize()
+                        ),
+                        tint = color
+                    )
+                }
             }
         }
 

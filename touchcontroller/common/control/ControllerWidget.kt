@@ -21,7 +21,7 @@ import kotlin.uuid.Uuid
 
 @Immutable
 @Serializable
-sealed class ControllerWidget {
+abstract class ControllerWidget {
     abstract val id: Uuid
     abstract val name: Name
     abstract val align: Align

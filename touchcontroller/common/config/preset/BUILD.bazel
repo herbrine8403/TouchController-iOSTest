@@ -15,10 +15,17 @@ kt_merge_library(
         "//touchcontroller/common/config/widget",
         "//touchcontroller/common/util/state",
         "//touchcontroller/common/config/condition",
+        "//touchcontroller/common/config/layout",
+        "//touchcontroller/common/control",
+        "//touchcontroller/common/gal/config",
     ],
     visibility = ["//touchcontroller:__subpackages__"],
     deps = [
         "//:kotlin_serialization",
+        "@maven//:androidx_compose_runtime_runtime_annotation_jvm",
         "@maven//:org_jetbrains_kotlinx_kotlinx_collections_immutable_jvm",
+        "@maven//:org_jetbrains_kotlinx_kotlinx_coroutines_core_jvm",
+        "@maven//:org_jetbrains_kotlinx_kotlinx_serialization_json_jvm",
+        "@maven//:org_slf4j_slf4j_api",
     ],
 )

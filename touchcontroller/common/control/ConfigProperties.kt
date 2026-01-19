@@ -6,17 +6,12 @@ import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
 import top.fifthlight.combine.data.Text
 import top.fifthlight.combine.data.TextFactory
-import top.fifthlight.combine.data.TextFactoryFactory
 import top.fifthlight.combine.layout.Alignment
 import top.fifthlight.combine.layout.Arrangement
 import top.fifthlight.combine.modifier.Modifier
 import top.fifthlight.combine.modifier.drawing.background
 import top.fifthlight.combine.modifier.drawing.innerLine
-import top.fifthlight.combine.modifier.placement.fillMaxHeight
-import top.fifthlight.combine.modifier.placement.fillMaxWidth
-import top.fifthlight.combine.modifier.placement.height
-import top.fifthlight.combine.modifier.placement.padding
-import top.fifthlight.combine.modifier.placement.width
+import top.fifthlight.combine.modifier.placement.*
 import top.fifthlight.combine.modifier.pointer.clickable
 import top.fifthlight.combine.modifier.scroll.verticalScroll
 import top.fifthlight.combine.paint.Color
@@ -34,7 +29,6 @@ import top.fifthlight.touchcontroller.assets.EmptyTexture
 import top.fifthlight.touchcontroller.assets.Texts
 import top.fifthlight.touchcontroller.assets.TextureSet
 import top.fifthlight.touchcontroller.assets.Textures
-import top.fifthlight.touchcontroller.assets.TexturesFactory
 import top.fifthlight.touchcontroller.common.control.action.ButtonTrigger
 import top.fifthlight.touchcontroller.common.control.action.WidgetTriggerAction
 import top.fifthlight.touchcontroller.common.control.property.ButtonActiveTexture
@@ -44,6 +38,7 @@ import top.fifthlight.touchcontroller.common.control.property.TextureCoordinate
 import top.fifthlight.touchcontroller.common.gal.key.KeyBindingHandler
 import top.fifthlight.touchcontroller.common.gal.key.KeyBindingHandlerFactory
 import top.fifthlight.touchcontroller.common.layout.align.Align
+import top.fifthlight.touchcontroller.common.ui.component.*
 
 private fun <Config : ControllerWidget, Value> ControllerWidget.Property<Config, Value>.paddingProperty(
     getPadding: (Value) -> IntPadding?,
@@ -65,9 +60,7 @@ private fun <Config : ControllerWidget, Value> ControllerWidget.Property<Config,
     setValue = { config, value -> setValue(config, setInt(getValue(config), value)) },
     range = range,
     messageFormatter = {
-        with(TextFactory.current) {
-            format(Texts.SCREEN_CONFIG_VALUE, toNative(name), it.toString())
-        }
+        Text.format(Texts.SCREEN_CONFIG_VALUE, TextFactory.current.toNative(name), it.toString())
     },
 )
 
@@ -101,9 +94,9 @@ private fun <Config : ControllerWidget, Value> ControllerWidget.Property<Config,
     setValue = { config, value -> setValue(config, setScale(getValue(config), value)) },
     range = range,
     messageFormatter = {
-        format(
+        Text.format(
             Texts.SCREEN_CONFIG_PERCENT,
-            toNative(name),
+            TextFactory.current.toNative(name),
             (it * 100).toInt().toString()
         )
     },
@@ -354,10 +347,8 @@ class EnumProperty<Config : ControllerWidget, T>(
     private val name: Text,
     private val items: PersistentList<Pair<T, Text>>,
 ) : ControllerWidget.Property<Config, T>(getValue, setValue) {
-    private val textFactory: TextFactory = TextFactoryFactory.of()
-
     private fun getItemText(item: T): Text =
-        items.firstOrNull { it.first == item }?.second ?: textFactory.literal(item.toString())
+        items.firstOrNull { it.first == item }?.second ?: Text.literal(item.toString())
 
     @Composable
     override fun controller(
@@ -404,7 +395,6 @@ class EnumProperty<Config : ControllerWidget, T>(
 }
 
 fun <Config : ControllerWidget> TextureSetProperty(
-    textFactory: TextFactory,
     getValue: (Config) -> TextureSet.TextureSetKey,
     setValue: (Config, TextureSet.TextureSetKey) -> Config,
     name: Text,
@@ -412,7 +402,7 @@ fun <Config : ControllerWidget> TextureSetProperty(
     getValue = getValue,
     setValue = setValue,
     items = TextureSet.TextureSetKey.entries.map {
-        Pair(it, textFactory.of(it.nameText))
+        Pair(it, Text.translatable(it.nameText))
     }.toPersistentList(),
     name = name,
 )
@@ -422,10 +412,8 @@ class FloatProperty<Config : ControllerWidget>(
     getValue: (Config) -> Float,
     setValue: (Config, Float) -> Config,
     private val range: ClosedFloatingPointRange<Float> = 0f..1f,
-    private val messageFormatter: TextFactory.(Float) -> Text,
+    private val messageFormatter: (Float) -> Text,
 ) : ControllerWidget.Property<Config, Float>(getValue, setValue) {
-    private val textFactory: TextFactory = TextFactoryFactory.of()
-
     @Composable
     override fun controller(
         modifier: Modifier,
@@ -437,7 +425,7 @@ class FloatProperty<Config : ControllerWidget>(
         val widgetConfig = config as Config
         Column(modifier) {
             val value = getValue(widgetConfig)
-            Text(textFactory.messageFormatter(value))
+            Text(messageFormatter(value))
             Slider(
                 modifier = Modifier.fillMaxWidth(),
                 value = value,
@@ -691,7 +679,7 @@ class TextureCoordinateProperty<Config : ControllerWidget>(
                         Column(
                             modifier = Modifier
                                 .padding(4)
-                                .background(Textures.BRICK_BACKGROUND)
+                                .background(Textures.background_brick_background)
                                 .then(modifier),
                             verticalArrangement = Arrangement.spacedBy(4),
                         ) {
@@ -889,7 +877,6 @@ class ButtonTextureProperty<Config : ControllerWidget>(
         @Suppress("UNCHECKED_CAST")
         val widgetConfig = config as Config
         val value = getValue(widgetConfig)
-        val textFactory: TextFactory = TextFactoryFactory.of()
         Column(
             modifier = modifier,
             verticalArrangement = Arrangement.spacedBy(4),
@@ -904,7 +891,7 @@ class ButtonTextureProperty<Config : ControllerWidget>(
                     DropdownItemList(
                         modifier = Modifier.verticalScroll(),
                         items = ButtonTexture.Type.entries,
-                        textProvider = { textFactory.of(it.nameId) },
+                        textProvider = { Text.translatable(it.nameId) },
                         selectedIndex = ButtonTexture.Type.entries.indexOf(value.type),
                         onItemSelected = {
                             val item = ButtonTexture.Type.entries[it]
@@ -970,8 +957,6 @@ class ButtonActiveTextureProperty<Config : ControllerWidget>(
     setValue: (Config, ButtonActiveTexture) -> Config,
     private val name: Text,
 ) : ControllerWidget.Property<Config, ButtonActiveTexture>(getValue, setValue) {
-    private val textFactory: TextFactory = TextFactoryFactory.of()
-
     private val textureProperty = buttonTextureProperty(
         getTexture = { (it as? ButtonActiveTexture.Texture)?.texture },
         setTexture = { texture, value ->
@@ -980,7 +965,7 @@ class ButtonActiveTextureProperty<Config : ControllerWidget>(
                 else -> ButtonActiveTexture.Texture(texture = value)
             }
         },
-        name = textFactory.of(Texts.WIDGET_ACTIVE_TEXTURE_TYPE),
+        name = Text.translatable(Texts.WIDGET_ACTIVE_TEXTURE_TYPE),
     )
 
     @Composable
@@ -993,7 +978,6 @@ class ButtonActiveTextureProperty<Config : ControllerWidget>(
         @Suppress("UNCHECKED_CAST")
         val widgetConfig = config as Config
         val value = getValue(widgetConfig)
-        val textFactory: TextFactory = TextFactoryFactory.of()
         Column(
             modifier = modifier,
             verticalArrangement = Arrangement.spacedBy(4),
@@ -1008,7 +992,7 @@ class ButtonActiveTextureProperty<Config : ControllerWidget>(
                     DropdownItemList(
                         modifier = Modifier.verticalScroll(),
                         items = ButtonActiveTexture.Type.entries,
-                        textProvider = { textFactory.of(it.nameId) },
+                        textProvider = { Text.translatable(it.nameId) },
                         selectedIndex = ButtonActiveTexture.Type.entries.indexOf(value.type),
                         onItemSelected = {
                             val item = ButtonActiveTexture.Type.entries[it]
@@ -1183,8 +1167,6 @@ class TriggerActionProperty<Config : ControllerWidget>(
     setValue: (Config, WidgetTriggerAction?) -> Config,
     private val name: Text,
 ) : ControllerWidget.Property<Config, WidgetTriggerAction?>(getValue, setValue) {
-    private val textFactory: TextFactory = TextFactoryFactory.of()
-
     private val keyClickBindingProperty = keyBindingProperty(
         getKeyBinding = { (it as? WidgetTriggerAction.Key.Click)?.keyBinding },
         setKeyBinding = { config, value ->
@@ -1193,7 +1175,7 @@ class TriggerActionProperty<Config : ControllerWidget>(
                 else -> config
             }
         },
-        name = textFactory.of(Texts.WIDGET_TRIGGER_KEY_BINDING),
+        name = Text.translatable(Texts.WIDGET_TRIGGER_KEY_BINDING),
     )
 
     private val keyLockBindingProperty = keyBindingProperty(
@@ -1204,7 +1186,7 @@ class TriggerActionProperty<Config : ControllerWidget>(
                 else -> config
             }
         },
-        name = textFactory.of(Texts.WIDGET_TRIGGER_KEY_BINDING),
+        name = Text.translatable(Texts.WIDGET_TRIGGER_KEY_BINDING),
     )
 
     @Composable
@@ -1499,8 +1481,8 @@ class TriggerActionProperty<Config : ControllerWidget>(
                                         modifier = Modifier.verticalScroll(),
                                         onItemSelected = { expanded = false },
                                         items = presetControlInfo.customConditions.conditions.map { condition ->
-                                            val name = condition.name?.let { textFactory.literal(it) }
-                                                ?: textFactory.of(Texts.SCREEN_LAYER_EDITOR_CUSTOM_CONDITION_UNNAMED)
+                                            val name = condition.name?.let { Text.literal(it) }
+                                                ?: Text.translatable(Texts.SCREEN_LAYER_EDITOR_CUSTOM_CONDITION_UNNAMED)
                                             Pair(name) {
                                                 onConfigChanged(
                                                     setValue(
@@ -1547,7 +1529,7 @@ class DoubleClickTriggerProperty<Config : ControllerWidget>(
     private val actionProperty = triggerActionProperty(
         getAction = { it.action },
         setAction = { config, value -> config.copy(action = value) },
-        name = TextFactory.current.of(Texts.WIDGET_DOUBLE_TRIGGER_ACTION)
+        name = Text.translatable(Texts.WIDGET_DOUBLE_TRIGGER_ACTION)
     )
 
     @Composable
@@ -1615,25 +1597,25 @@ class ButtonTriggerProperty<Config : ControllerWidget>(
     private val downTriggerActionProperty = triggerActionProperty(
         getAction = { it.down },
         setAction = { config, value -> config.copy(down = value) },
-        name = TextFactory.current.of(Texts.WIDGET_TRIGGER_DOWN)
+        name = Text.translatable(Texts.WIDGET_TRIGGER_DOWN)
     )
 
     private val pressKeyBindingProperty = keyBindingProperty(
         getKeyBinding = { it.press },
         setKeyBinding = { config, value -> config.copy(press = value) },
-        name = TextFactory.current.of(Texts.WIDGET_TRIGGER_PRESS)
+        name = Text.translatable(Texts.WIDGET_TRIGGER_PRESS)
     )
 
     private val releaseTriggerActionProperty = triggerActionProperty(
         getAction = { it.release },
         setAction = { config, value -> config.copy(release = value) },
-        name = TextFactory.current.of(Texts.WIDGET_TRIGGER_RELEASE)
+        name = Text.translatable(Texts.WIDGET_TRIGGER_RELEASE)
     )
 
     private val doubleClickTriggerActionProperty = doubleClickActionProperty(
         getAction = { it.doubleClick },
         setAction = { config, value -> config.copy(doubleClick = value) },
-        name = TextFactory.current.of(Texts.WIDGET_TRIGGER_DOUBLE_CLICK)
+        name = Text.translatable(Texts.WIDGET_TRIGGER_DOUBLE_CLICK)
     )
 
     @Composable
@@ -1668,8 +1650,6 @@ class DPadActiveTextureProperty<Config : ControllerWidget>(
     getValue: (Config) -> DPadExtraButton.ActiveTexture,
     setValue: (Config, DPadExtraButton.ActiveTexture) -> Config,
 ) : ControllerWidget.Property<Config, DPadExtraButton.ActiveTexture>(getValue, setValue) {
-    private val textFactory: TextFactory = TextFactoryFactory.of()
-
     private val textureProperty = textureCoordinateProperty(
         getCoordinate = { (it as? DPadExtraButton.ActiveTexture.Texture)?.texture },
         setCoordinate = { texture, value ->
@@ -1678,7 +1658,7 @@ class DPadActiveTextureProperty<Config : ControllerWidget>(
                 else -> texture
             }
         },
-        name = textFactory.of(Texts.WIDGET_DPAD_PROPERTY_EXTRA_BUTTON_ACTIVE_TEXTURE_TYPE),
+        name = Text.translatable(Texts.WIDGET_DPAD_PROPERTY_EXTRA_BUTTON_ACTIVE_TEXTURE_TYPE),
     )
 
     @Composable
@@ -1714,7 +1694,7 @@ class DPadActiveTextureProperty<Config : ControllerWidget>(
                     DropdownItemList(
                         modifier = Modifier.verticalScroll(),
                         items = DPadExtraButton.ActiveTexture.Type.entries,
-                        textProvider = { textFactory.of(it.nameId) },
+                        textProvider = { Text.translatable(it.nameId) },
                         selectedIndex = DPadExtraButton.ActiveTexture.Type.entries.indexOf(value.type),
                         onItemSelected = {
                             val item = DPadExtraButton.ActiveTexture.Type.entries[it]
@@ -1759,19 +1739,17 @@ class DPadButtonInfoProperty<Config : ControllerWidget>(
     getValue: (Config) -> DPadExtraButton.ButtonInfo,
     setValue: (Config, DPadExtraButton.ButtonInfo) -> Config,
 ) : ControllerWidget.Property<Config, DPadExtraButton.ButtonInfo>(getValue, setValue) {
-    private val textFactory: TextFactory = TextFactoryFactory.of()
-
     private val sizeProperty = intProperty(
         getInt = { it.size },
         setInt = { config, value -> config.copy(size = value) },
         range = 12..22,
-        name = textFactory.of(Texts.WIDGET_DPAD_PROPERTY_EXTRA_BUTTON_SIZE)
+        name = Text.translatable(Texts.WIDGET_DPAD_PROPERTY_EXTRA_BUTTON_SIZE)
     )
 
     private val textureProperty = textureCoordinateProperty(
         getCoordinate = { it.texture },
         setCoordinate = { config, value -> config.copy(texture = value) },
-        name = textFactory.of(Texts.WIDGET_DPAD_PROPERTY_EXTRA_BUTTON_TEXTURE)
+        name = Text.translatable(Texts.WIDGET_DPAD_PROPERTY_EXTRA_BUTTON_TEXTURE)
     )
 
     private val activeTextureProperty = dpadActiveTextureProperty(
@@ -1805,8 +1783,6 @@ class DPadExtraButtonProperty<Config : ControllerWidget>(
     getValue: (Config) -> DPadExtraButton,
     setValue: (Config, DPadExtraButton) -> Config,
 ) : ControllerWidget.Property<Config, DPadExtraButton>(getValue, setValue) {
-    private val textFactory: TextFactory = TextFactoryFactory.of()
-
     private val normalTriggerProperty = triggerProperty(
         getTrigger = { (it as? DPadExtraButton.Normal)?.trigger },
         setTrigger = { config, value ->
@@ -1870,7 +1846,7 @@ class DPadExtraButtonProperty<Config : ControllerWidget>(
                 else -> config
             }
         },
-        name = textFactory.of(Texts.WIDGET_DPAD_PROPERTY_EXTRA_BUTTON_SWIPE_LOCKING_KEY_BINDING),
+        name = Text.translatable(Texts.WIDGET_DPAD_PROPERTY_EXTRA_BUTTON_SWIPE_LOCKING_KEY_BINDING),
     )
 
     private val swipeLockingButtonInfoProperty = dpadButtonInfoProperty(
@@ -1896,7 +1872,6 @@ class DPadExtraButtonProperty<Config : ControllerWidget>(
         @Suppress("UNCHECKED_CAST")
         val widgetConfig = config as Config
         val value = getValue(widgetConfig)
-        val textFactory = TextFactoryFactory.of()
 
         @Composable
         fun <Config : ControllerWidget> ControllerWidget.Property<Config, *>.controller() = controller(
@@ -1921,7 +1896,7 @@ class DPadExtraButtonProperty<Config : ControllerWidget>(
                     DropdownItemList(
                         modifier = Modifier.verticalScroll(),
                         items = DPadExtraButton.Type.entries,
-                        textProvider = { textFactory.of(it.nameId) },
+                        textProvider = { Text.translatable(it.nameId) },
                         selectedIndex = DPadExtraButton.Type.entries.indexOf(value.type),
                         onItemSelected = {
                             val item = DPadExtraButton.Type.entries[it]

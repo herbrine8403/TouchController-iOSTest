@@ -1,4 +1,4 @@
-package top.fifthlight.touchcontroller.common.layout.widget
+package top.fifthlight.touchcontroller.common.layout.widget.game
 
 import top.fifthlight.combine.paint.*
 import top.fifthlight.touchcontroller.common.gal.paint.CrosshairRenderer
@@ -9,7 +9,7 @@ fun Context.Crosshair() {
     val status = result.crosshairStatus ?: return
     val crosshairRenderer: CrosshairRenderer = CrosshairRendererFactory.of()
 
-    val config = touchRingConfig
+    val config = config.touchRingConfig
     drawQueue.enqueue { canvas ->
         canvas.withTranslate(status.position * windowScaledSize) {
             if (status.breakPercent > 0f) {

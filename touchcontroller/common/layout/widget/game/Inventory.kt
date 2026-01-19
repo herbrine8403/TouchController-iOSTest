@@ -1,4 +1,4 @@
-package top.fifthlight.touchcontroller.common.layout.widget
+package top.fifthlight.touchcontroller.common.layout.widget.game
 
 import top.fifthlight.data.IntSize
 import top.fifthlight.touchcontroller.common.gal.PlayerHandleFactory
@@ -39,7 +39,7 @@ private fun Context.InventorySlot(index: Int) {
                 val previousState = state.previousState
                 if (previousState is PointerState.InventorySlot && previousState.index == index) {
                     slot.select = true
-                    if (gameFeatures.dualWield || regularConfig.quickHandSwap) {
+                    if (gameFeatures.dualWield || config.quickHandSwap) {
                         if (player.currentSelectedSlot == index) {
                             if (status.quickHandSwap.click(timer.clientTick)) {
                                 keyBindingHandler.getState(DefaultKeyBindingType.SWAP_HANDS).clicked = true

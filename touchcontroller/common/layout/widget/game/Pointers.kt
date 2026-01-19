@@ -1,4 +1,4 @@
-package top.fifthlight.touchcontroller.common.layout.widget
+package top.fifthlight.touchcontroller.common.layout.widget.game
 
 import top.fifthlight.combine.paint.Colors
 import top.fifthlight.combine.paint.drawCenteredText

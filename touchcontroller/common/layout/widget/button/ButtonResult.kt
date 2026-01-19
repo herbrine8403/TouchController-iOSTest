@@ -1,4 +1,4 @@
-package top.fifthlight.touchcontroller.common.layout.widget.data
+package top.fifthlight.touchcontroller.common.layout.widget.button
 
 data class ButtonResult(
     val newPointer: Boolean = false,

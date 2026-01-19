@@ -1,4 +1,4 @@
-package top.fifthlight.touchcontroller.common.layout.widget
+package top.fifthlight.touchcontroller.common.layout.widget.game
 
 import top.fifthlight.touchcontroller.common.config.layout.LayoutLayer
 import top.fifthlight.touchcontroller.common.layout.Context

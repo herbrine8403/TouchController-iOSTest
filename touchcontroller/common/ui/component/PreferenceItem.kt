@@ -9,10 +9,10 @@ import top.fifthlight.combine.modifier.placement.fillMaxWidth
 import top.fifthlight.combine.modifier.placement.minHeight
 import top.fifthlight.combine.paint.Color
 import top.fifthlight.combine.paint.Colors
-import top.fifthlight.combine.widget.base.layout.Column
-import top.fifthlight.combine.widget.base.layout.ColumnScope
-import top.fifthlight.combine.widget.base.layout.Row
-import top.fifthlight.combine.widget.base.layout.RowScope
+import top.fifthlight.combine.widget.layout.Column
+import top.fifthlight.combine.widget.layout.ColumnScope
+import top.fifthlight.combine.widget.layout.Row
+import top.fifthlight.combine.widget.layout.RowScope
 import top.fifthlight.combine.widget.ui.ColorPicker
 import top.fifthlight.combine.widget.ui.IntSlider
 import top.fifthlight.combine.widget.ui.Slider

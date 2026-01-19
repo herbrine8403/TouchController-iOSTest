@@ -6,6 +6,7 @@ load("//rule/combine:minecraft.bzl", "atlas_pack", "kt_vanilla_lib", "vanilla_pa
 kt_texture_lib(
     name = "texture_lib",
     dep = "//combine/theme/blackstone/texture",
+    visibility = ["//visibility:public"],
 )
 
 kt_merge_library(

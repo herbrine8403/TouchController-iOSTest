@@ -2,7 +2,7 @@ package top.fifthlight.touchcontroller.common.control.action
 
 import kotlinx.serialization.Serializable
 import top.fifthlight.touchcontroller.common.layout.Context
-import top.fifthlight.touchcontroller.common.layout.widget.data.ButtonResult
+import top.fifthlight.touchcontroller.common.layout.widget.button.ButtonResult
 import kotlin.uuid.Uuid
 
 @Serializable

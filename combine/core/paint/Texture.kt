@@ -11,7 +11,7 @@ interface Texture : Drawable {
     fun Canvas.draw(
         dstRect: Rect,
         tint: Color = Colors.WHITE,
-        srcRect: Rect,
+        srcRect: Rect = Rect.ONE,
     )
 
     fun Canvas.draw(

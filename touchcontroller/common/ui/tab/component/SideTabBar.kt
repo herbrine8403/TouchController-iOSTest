@@ -1,7 +1,8 @@
-package top.fifthlight.touchcontroller.common.ui.component
+package top.fifthlight.touchcontroller.common.ui.tab.component
 
 import androidx.compose.runtime.Composable
 import cafe.adriel.voyager.navigator.LocalNavigator
+import sun.tools.jconsole.Tab
 import top.fifthlight.combine.layout.Arrangement
 import top.fifthlight.combine.modifier.Modifier
 import top.fifthlight.combine.modifier.drawing.border
@@ -9,10 +10,9 @@ import top.fifthlight.combine.modifier.placement.fillMaxWidth
 import top.fifthlight.combine.modifier.placement.padding
 import top.fifthlight.combine.modifier.placement.width
 import top.fifthlight.combine.modifier.scroll.verticalScroll
-import top.fifthlight.combine.widget.base.layout.Column
+import top.fifthlight.combine.widget.layout.Column
 import top.fifthlight.combine.widget.ui.Text
 import top.fifthlight.touchcontroller.assets.Textures
-import top.fifthlight.touchcontroller.common.ui.tab.Tab
 import top.fifthlight.touchcontroller.common.ui.tab.TabGroup
 import top.fifthlight.touchcontroller.common.ui.tab.TabOptions
 

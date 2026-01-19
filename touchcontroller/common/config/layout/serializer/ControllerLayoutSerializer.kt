@@ -1,4 +1,4 @@
-package top.fifthlight.touchcontroller.common.config.serializer
+package top.fifthlight.touchcontroller.common.config.layout.serializer
 
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.serialization.ExperimentalSerializationApi
@@ -10,7 +10,7 @@ import kotlinx.serialization.descriptors.serialDescriptor
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.serializer
-import top.fifthlight.touchcontroller.common.config.ControllerLayout
+import top.fifthlight.touchcontroller.common.config.layout.ControllerLayout
 import top.fifthlight.touchcontroller.common.config.layout.LayoutLayer
 import top.fifthlight.touchcontroller.common.control.ControllerWidget
 

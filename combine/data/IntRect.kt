@@ -29,8 +29,8 @@ private class IntRectIterator(
 
 @Serializable
 data class IntRect(
-    val offset: IntOffset,
-    val size: IntSize
+    val offset: IntOffset = IntOffset.ZERO,
+    val size: IntSize = IntSize.ZERO,
 ) : Iterable<IntOffset> {
     val left
         get() = offset.x

@@ -8,6 +8,7 @@ texture(
     srcs = glob(
         include = [
             "icon/*.png",
+            "background/*.png",
         ],
         allow_empty = True,
         exclude = ["**/*.9.png"],
@@ -36,6 +37,7 @@ texture_lib(
 kt_texture_lib(
     name = "texture_lib",
     dep = ":texture",
+    visibility = ["//touchcontroller:__subpackages__"],
 )
 
 kt_control_texture_set_lib(

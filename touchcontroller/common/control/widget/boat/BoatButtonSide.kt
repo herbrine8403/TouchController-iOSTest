@@ -1,4 +1,4 @@
-package top.fifthlight.touchcontroller.common.control.property
+package top.fifthlight.touchcontroller.common.control.widget.boat
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

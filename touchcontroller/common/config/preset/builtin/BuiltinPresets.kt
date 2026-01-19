@@ -1,33 +1,49 @@
 package top.fifthlight.touchcontroller.common.config.preset.builtin
 
+import top.fifthlight.touchcontroller.assets.TextureSet
+import top.fifthlight.touchcontroller.common.config.layout.controllerLayoutOf
+import top.fifthlight.touchcontroller.common.config.preset.LayoutPreset
+import top.fifthlight.touchcontroller.common.config.preset.builtin.key.BuiltinPresetKey
+import top.fifthlight.touchcontroller.common.config.preset.info.PresetControlInfo
+import top.fifthlight.touchcontroller.common.control.property.ButtonActiveTexture
+import top.fifthlight.touchcontroller.common.control.property.ButtonTexture
+import top.fifthlight.touchcontroller.common.control.widget.boat.BoatButton
+import top.fifthlight.touchcontroller.common.control.widget.custom.CustomWidget
+import top.fifthlight.touchcontroller.common.control.widget.dpad.DPad
+import top.fifthlight.touchcontroller.common.control.widget.joystick.Joystick
+
 object BuiltinPresets {
-    private fun generate(key: BuiltInPresetKey) {
-        val layers = BuiltinLayers.Companion[textureSet]
-        val sprintButton = when (sprintButtonLocation) {
-            SprintButtonLocation.NONE -> null
-            SprintButtonLocation.RIGHT_TOP -> layers.sprintRightTopButton
-            SprintButtonLocation.RIGHT -> layers.sprintRightButton
+    fun generate(key: BuiltinPresetKey): LayoutPreset {
+        val textureSet = key.textureSet
+        val layers = BuiltinLayers[textureSet]
+        val sprintButton = when (key.sprintButtonLocation) {
+            BuiltinPresetKey.SprintButtonLocation.NONE -> null
+            BuiltinPresetKey.SprintButtonLocation.RIGHT_TOP -> layers.sprintRightTopButton
+            BuiltinPresetKey.SprintButtonLocation.RIGHT -> layers.sprintRightButton
         }
+        val controlStyle = key.controlStyle
         return LayoutPreset(
             name = "Built-in preset",
             controlInfo = PresetControlInfo(
-                splitControls = controlStyle is ControlStyle.SplitControls,
-                disableCrosshair = controlStyle !is ControlStyle.SplitControls,
-                disableTouchGesture = controlStyle is ControlStyle.SplitControls && controlStyle.buttonInteraction,
+                splitControls = controlStyle is BuiltinPresetKey.ControlStyle.SplitControls,
+                disableCrosshair = controlStyle !is BuiltinPresetKey.ControlStyle.SplitControls,
+                disableTouchGesture = controlStyle is BuiltinPresetKey.ControlStyle.SplitControls && controlStyle.buttonInteraction,
             ),
             layout = controllerLayoutOf(
-                if (useVanillaChat) {
+                if (key.useVanillaChat) {
                     layers.vanillaChatControlLayer
                 } else {
                     layers.controlLayer
                 },
-                layers.interactionLayer.takeIf { controlStyle is ControlStyle.SplitControls && controlStyle.buttonInteraction },
-                layers.normalLayer.getByKey(this) + sprintButton,
-                layers.swimmingLayer.getByKey(this),
-                layers.flyingLayer.getByKey(this),
-                layers.onBoatLayer.getByKey(this),
-                layers.onMinecartLayer.getByKey(this),
-                layers.ridingOnEntityLayer.getByKey(this),
+                layers.interactionLayer.takeIf {
+                    controlStyle is BuiltinPresetKey.ControlStyle.SplitControls && controlStyle.buttonInteraction
+                },
+                layers.normalLayer.getByKey(key) + sprintButton,
+                layers.swimmingLayer.getByKey(key),
+                layers.flyingLayer.getByKey(key),
+                layers.onBoatLayer.getByKey(key),
+                layers.onMinecartLayer.getByKey(key),
+                layers.ridingOnEntityLayer.getByKey(key),
             )
         ).mapWidgets { widget ->
             when (widget) {
@@ -52,8 +68,8 @@ object BuiltinPresets {
                         else -> texture
                     }
                     widget.copy(
-                        normalTexture = scaleTexture(scale, widget.normalTexture),
-                        activeTexture = scaleActiveTexture(scale, widget.activeTexture),
+                        normalTexture = scaleTexture(key.scale, widget.normalTexture),
+                        activeTexture = scaleActiveTexture(key.scale, widget.activeTexture),
                     )
                 }
 
@@ -61,7 +77,7 @@ object BuiltinPresets {
                     val isClassic =
                         textureSet == TextureSet.TextureSetKey.CLASSIC || textureSet == TextureSet.TextureSetKey.CLASSIC_EXTENSION
                     widget.copy(
-                        size = widget.size * scale,
+                        size = widget.size * key.scale,
                         textureSet = textureSet,
                         padding = if (isClassic) 4 else -1,
                         showBackwardButton = !isClassic,
@@ -69,18 +85,20 @@ object BuiltinPresets {
                 }
 
                 is Joystick -> widget.copy(
-                    size = widget.size * scale,
-                    stickSize = widget.stickSize * scale,
+                    size = widget.size * key.scale,
+                    stickSize = widget.stickSize * key.scale,
                     textureSet = textureSet,
                 )
 
                 is BoatButton -> widget.copy(
-                    size = widget.size * scale,
+                    size = widget.size * key.scale,
                     textureSet = textureSet,
                 )
+
+                else -> widget
             }.cloneBase(
-                opacity = opacity,
-                offset = (widget.offset.toOffset() * scale).toIntOffset(),
+                opacity = key.opacity,
+                offset = (widget.offset.toOffset() * key.scale).toIntOffset(),
             )
         }
     }

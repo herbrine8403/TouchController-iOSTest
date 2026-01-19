@@ -1,12 +1,11 @@
-package top.fifthlight.touchcontroller.common.control.widget
+package top.fifthlight.touchcontroller.common.control.widget.custom
 
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.plus
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import top.fifthlight.combine.data.TextFactory
-import top.fifthlight.combine.data.TextFactoryFactory
+import top.fifthlight.combine.data.Text
 import top.fifthlight.combine.paint.Color
 import top.fifthlight.combine.paint.Colors
 import top.fifthlight.combine.paint.TextMeasurer
@@ -16,22 +15,22 @@ import top.fifthlight.data.IntPadding
 import top.fifthlight.data.IntRect
 import top.fifthlight.data.IntSize
 import top.fifthlight.touchcontroller.assets.Texts
+import top.fifthlight.touchcontroller.common.control.BooleanProperty
+import top.fifthlight.touchcontroller.common.control.ButtonActiveTextureProperty
+import top.fifthlight.touchcontroller.common.control.ButtonTextureProperty
+import top.fifthlight.touchcontroller.common.control.ButtonTriggerProperty
+import top.fifthlight.touchcontroller.common.control.ColorProperty
 import top.fifthlight.touchcontroller.common.control.ControllerWidget
+import top.fifthlight.touchcontroller.common.control.StringProperty
 import top.fifthlight.touchcontroller.common.control.action.ButtonTrigger
-import top.fifthlight.touchcontroller.common.control.property.BooleanProperty
 import top.fifthlight.touchcontroller.common.control.property.ButtonActiveTexture
-import top.fifthlight.touchcontroller.common.control.property.ButtonActiveTextureProperty
 import top.fifthlight.touchcontroller.common.control.property.ButtonTexture
-import top.fifthlight.touchcontroller.common.control.property.ButtonTextureProperty
-import top.fifthlight.touchcontroller.common.control.property.ButtonTriggerProperty
-import top.fifthlight.touchcontroller.common.control.property.ColorProperty
-import top.fifthlight.touchcontroller.common.control.property.StringProperty
-import top.fifthlight.touchcontroller.common.util.uuid.fastRandomUuid
-import top.fifthlight.touchcontroller.common.helper.ColorHelper
-import top.fifthlight.touchcontroller.common.layout.Align
-import top.fifthlight.touchcontroller.common.layout.Button
 import top.fifthlight.touchcontroller.common.layout.Context
 import top.fifthlight.touchcontroller.common.layout.align.Align
+import top.fifthlight.touchcontroller.common.layout.widget.Texture
+import top.fifthlight.touchcontroller.common.layout.widget.button.Button
+import top.fifthlight.touchcontroller.common.util.color.ColorHelper
+import top.fifthlight.touchcontroller.common.util.uuid.fastRandomUuid
 import kotlin.uuid.Uuid
 
 @Serializable
@@ -48,13 +47,12 @@ data class CustomWidget(
     override val id: Uuid = fastRandomUuid(),
     override val name: Name = Name.Translatable(Texts.WIDGET_CUSTOM_BUTTON_NAME),
     override val align: Align = Align.RIGHT_BOTTOM,
-    override val offset: IntOffset = IntOffset.ZERO,
+    override val offset: IntOffset = IntOffset.Companion.ZERO,
     override val opacity: Float = 1f,
     override val lockMoving: Boolean = false,
 ) : ControllerWidget() {
     companion object {
         private val textMeasurer: TextMeasurer = TextMeasurerFactory.of()
-        private val textFactory: TextFactory = TextFactoryFactory.of()
 
         @Suppress("UNCHECKED_CAST")
         private val _properties = properties + persistentListOf<Property<CustomWidget, *>>(
@@ -63,49 +61,49 @@ data class CustomWidget(
                 setValue = { config, value ->
                     config.copy(swipeTrigger = value)
                 },
-                name = textFactory.of(Texts.WIDGET_CUSTOM_BUTTON_SWIPE_TRIGGER),
+                name = Text.Companion.translatable(Texts.WIDGET_CUSTOM_BUTTON_SWIPE_TRIGGER),
             ),
             BooleanProperty(
                 getValue = { it.grabTrigger },
                 setValue = { config, value ->
                     config.copy(grabTrigger = value)
                 },
-                name = textFactory.of(Texts.WIDGET_CUSTOM_BUTTON_GRAB_TRIGGER),
+                name = Text.Companion.translatable(Texts.WIDGET_CUSTOM_BUTTON_GRAB_TRIGGER),
             ),
             BooleanProperty(
                 getValue = { it.moveView },
                 setValue = { config, value ->
                     config.copy(moveView = value)
                 },
-                name = textFactory.of(Texts.WIDGET_CUSTOM_BUTTON_MOVE_VIEW),
+                name = Text.Companion.translatable(Texts.WIDGET_CUSTOM_BUTTON_MOVE_VIEW),
             ),
             StringProperty(
                 getValue = { it.centerText ?: "" },
                 setValue = { config, value ->
                     config.copy(centerText = value)
                 },
-                name = textFactory.of(Texts.WIDGET_CUSTOM_BUTTON_CENTER_TEXT),
+                name = Text.Companion.translatable(Texts.WIDGET_CUSTOM_BUTTON_CENTER_TEXT),
             ),
             ColorProperty(
                 getValue = { it.textColor },
                 setValue = { config, value ->
                     config.copy(textColor = value)
                 },
-                name = textFactory.of(Texts.WIDGET_CUSTOM_BUTTON_TEXT_COLOR),
+                name = Text.Companion.translatable(Texts.WIDGET_CUSTOM_BUTTON_TEXT_COLOR),
             ),
             ButtonTextureProperty(
                 getValue = { it.normalTexture },
                 setValue = { config, value ->
                     config.copy(normalTexture = value)
                 },
-                name = textFactory.of(Texts.WIDGET_CUSTOM_BUTTON_NORMAL_TEXTURE),
+                name = Text.Companion.translatable(Texts.WIDGET_CUSTOM_BUTTON_NORMAL_TEXTURE),
             ),
             ButtonActiveTextureProperty(
                 getValue = { it.activeTexture },
                 setValue = { config, value ->
                     config.copy(activeTexture = value)
                 },
-                name = textFactory.of(Texts.WIDGET_CUSTOM_BUTTON_ACTIVE_TEXTURE),
+                name = Text.Companion.translatable(Texts.WIDGET_CUSTOM_BUTTON_ACTIVE_TEXTURE),
             ),
             ButtonTriggerProperty(
                 getValue = { it.action },
@@ -120,7 +118,7 @@ data class CustomWidget(
         get() = _properties
 
     private fun ButtonTexture.getSize(): Pair<IntSize, IntOffset> {
-        fun measureCenterText() = centerText?.takeIf { it.isNotEmpty() }?.let(textMeasurer::measure) ?: IntSize.ZERO
+        fun measureCenterText() = centerText?.takeIf { it.isNotEmpty() }?.let(textMeasurer::measure) ?: IntSize.Companion.ZERO
         return when (val texture = this) {
             is ButtonTexture.Empty -> {
                 val textSize = measureCenterText()
@@ -240,14 +238,15 @@ data class CustomWidget(
                 val renderText = centerText?.takeIf { it.isNotEmpty() }
                 val (textureSize, textOffset) = buttonTexture.getSize()
                 drawQueue.enqueue { canvas ->
-                    canvas.drawNinePatchTexture(
-                        texture = buttonTexture.texture.texture,
-                        dstRect = IntRect(
-                            offset = IntOffset.ZERO,
-                            size = textureSize
-                        ),
-                        tint = ColorHelper.mixOpacity(tint, opacity),
-                    )
+                    with(buttonTexture.texture.texture) {
+                        canvas.draw(
+                            dstRect = IntRect(
+                                offset = IntOffset.Companion.ZERO,
+                                size = textureSize
+                            ),
+                            tint = ColorHelper.mixOpacity(tint, opacity),
+                        )
+                    }
                     renderText?.let { text ->
                         canvas.drawText(
                             offset = textOffset,

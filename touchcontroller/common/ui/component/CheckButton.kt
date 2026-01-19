@@ -3,14 +3,15 @@ package top.fifthlight.touchcontroller.common.ui.component
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.staticCompositionLocalOf
 import top.fifthlight.combine.modifier.Modifier
+import top.fifthlight.combine.theme.blackstone.BlackstoneTextures
 import top.fifthlight.combine.ui.style.ColorTheme
 import top.fifthlight.combine.ui.style.DrawableSet
-import top.fifthlight.combine.widget.base.layout.BoxScope
+import top.fifthlight.combine.widget.layout.BoxScope
 import top.fifthlight.combine.widget.ui.Button
-import top.fifthlight.combine.widget.ui.defaultButtonDrawable
 import top.fifthlight.data.IntPadding
 import top.fifthlight.data.IntSize
-import top.fifthlight.touchcontroller.assets.Textures
+
+// TODO: should use some theme system
 
 data class CheckButtonDrawables(
     val unchecked: DrawableSet,
@@ -24,18 +25,18 @@ data class CheckButtonColors(
 
 val tabButtonDrawable = CheckButtonDrawables(
     unchecked = DrawableSet(
-        normal = Textures.WIDGET_TAB_TAB,
-        focus = Textures.WIDGET_TAB_TAB_HOVER,
-        hover = Textures.WIDGET_TAB_TAB_HOVER,
-        active = Textures.WIDGET_TAB_TAB_ACTIVE,
-        disabled = Textures.WIDGET_TAB_TAB_DISABLED,
+        normal = BlackstoneTextures.widget_tab_tab,
+        focus = BlackstoneTextures.widget_tab_tab_hover,
+        hover = BlackstoneTextures.widget_tab_tab_hover,
+        active = BlackstoneTextures.widget_tab_tab_active,
+        disabled = BlackstoneTextures.widget_tab_tab_disabled,
     ),
     checked = DrawableSet(
-        normal = Textures.WIDGET_TAB_TAB_PRESSLOCK,
-        focus = Textures.WIDGET_TAB_TAB_PRESSLOCK_HOVER,
-        hover = Textures.WIDGET_TAB_TAB_PRESSLOCK_HOVER,
-        active = Textures.WIDGET_TAB_TAB_ACTIVE,
-        disabled = Textures.WIDGET_TAB_TAB_DISABLED,
+        normal = BlackstoneTextures.widget_tab_tab_presslock,
+        focus = BlackstoneTextures.widget_tab_tab_presslock_hover,
+        hover = BlackstoneTextures.widget_tab_tab_presslock_hover,
+        active = BlackstoneTextures.widget_tab_tab_active,
+        disabled = BlackstoneTextures.widget_tab_tab_disabled,
     ),
 )
 
@@ -46,18 +47,18 @@ val tabButtonColors = CheckButtonColors(
 
 val listButtonDrawable = CheckButtonDrawables(
     unchecked = DrawableSet(
-        normal = Textures.WIDGET_LIST_LIST,
-        focus = Textures.WIDGET_LIST_LIST_HOVER,
-        hover = Textures.WIDGET_LIST_LIST_HOVER,
-        active = Textures.WIDGET_LIST_LIST_ACTIVE,
-        disabled = Textures.WIDGET_LIST_LIST_DISABLED,
+        normal = BlackstoneTextures.widget_list_list,
+        focus = BlackstoneTextures.widget_list_list_hover,
+        hover = BlackstoneTextures.widget_list_list_hover,
+        active = BlackstoneTextures.widget_list_list_active,
+        disabled = BlackstoneTextures.widget_list_list_disabled,
     ),
     checked = DrawableSet(
-        normal = Textures.WIDGET_LIST_LIST_PRESSLOCK,
-        focus = Textures.WIDGET_LIST_LIST_PRESSLOCK_HOVER,
-        hover = Textures.WIDGET_LIST_LIST_PRESSLOCK_HOVER,
-        active = Textures.WIDGET_LIST_LIST_ACTIVE,
-        disabled = Textures.WIDGET_LIST_LIST_DISABLED,
+        normal = BlackstoneTextures.widget_list_list_presslock,
+        focus = BlackstoneTextures.widget_list_list_presslock_hover,
+        hover = BlackstoneTextures.widget_list_list_presslock_hover,
+        active = BlackstoneTextures.widget_list_list_active,
+        disabled = BlackstoneTextures.widget_list_list_disabled,
     ),
 )
 
@@ -67,12 +68,17 @@ val listButtonColors = CheckButtonColors(
 )
 
 val checkButtonDrawable = CheckButtonDrawables(
-    unchecked = defaultButtonDrawable,
-    checked = defaultButtonDrawable.copy(
-        normal = Textures.WIDGET_BUTTON_BUTTON_PRESSLOCK,
-        hover = Textures.WIDGET_BUTTON_BUTTON_PRESSLOCK_HOVER,
-        focus = Textures.WIDGET_BUTTON_BUTTON_PRESSLOCK_HOVER,
-        active = Textures.WIDGET_BUTTON_BUTTON_PRESSLOCK_ACTIVE,
+    unchecked = DrawableSet(
+        normal = BlackstoneTextures.widget_button_button,
+        hover = BlackstoneTextures.widget_button_button_hover,
+        focus = BlackstoneTextures.widget_button_button_hover,
+        active = BlackstoneTextures.widget_button_button_active,
+    ),
+    checked = DrawableSet(
+        normal = BlackstoneTextures.widget_button_button_presslock,
+        hover = BlackstoneTextures.widget_button_button_presslock_hover,
+        focus = BlackstoneTextures.widget_button_button_presslock_hover,
+        active = BlackstoneTextures.widget_button_button_presslock_active,
     ),
 )
 
