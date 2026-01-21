@@ -1,4 +1,4 @@
-package top.fifthlight.touchcontroller.common.ui.state
+package top.fifthlight.touchcontroller.common.ui.chat.state
 
 import top.fifthlight.combine.paint.Color
 import top.fifthlight.combine.paint.Colors

@@ -1,25 +1,25 @@
-package top.fifthlight.touchcontroller.common.ui.model
+package top.fifthlight.touchcontroller.common.ui.chat.model
 
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.getAndUpdate
 import kotlinx.coroutines.launch
-import org.koin.core.component.inject
 import top.fifthlight.combine.paint.Color
 import top.fifthlight.combine.paint.Colors
-import top.fifthlight.touchcontroller.common.config.GlobalConfigHolder
-import top.fifthlight.touchcontroller.common.gal.ChatMessageProvider
-import top.fifthlight.touchcontroller.common.ui.state.ChatScreenState
+import top.fifthlight.touchcontroller.common.config.holder.GlobalConfigHolder
+import top.fifthlight.touchcontroller.common.gal.chat.ChatMessageProvider
+import top.fifthlight.touchcontroller.common.gal.chat.ChatMessageProviderFactory
+import top.fifthlight.touchcontroller.common.ui.chat.state.ChatScreenState
+import top.fifthlight.touchcontroller.common.ui.model.TouchControllerScreenModel
 
 class ChatScreenModel : TouchControllerScreenModel() {
-    private val configHolder: GlobalConfigHolder by inject()
-    private val chatMessageProvider: ChatMessageProvider by inject()
-    private val _uiState = MutableStateFlow(ChatScreenState())
+    private val chatMessageProvider: ChatMessageProvider = ChatMessageProviderFactory.of()
+    private val _uiState: MutableStateFlow<ChatScreenState> = MutableStateFlow(ChatScreenState())
     val uiState = _uiState.asStateFlow()
 
     init {
         coroutineScope.launch {
-            configHolder.config.collect { config ->
+            GlobalConfigHolder.config.collect { config ->
                 _uiState.getAndUpdate {
                     it.copy(
                         lineSpacing = config.chat.lineSpacing,
@@ -57,13 +57,13 @@ class ChatScreenModel : TouchControllerScreenModel() {
     }
 
     fun updateLineSpacing(lineSpacing: Int) {
-        configHolder.updateConfig {
+        GlobalConfigHolder.updateConfig {
             copy(chat = chat.copy(lineSpacing = lineSpacing))
         }
     }
 
     fun updateTextColor(textColor: Color) {
-        configHolder.updateConfig {
+        GlobalConfigHolder.updateConfig {
             copy(chat = chat.copy(textColor = textColor))
         }
     }

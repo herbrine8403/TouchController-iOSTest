@@ -1,11 +1,7 @@
-package top.fifthlight.touchcontroller.common.ui.screen
+package top.fifthlight.touchcontroller.common.ui.chat.screen
 
 import androidx.compose.runtime.*
-import org.koin.compose.koinInject
-import org.koin.core.context.GlobalContext
-import top.fifthlight.combine.data.LocalTextFactory
 import top.fifthlight.combine.data.Text
-import top.fifthlight.combine.data.TextFactory
 import top.fifthlight.combine.input.MutableInteractionSource
 import top.fifthlight.combine.layout.Alignment
 import top.fifthlight.combine.layout.Arrangement
@@ -21,38 +17,20 @@ import top.fifthlight.combine.modifier.placement.width
 import top.fifthlight.combine.modifier.scroll.verticalScroll
 import top.fifthlight.combine.paint.Colors
 import top.fifthlight.combine.screen.ScreenFactory
-import top.fifthlight.combine.widget.base.layout.Column
-import top.fifthlight.combine.widget.base.layout.Row
-import top.fifthlight.combine.widget.base.layout.Spacer
-import top.fifthlight.combine.widget.ui.AlertDialog
-import top.fifthlight.combine.widget.ui.Button
-import top.fifthlight.combine.widget.ui.DropdownItemList
-import top.fifthlight.combine.widget.ui.EditText
-import top.fifthlight.combine.widget.ui.GuideButton
-import top.fifthlight.combine.widget.ui.Icon
-import top.fifthlight.combine.widget.ui.IconButton
-import top.fifthlight.combine.widget.ui.IntSlider
-import top.fifthlight.combine.widget.ui.Select
-import top.fifthlight.combine.widget.ui.SelectIcon
-import top.fifthlight.combine.widget.ui.Text
-import top.fifthlight.combine.widget.ui.WarningButton
+import top.fifthlight.combine.screen.ScreenFactoryFactory
+import top.fifthlight.combine.widget.layout.Column
+import top.fifthlight.combine.widget.layout.Row
+import top.fifthlight.combine.widget.ui.*
 import top.fifthlight.touchcontroller.assets.Texts
-import top.fifthlight.touchcontroller.assets.TextureSet
 import top.fifthlight.touchcontroller.assets.Textures
-import top.fifthlight.touchcontroller.common.gal.ChatMessageProvider
-import top.fifthlight.touchcontroller.common.ui.component.AppBar
-import top.fifthlight.touchcontroller.common.ui.component.BackButton
-import top.fifthlight.touchcontroller.common.ui.component.ColorPreferenceItem
-import top.fifthlight.touchcontroller.common.ui.component.HorizontalPreferenceItem
-import top.fifthlight.touchcontroller.common.ui.component.IntSliderPreferenceItem
-import top.fifthlight.touchcontroller.common.ui.component.Scaffold
-import top.fifthlight.touchcontroller.common.ui.component.VerticalPreferenceItem
-import top.fifthlight.touchcontroller.common.ui.model.ChatScreenModel
-import top.fifthlight.touchcontroller.common.ui.state.ChatScreenState
+import top.fifthlight.touchcontroller.common.gal.chat.ChatMessageProvider
+import top.fifthlight.touchcontroller.common.gal.chat.ChatMessageProviderFactory
+import top.fifthlight.touchcontroller.common.ui.chat.model.ChatScreenModel
+import top.fifthlight.touchcontroller.common.ui.component.*
 
 @Composable
 private fun ChatScreen() {
-    val screenModel: ChatScreenModel = koinInject()
+    val screenModel = ChatScreenModel()
     DisposableEffect(screenModel) {
         onDispose {
             screenModel.onDispose()
@@ -86,7 +64,7 @@ private fun ChatScreen() {
             IntSliderPreferenceItem(
                 modifier = Modifier.fillMaxWidth(),
                 title = Text.translatable(Texts.SCREEN_CHAT_SETTINGS_LINE_SPACING),
-                range = 0 .. 16,
+                range = 0..16,
                 value = uiState.lineSpacing,
                 onValueChanged = {
                     screenModel.updateLineSpacing(it)
@@ -122,7 +100,7 @@ private fun ChatScreen() {
         Column(
             modifier = modifier,
         ) {
-            val messageProvider: ChatMessageProvider = koinInject()
+            val messageProvider: ChatMessageProvider = ChatMessageProviderFactory.of()
             var messages by remember { mutableStateOf(messageProvider.getMessages()) }
             LaunchedEffect(Unit) {
                 while (true) {
@@ -178,15 +156,7 @@ private fun ChatScreen() {
                         }
                     },
                 ) {
-                    Icon(Textures.ICON_CHAT_KEYBOARD)
-                }
-                IconButton(
-                    modifier = Modifier
-                        .fillMaxHeight()
-                        .width(bottomBarHeight),
-                    onClick = {}
-                ) {
-                    Icon(Textures.ICON_CHAT_COMMAND)
+                    Icon(Textures.icon_chat_keyboard)
                 }
                 IconButton(
                     modifier = Modifier
@@ -196,7 +166,7 @@ private fun ChatScreen() {
                         screenModel.openSettingsDialog()
                     },
                 ) {
-                    Icon(Textures.ICON_CHAT_SETTING)
+                    Icon(Textures.icon_chat_setting)
                 }
                 EditText(
                     interactionSource = interactionSource,
@@ -214,19 +184,18 @@ private fun ChatScreen() {
                         .fillMaxHeight(),
                     onClick = screenModel::sendText,
                 ) {
-                    Icon(Textures.ICON_CHAT_SEND)
+                    Icon(Textures.icon_chat_send)
                 }
             }
         }
     }
 }
 
-fun openChatScreen(parent: Any? = null): Any? = with(GlobalContext.get()) {
-    val textFactory: TextFactory = get()
-    val screenFactory: ScreenFactory = get()
-    screenFactory.openScreen(
+fun openChatScreen(parent: Any? = null): Any {
+    val screenFactory: ScreenFactory = ScreenFactoryFactory.of()
+    return screenFactory.openScreen(
         renderBackground = false,
-        title = textFactory.of(Texts.SCREEN_CHAT_TITLE),
+        title = Text.translatable(Texts.SCREEN_CHAT_TITLE),
     ) {
         ChatScreen()
     }
