@@ -1,26 +1,26 @@
-package top.fifthlight.touchcontroller.common.ui.screen
+package top.fifthlight.touchcontroller.common.ui.item.screen
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import cafe.adriel.voyager.core.model.rememberScreenModel
 import cafe.adriel.voyager.core.screen.Screen
-import cafe.adriel.voyager.koin.koinScreenModel
 import kotlinx.collections.immutable.PersistentList
-import org.koin.core.parameter.parametersOf
-import top.fifthlight.combine.data.Item
 import top.fifthlight.combine.data.Text
+import top.fifthlight.combine.item.data.Item
+import top.fifthlight.combine.item.widget.Item
 import top.fifthlight.combine.layout.Alignment
 import top.fifthlight.combine.layout.Arrangement
 import top.fifthlight.combine.modifier.Modifier
 import top.fifthlight.combine.modifier.drawing.border
 import top.fifthlight.combine.modifier.placement.*
 import top.fifthlight.combine.modifier.scroll.verticalScroll
-import top.fifthlight.combine.widget.base.layout.Box
-import top.fifthlight.combine.widget.base.layout.Column
-import top.fifthlight.combine.widget.base.layout.Row
+import top.fifthlight.combine.theme.blackstone.BlackstoneTextures
+import top.fifthlight.combine.widget.layout.Box
+import top.fifthlight.combine.widget.layout.Column
+import top.fifthlight.combine.widget.layout.Row
 import top.fifthlight.combine.widget.ui.Icon
 import top.fifthlight.combine.widget.ui.IconButton
-import top.fifthlight.combine.widget.ui.Item
 import top.fifthlight.combine.widget.ui.Text
 import top.fifthlight.touchcontroller.assets.Texts
 import top.fifthlight.touchcontroller.assets.Textures
@@ -33,7 +33,7 @@ class ItemListScreen(
 ) : Screen {
     @Composable
     override fun Content() {
-        val screenModel: ItemListScreenModel = koinScreenModel { parametersOf(initialValue, onValueChanged) }
+        val screenModel = rememberScreenModel { ItemListScreenModel(initialValue, onValueChanged) }
         Scaffold(
             topBar = {
                 AppBar(
@@ -51,7 +51,7 @@ class ItemListScreen(
                     modifier = Modifier
                         .padding(2)
                         .verticalScroll()
-                        .border(Textures.WIDGET_BACKGROUND_BACKGROUND_DARK)
+                        .border(BlackstoneTextures.widget_background_background_dark)
                         .fillMaxHeight()
                         .weight(.4f),
                 ) {
@@ -82,14 +82,14 @@ class ItemListScreen(
                                 modifier = Modifier.fillMaxHeight(),
                                 onClick = { screenModel.removeItem(index) },
                             ) {
-                                Icon(Textures.ICON_DELETE)
+                                Icon(Textures.icon_delete)
                             }
                         }
                     }
                 }
                 Box(
                     modifier = Modifier
-                        .border(Textures.WIDGET_BACKGROUND_BACKGROUND_DARK)
+                        .border(BlackstoneTextures.widget_background_background_dark)
                         .fillMaxHeight()
                         .weight(.6f)
                 ) {

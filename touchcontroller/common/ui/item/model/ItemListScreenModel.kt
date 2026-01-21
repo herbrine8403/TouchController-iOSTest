@@ -5,7 +5,7 @@ import kotlinx.collections.immutable.plus
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.updateAndGet
-import top.fifthlight.combine.data.Item
+import top.fifthlight.combine.item.data.Item
 
 class ItemListScreenModel(
     initialValue: PersistentList<Item>,

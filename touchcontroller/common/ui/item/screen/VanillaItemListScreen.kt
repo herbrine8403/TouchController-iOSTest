@@ -1,12 +1,15 @@
-package top.fifthlight.touchcontroller.common.ui.screen.itemlist
+package top.fifthlight.touchcontroller.common.ui.item.screen
 
 import androidx.compose.runtime.*
 import cafe.adriel.voyager.core.screen.Screen
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.toPersistentList
-import top.fifthlight.combine.data.Item
-import top.fifthlight.combine.data.ItemStack
 import top.fifthlight.combine.data.Text
+import top.fifthlight.combine.item.data.Item
+import top.fifthlight.combine.item.data.ItemStack
+import top.fifthlight.combine.item.widget.Item
+import top.fifthlight.combine.item.widget.ItemButton
+import top.fifthlight.combine.item.widget.ItemGrid
 import top.fifthlight.combine.layout.Alignment
 import top.fifthlight.combine.layout.Arrangement
 import top.fifthlight.combine.modifier.Modifier
@@ -17,23 +20,26 @@ import top.fifthlight.combine.modifier.placement.fillMaxWidth
 import top.fifthlight.combine.modifier.placement.padding
 import top.fifthlight.combine.modifier.placement.width
 import top.fifthlight.combine.modifier.scroll.verticalScroll
-import top.fifthlight.combine.widget.base.layout.Box
-import top.fifthlight.combine.widget.base.layout.Column
-import top.fifthlight.combine.widget.base.layout.FlowRow
-import top.fifthlight.combine.widget.base.layout.Row
+import top.fifthlight.combine.theme.LocalTheme
+import top.fifthlight.combine.theme.blackstone.BlackstoneTextures
+import top.fifthlight.combine.widget.layout.Box
+import top.fifthlight.combine.widget.layout.Column
+import top.fifthlight.combine.widget.layout.FlowRow
+import top.fifthlight.combine.widget.layout.Row
 import top.fifthlight.combine.widget.ui.*
 import top.fifthlight.data.IntPadding
 import top.fifthlight.data.IntSize
-import top.fifthlight.touchcontroller.assets.BackgroundTextures
 import top.fifthlight.touchcontroller.assets.Texts
 import top.fifthlight.touchcontroller.assets.Textures
 import top.fifthlight.touchcontroller.common.gal.PlayerInventory
-import top.fifthlight.touchcontroller.common.gal.VanillaItemListProvider
+import top.fifthlight.touchcontroller.common.gal.creativetab.CreativeTabsProvider
 import top.fifthlight.touchcontroller.common.ui.component.ListButton
+import kotlin.collections.getOrNull
+import kotlin.collections.withIndex
 
 class VanillaItemListScreen(
     private val onItemSelected: (Item) -> Unit,
-    private val tabs: PersistentList<VanillaItemListProvider.CreativeTab>,
+    private val tabs: PersistentList<CreativeTabsProvider.CreativeTab>,
     private val playerInventory: PlayerInventory,
 ) : Screen {
     @Composable
@@ -53,7 +59,7 @@ class VanillaItemListScreen(
                     Text(selectedTab.name)
 
                     when (selectedTab.type) {
-                        VanillaItemListProvider.CreativeTab.Type.CATEGORY -> {
+                        CreativeTabsProvider.CreativeTab.Type.CATEGORY -> {
                             ItemGrid(
                                 modifier = Modifier
                                     .weight(1f)
@@ -63,7 +69,7 @@ class VanillaItemListScreen(
                             )
                         }
 
-                        VanillaItemListProvider.CreativeTab.Type.SEARCH -> {
+                        CreativeTabsProvider.CreativeTab.Type.SEARCH -> {
                             var searchText by remember { mutableStateOf("") }
                             val showingItems = remember(searchText, itemStacks) {
                                 if (searchText.isEmpty()) {
@@ -90,15 +96,19 @@ class VanillaItemListScreen(
                             )
                         }
 
-                        VanillaItemListProvider.CreativeTab.Type.SURVIVAL_INVENTORY -> {
+                        CreativeTabsProvider.CreativeTab.Type.SURVIVAL_INVENTORY -> {
                             Box(
                                 modifier = Modifier.weight(1f).fillMaxWidth(),
                                 alignment = Alignment.Center,
                             ) {
-                                val backpackBackground = BackgroundTextures.BACKPACK
-                                val padding = (backpackBackground.size.width - 16) / 2
+                                val backpackBackground = LocalTheme.current.drawables.itemGridBackground
+                                val backpackBackgroundModifier = backpackBackground?.let {
+                                    Modifier.background(it)
+                                } ?: Modifier
+                                val backpackBackgroundSize = backpackBackground?.size ?: IntSize(18)
+                                val padding = (backpackBackgroundSize.width - 16) / 2
                                 Column(
-                                    modifier = Modifier.width(backpackBackground.size.width * 9),
+                                    modifier = Modifier.width(backpackBackgroundSize.width * 9),
                                     verticalArrangement = Arrangement.spacedBy(4, Alignment.CenterVertically),
                                 ) {
                                     @Composable
@@ -121,7 +131,7 @@ class VanillaItemListScreen(
                                     ) {
                                         Column {
                                             Text(Text.translatable(Texts.SCREEN_ITEM_LIST_INVENTORY_ARMOR))
-                                            Row(modifier = Modifier.background(backpackBackground)) {
+                                            Row(modifier = backpackBackgroundModifier) {
                                                 for (index in 0 until 4) {
                                                     Item(playerInventory.armor[index])
                                                 }
@@ -131,7 +141,7 @@ class VanillaItemListScreen(
                                             Column {
                                                 Text(Text.translatable(Texts.SCREEN_ITEM_LIST_INVENTORY_OFFHAND))
                                                 Item(
-                                                    modifier = Modifier.background(backpackBackground),
+                                                    modifier = backpackBackgroundModifier,
                                                     itemStack = offHand
                                                 )
                                             }
@@ -141,7 +151,7 @@ class VanillaItemListScreen(
                                     Column {
                                         Text(Text.translatable(Texts.SCREEN_ITEM_LIST_INVENTORY_MAIN))
                                         for (y in 0 until 4) {
-                                            Row(modifier = Modifier.background(backpackBackground)) {
+                                            Row(modifier = backpackBackgroundModifier) {
                                                 for (x in 0 until 9) {
                                                     val index = y * 9 + x
                                                     Item(playerInventory.main[index])
@@ -159,7 +169,7 @@ class VanillaItemListScreen(
                     modifier = Modifier
                         .padding(4)
                         .weight(1f)
-                        .border(Textures.WIDGET_BACKGROUND_BACKGROUND_DARK)
+                        .border(BlackstoneTextures.widget_background_background_dark)
                         .fillMaxHeight(),
                 ) {
                     Text(Text.translatable(Texts.SCREEN_ITEM_LIST_NO_TAB_SELECTED))
@@ -170,7 +180,7 @@ class VanillaItemListScreen(
                 modifier = Modifier
                     .padding(4)
                     .verticalScroll()
-                    .border(Textures.WIDGET_BACKGROUND_BACKGROUND_DARK)
+                    .border(BlackstoneTextures.widget_background_background_dark)
                     .fillMaxHeight(),
                 maxColumns = 2,
             ) {
