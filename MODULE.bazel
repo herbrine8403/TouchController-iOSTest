@@ -34,14 +34,14 @@ archive_override(
 )
 
 # Patch protobuf to avoid https://github.com/protocolbuffers/protobuf/issues/21755
-bazel_dep(name = "protobuf", version = "33.1")
+bazel_dep(name = "protobuf", version = "33.4")
 archive_override(
     module_name = "protobuf",
-    integrity = "sha256-/aEyywyGQAOBwK8f6YvQ93XLVmyyR83MEF40TgCsww4=",
+    integrity = "sha256-aH6YpHGXO1xf1xF1DEC4uCwK3jP2Sdtl4AspDyk0Wis=",
     patch_strip = 1,
     patches = ["//third_party/protobuf/patches:retain-linker-array.patch"],
-    strip_prefix = "protobuf-33.1",
-    url = "https://github.com/protocolbuffers/protobuf/releases/download/v33.1/protobuf-33.1.tar.gz",
+    strip_prefix = "protobuf-33.4",
+    url = "https://github.com/protocolbuffers/protobuf/releases/download/v33.4/protobuf-33.4.bazel.tar.gz",
 )
 
 bazel_dep(name = "hedron_compile_commands", dev_dependency = True)
