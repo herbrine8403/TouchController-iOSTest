@@ -29,6 +29,8 @@ public class GlConstMixin {
             cir.setReturnValue(GL30C.GL_R32F);
         } else if (textureFormat == TextureFormatExt.R32I) {
             cir.setReturnValue(GL30C.GL_R32I);
+        } else if (textureFormat == TextureFormatExt.RGB8) {
+            cir.setReturnValue(GL11C.GL_RGB8);
         }
     }
 
@@ -43,7 +45,9 @@ public class GlConstMixin {
         } else if (textureFormat == TextureFormatExt.R32F) {
             cir.setReturnValue(GL11C.GL_RED);
         } else if (textureFormat == TextureFormatExt.R32I) {
-            cir.setReturnValue(GL30C.GL_RED);
+            cir.setReturnValue(GL11C.GL_RED);
+        } else if (textureFormat == TextureFormatExt.RGB8) {
+            cir.setReturnValue(GL11C.GL_RGB);
         }
     }
 
@@ -54,11 +58,13 @@ public class GlConstMixin {
         } else if (textureFormat == TextureFormatExt.RGB32F) {
             cir.setReturnValue(GL11C.GL_FLOAT);
         } else if (textureFormat == TextureFormatExt.RG32F) {
-            cir.setReturnValue(GL30C.GL_FLOAT);
+            cir.setReturnValue(GL11C.GL_FLOAT);
         } else if (textureFormat == TextureFormatExt.R32F) {
-            cir.setReturnValue(GL30C.GL_FLOAT);
+            cir.setReturnValue(GL11C.GL_FLOAT);
         } else if (textureFormat == TextureFormatExt.R32I) {
-            cir.setReturnValue(GL30C.GL_INT);
+            cir.setReturnValue(GL11C.GL_INT);
+        } else if (textureFormat == TextureFormatExt.RGB8) {
+            cir.setReturnValue(GL11C.GL_UNSIGNED_BYTE);
         }
     }
 

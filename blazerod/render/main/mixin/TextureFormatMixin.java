@@ -46,13 +46,17 @@ public abstract class TextureFormatMixin {
         TextureFormatExt.R32I = R32I;
         newValues[nextOrdinal] = R32I;
 
+        var RGB8 = blazerod$invokeInit("RGB8", nextOrdinal, 3);
+        TextureFormatExt.RGB8 = RGB8;
+        newValues[nextOrdinal] = RGB8;
+
         $VALUES = newValues;
     }
 
     @ModifyReturnValue(method = "hasColorAspect", at = @At("RETURN"))
     private boolean onHasColorAspect(boolean original) {
         var format = (TextureFormat) (Object) this;
-        return original || format == TextureFormatExt.RGBA32F || format == TextureFormatExt.RGB32F || format == TextureFormatExt.RG32F || format == TextureFormatExt.R32F;
+        return original || format == TextureFormatExt.RGBA32F || format == TextureFormatExt.RGB32F || format == TextureFormatExt.RG32F || format == TextureFormatExt.R32F || format == TextureFormatExt.R32I || format == TextureFormatExt.RGB8;
     }
 
     @Invoker("<init>")

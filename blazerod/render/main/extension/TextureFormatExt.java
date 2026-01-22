@@ -11,4 +11,5 @@ public class TextureFormatExt {
     public static TextureFormat RG32F;
     public static TextureFormat R32F;
     public static TextureFormat R32I;
+    public static TextureFormat RGB8;
 }

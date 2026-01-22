@@ -78,6 +78,9 @@ uniform isamplerBuffer MorphTargetIndices;
 #define MORPH_VERTEX_ID gl_VertexID
 #endif
 
+// for line continuation support
+// BlazeRod: force process
+
 #ifdef SUPPORT_SSBO
 // @formatter:off
 #define MACRO_MORPH_FUNCTION(RETURN_TYPE, FUNCTION_NAME, BASE_VAR_TYPE, BASE_VAR_ACCESSOR, MORPH_DATA_BUFFER_VAR, OFFSET, COUNT_NAME, INDEX_NAME, WEIGHT_OFFSET) \

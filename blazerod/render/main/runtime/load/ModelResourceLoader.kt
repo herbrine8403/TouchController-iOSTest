@@ -1,6 +1,7 @@
 package top.fifthlight.blazerod.runtime.load
 
 import com.mojang.blaze3d.buffers.GpuBuffer
+import com.mojang.blaze3d.platform.NativeImage
 import com.mojang.blaze3d.systems.RenderSystem
 import com.mojang.blaze3d.textures.GpuTexture
 import com.mojang.blaze3d.textures.TextureFormat
@@ -9,6 +10,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
 import top.fifthlight.blazerod.extension.GpuBufferExt
+import top.fifthlight.blazerod.extension.TextureFormatExt
 import top.fifthlight.blazerod.extension.createBuffer
 import top.fifthlight.blazerod.render.GpuIndexBuffer
 import top.fifthlight.blazerod.render.RefCountedGpuBuffer
@@ -54,7 +56,11 @@ object ModelResourceLoader {
                     gpuTexture = device.createTexture(
                         name,
                         GpuTexture.USAGE_TEXTURE_BINDING or GpuTexture.USAGE_COPY_DST,
-                        TextureFormat.RGBA8,
+                        when (it.format()) {
+                            NativeImage.Format.RGBA -> TextureFormat.RGBA8
+                            NativeImage.Format.RGB -> TextureFormatExt.RGB8
+                            else -> throw IllegalArgumentException("Unknown texture format: ${it.format()}")
+                        },
                         nativeImage.width,
                         nativeImage.height,
                         1,

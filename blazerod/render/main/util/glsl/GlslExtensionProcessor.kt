@@ -46,6 +46,7 @@ object GlslExtensionProcessor {
         var needProcess = false
         val extensions = mutableMapOf<String, String>()
         val processedLines = StringBuilder()
+        val continuedLines = StringBuilder()
         for (line in source.lines()) {
             val processed = run {
                 when {
@@ -83,10 +84,29 @@ object GlslExtensionProcessor {
                         "/* $line */"
                     }
 
+                    line == "// BlazeRod: force process" -> {
+                        needProcess = true
+                        line
+                    }
+
+                    line.endsWith('\\') -> {
+                        continuedLines.append(line.dropLast(1))
+                        null
+                    }
+
                     else -> line
                 }
             }
-            processedLines.appendLine(processed)
+            if (processed != null) {
+                if (continuedLines.isNotEmpty()) {
+                    processedLines.append(continuedLines.toString())
+                    continuedLines.clear()
+                }
+                processedLines.appendLine(processed)
+            }
+        }
+        if (continuedLines.isNotEmpty()) {
+            processedLines.appendLine(continuedLines.toString())
         }
         if (!needProcess) {
             return source
