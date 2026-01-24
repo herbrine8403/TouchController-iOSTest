@@ -1,4 +1,4 @@
-package top.fifthlight.touchcontroller.version_26_1
+package top.fifthlight.touchcontroller.common.model
 
 object TouchControllerLoadStatus {
     var isLoaded: Boolean = false

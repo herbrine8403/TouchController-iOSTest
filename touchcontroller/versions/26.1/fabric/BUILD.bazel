@@ -38,8 +38,9 @@ kt_merge_library(
         "//touchcontroller/common/gal/key",
         "//touchcontroller/common/layout/data",
         "//touchcontroller/common/model",
-        "//touchcontroller/versions/26.1",
+        "//touchcontroller/resources/texture:vanilla_lib",
         "//touchcontroller/versions/26.1/extension",
+        "//touchcontroller/versions/26.1/gal",
         "//touchcontroller/versions/26.1/mixin",
     ],
     resource_jars = [
@@ -62,7 +63,6 @@ kt_merge_library(
         "@maven_fabric_26_1//:net_fabricmc_fabric_api_fabric_events_interaction_v0",
         "@maven_fabric_26_1//:net_fabricmc_fabric_api_fabric_lifecycle_events_v1",
         "@maven_fabric_26_1//:net_fabricmc_fabric_api_fabric_networking_api_v1",
-        "@maven_fabric_26_1//:net_fabricmc_fabric_api_fabric_renderer_api_v1",
         "@maven_fabric_26_1//:net_fabricmc_fabric_api_fabric_rendering_v1",
         "@maven_fabric_26_1//:net_fabricmc_fabric_loader",
         "@maven_fabric_26_1//:net_fabricmc_sponge_mixin",

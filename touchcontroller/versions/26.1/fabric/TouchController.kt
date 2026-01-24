@@ -23,7 +23,7 @@ import top.fifthlight.touchcontroller.common.event.render.RenderEvents
 import top.fifthlight.touchcontroller.common.event.tick.TickEvents
 import top.fifthlight.touchcontroller.common.event.window.WindowEvents
 import top.fifthlight.touchcontroller.common.model.ControllerHudModel
-import top.fifthlight.touchcontroller.version_26_1.TouchControllerLoadStatus
+import top.fifthlight.touchcontroller.common.model.TouchControllerLoadStatus
 import top.fifthlight.touchcontroller.version_26_1.gal.GameConfigEditorImpl
 import top.fifthlight.touchcontroller.version_26_1.gal.KeyBindingStateImpl
 import top.fifthlight.touchcontroller.version_26_1.gal.PlatformWindowProviderImpl
@@ -32,8 +32,6 @@ class TouchController : ClientModInitializer {
     private val logger = LoggerFactory.getLogger(TouchController::class.java)
 
     companion object {
-        var isLoaded by TouchControllerLoadStatus::isLoaded
-
         @JvmStatic
         var isInEmulatedSetDown = false
     }
@@ -43,7 +41,7 @@ class TouchController : ClientModInitializer {
 
         initialize()
 
-        isLoaded = true
+        TouchControllerLoadStatus.isLoaded = true
     }
 
     private fun initialize() {

@@ -1,14 +1,12 @@
 load("//rule:merge_library.bzl", "kt_merge_library")
 
 kt_merge_library(
-    name = "26.1",
+    name = "gal",
     srcs = glob(["**/*.kt"]),
     actual = True,
-    expect = True,
     merge_deps = [
         "//touchcontroller/buildinfo",
         "//touchcontroller/common/config/item",
-        "//touchcontroller/common/event/key",
         "//touchcontroller/common/gal/action",
         "//touchcontroller/common/gal/chat",
         "//touchcontroller/common/gal/creativetab",
@@ -23,9 +21,6 @@ kt_merge_library(
         "//touchcontroller/common/gal/player",
         "//touchcontroller/common/gal/view",
         "//touchcontroller/common/gal/window",
-        "//touchcontroller/common/layout/data",
-        "//touchcontroller/common/model",
-        "//touchcontroller/resources/texture:vanilla_lib",
         "//touchcontroller/versions/26.1/extension",
     ],
     visibility = ["//visibility:public"],

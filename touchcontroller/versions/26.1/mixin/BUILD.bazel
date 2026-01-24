@@ -8,7 +8,7 @@ java_merge_library(
         "//touchcontroller/common/event/render",
         "//touchcontroller/common/model",
         "//touchcontroller/common/util/crosshair",
-        "//touchcontroller/versions/26.1",
+        "//touchcontroller/versions/26.1/event",
         "//touchcontroller/versions/26.1/extension",
     ],
     resource_strip_prefix = "touchcontroller/versions/26.1/mixin/resource",

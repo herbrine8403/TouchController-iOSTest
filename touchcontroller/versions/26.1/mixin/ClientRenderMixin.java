@@ -6,7 +6,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import top.fifthlight.touchcontroller.common.event.render.RenderEvents;
-import top.fifthlight.touchcontroller.version_26_1.TouchControllerLoadStatus;
+import top.fifthlight.touchcontroller.common.model.TouchControllerLoadStatus;
 
 @Mixin(Minecraft.class)
 public abstract class ClientRenderMixin {
