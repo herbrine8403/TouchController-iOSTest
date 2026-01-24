@@ -4,13 +4,13 @@ kt_merge_library(
     name = "screen",
     srcs = glob(["*.kt"]),
     merge_deps = [
-        "//touchcontroller/common/ui/component",
         "//touchcontroller/common/gal/chat",
         "//touchcontroller/common/ui/chat/model",
         "//touchcontroller/common/ui/chat/state",
+        "//touchcontroller/common/ui/component",
+        "//touchcontroller/common/ui/model",
         "//touchcontroller/resources/lang:text_binding",
         "//touchcontroller/resources/texture:texture_lib",
-        "//touchcontroller/common/ui/model",
     ],
     visibility = ["//touchcontroller:__subpackages__"],
     deps = [

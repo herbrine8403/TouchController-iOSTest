@@ -4,8 +4,8 @@ kt_merge_library(
     name = "crosshair",
     srcs = glob(["*.kt"]),
     merge_deps = [
-        "//touchcontroller/common/model",
         "//touchcontroller/common/layout/data",
+        "//touchcontroller/common/model",
     ],
     visibility = ["//touchcontroller:__subpackages__"],
     deps = [

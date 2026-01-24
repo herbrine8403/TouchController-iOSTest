@@ -5,9 +5,9 @@ java_merge_library(
     srcs = glob(["**/*.java"]),
     merge_deps = [
         "//blazerod/render/api/event",
-        "//blazerod/render/main/systems",
         "//blazerod/render/main/extension",
         "//blazerod/render/main/render",
+        "//blazerod/render/main/systems",
         "//blazerod/render/main/util/glsl",
     ],
     visibility = ["//blazerod/render:__subpackages__"],

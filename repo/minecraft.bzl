@@ -69,7 +69,7 @@ _minecraft_library_repo = repository_rule(
         "path": attr.string(mandatory = True),
         "extract": attr.bool(default = False),
         "extract_exclude": attr.string_list(default = []),
-    }
+    },
 )
 
 def _minecraft_repo_impl(rctx):

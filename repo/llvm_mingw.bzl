@@ -9,7 +9,7 @@ def _llvm_mingw_toolchain_impl(rctx):
             '    name = "%s_toolchain",' % name,
             '    target_cpu = "@platforms//cpu:%s",' % name,
             '    target_cpu_name = "%s",' % name,
-            '    exec_compatible_with = %s,' % rctx.attr.exec_compatible_with,
+            "    exec_compatible_with = %s," % rctx.attr.exec_compatible_with,
             '    execroot = "%s",' % rctx.path(""),
             '    triple = "%s",' % triple,
             '    visibility = ["//visibility:public"],',

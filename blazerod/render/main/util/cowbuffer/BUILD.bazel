@@ -7,8 +7,8 @@ kt_merge_library(
         "CowBufferList.kt",
     ],
     merge_deps = [
-        "//blazerod/render/main/util/objectpool",
         "//blazerod/render/api/refcount",
+        "//blazerod/render/main/util/objectpool",
     ],
     visibility = ["//blazerod/render:__subpackages__"],
 )

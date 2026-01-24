@@ -18,8 +18,8 @@ kt_merge_library(
         allow_empty = True,
     ),
     merge_deps = [
-        "//armorstand/main",
         "//armorstand/expect_client",
+        "//armorstand/main",
     ],
     visibility = ["//armorstand:__subpackages__"],
     exports = [
