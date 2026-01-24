@@ -5,7 +5,7 @@ load("@rules_java//java:defs.bzl", "JavaInfo")
 def _impl(ctx):
     output_jar = ctx.actions.declare_file(ctx.label.name + ".jar")
 
-    strip_prefix = ctx.attr.resources_strip_prefix
+    strip_prefix = ctx.attr.resource_strip_prefix
 
     args = ctx.actions.args()
     args.add("--output")
@@ -23,13 +23,13 @@ def _impl(ctx):
                 dirname = ""
             elif dirname.startswith(strip_prefix):
                 dirname = dirname.removeprefix(strip_prefix)
-            dirname = ctx.attr.resources_prefix + "/" + dirname
+            dirname = ctx.attr.resource_prefix + "/" + dirname
             if dirname.endswith("/"):
                 dirname = dirname[:-1]
             if dirname.startswith("/"):
                 dirname = dirname[1:]
 
-            basename = ctx.attr.resources_rename.get(file.basename, file.basename)
+            basename = ctx.attr.resource_rename.get(file.basename, file.basename)
 
             jar_entry_path = dirname + "/" + basename
 
@@ -71,17 +71,17 @@ jar = rule(
             default = [],
             doc = "Resource files to include in JAR",
         ),
-        "resources_strip_prefix": attr.string(
+        "resource_strip_prefix": attr.string(
             mandatory = False,
             default = ".",
             doc = "Strip prefix from resource paths",
         ),
-        "resources_rename": attr.string_dict(
+        "resource_rename": attr.string_dict(
             mandatory = False,
             default = {},
             doc = "Map file basename to new basename",
         ),
-        "resources_prefix": attr.string(
+        "resource_prefix": attr.string(
             mandatory = False,
             default = "",
             doc = "Prefix to add to resource paths",
