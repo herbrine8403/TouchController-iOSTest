@@ -1,11 +1,12 @@
 load("//rule:merge_library.bzl", "kt_merge_library")
 
 kt_merge_library(
-    name = "screen",
+    name = "license",
     srcs = glob(["*.kt"]),
     merge_deps = [
         "//touchcontroller/common/about",
-        "//touchcontroller/common/ui/component",
+        "//touchcontroller/common/ui/widget",
+        "//touchcontroller/common/ui/widget/navigation",
         "//touchcontroller/resources/lang:text_binding",
         "//touchcontroller/resources/texture:texture_lib",
     ],

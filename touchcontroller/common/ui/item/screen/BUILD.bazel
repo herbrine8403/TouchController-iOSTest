@@ -7,7 +7,7 @@ kt_merge_library(
         "//touchcontroller/common/gal/creativetab",
         "//touchcontroller/common/gal/item",
         "//touchcontroller/common/gal/player",
-        "//touchcontroller/common/ui/component",
+        "//touchcontroller/common/ui/widget",
         "//touchcontroller/common/ui/item/model",
         "//touchcontroller/resources/lang:text_binding",
         "//touchcontroller/resources/texture:texture_lib",

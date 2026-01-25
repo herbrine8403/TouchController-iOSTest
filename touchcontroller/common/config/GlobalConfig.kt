@@ -2,6 +2,7 @@ package top.fifthlight.touchcontroller.common.config
 
 import kotlinx.serialization.Serializable
 import top.fifthlight.touchcontroller.common.gal.itemlist.DefaultItemListProvider
+import top.fifthlight.touchcontroller.common.gal.itemlist.DefaultItemListProviderFactory
 
 @Serializable
 data class GlobalConfig(
@@ -9,13 +10,13 @@ data class GlobalConfig(
     val control: ControlConfig = ControlConfig(),
     val touchRing: TouchRingConfig = TouchRingConfig(),
     val debug: DebugConfig = DebugConfig(),
-    val item: ItemConfig,
+    val item: ItemConfig = ItemConfig.default(DefaultItemListProviderFactory.of()),
     val preset: PresetConfig = PresetConfig.BuiltIn(),
     val chat: ChatConfig = ChatConfig(),
 ) {
     companion object {
-        fun default(itemListProvider: DefaultItemListProvider) = GlobalConfig(
-            item = ItemConfig.default(itemListProvider),
-        )
+        val default by lazy {
+            GlobalConfig()
+        }
     }
 }

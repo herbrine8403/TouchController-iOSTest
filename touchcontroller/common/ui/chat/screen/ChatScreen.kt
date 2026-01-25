@@ -26,11 +26,13 @@ import top.fifthlight.touchcontroller.assets.Textures
 import top.fifthlight.touchcontroller.common.gal.chat.ChatMessageProvider
 import top.fifthlight.touchcontroller.common.gal.chat.ChatMessageProviderFactory
 import top.fifthlight.touchcontroller.common.ui.chat.model.ChatScreenModel
-import top.fifthlight.touchcontroller.common.ui.component.*
+import top.fifthlight.touchcontroller.common.ui.component.AppBar
+import top.fifthlight.touchcontroller.common.ui.component.BackButton
+import top.fifthlight.touchcontroller.common.ui.widget.*
 
 @Composable
 private fun ChatScreen() {
-    val screenModel = ChatScreenModel()
+    val screenModel = remember { ChatScreenModel() }
     DisposableEffect(screenModel) {
         onDispose {
             screenModel.onDispose()

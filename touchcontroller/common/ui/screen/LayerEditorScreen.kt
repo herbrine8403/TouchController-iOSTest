@@ -31,7 +31,7 @@ import top.fifthlight.touchcontroller.common.config.condition.HoldingItemConditi
 import top.fifthlight.touchcontroller.common.config.condition.LayerConditions
 import top.fifthlight.touchcontroller.common.config.preset.LayerCustomConditions
 import top.fifthlight.touchcontroller.common.config.preset.LayoutPreset
-import top.fifthlight.touchcontroller.common.ui.component.*
+import top.fifthlight.touchcontroller.common.ui.widget.*
 import top.fifthlight.touchcontroller.common.ui.model.LayerEditorScreenModel
 import top.fifthlight.touchcontroller.common.ui.tab.layercondition.LayerConditionTabContext
 import top.fifthlight.touchcontroller.common.ui.tab.layercondition.LocalLayerConditionTabContext

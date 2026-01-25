@@ -34,7 +34,9 @@ import top.fifthlight.touchcontroller.common.control.property.TextureCoordinate
 import top.fifthlight.touchcontroller.common.gal.key.KeyBindingHandler
 import top.fifthlight.touchcontroller.common.gal.key.KeyBindingHandlerFactory
 import top.fifthlight.touchcontroller.common.layout.align.Align
-import top.fifthlight.touchcontroller.common.ui.component.*
+import top.fifthlight.touchcontroller.common.ui.widget.*
+import top.fifthlight.touchcontroller.common.ui.widget.navigation.AppBar
+import top.fifthlight.touchcontroller.common.ui.widget.navigation.BackButton
 
 fun <Config : ControllerWidget, Value> ControllerWidget.Property<Config, Value>.paddingProperty(
     getPadding: (Value) -> IntPadding?,

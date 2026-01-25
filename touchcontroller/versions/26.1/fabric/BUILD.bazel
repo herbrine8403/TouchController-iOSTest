@@ -44,6 +44,7 @@ kt_merge_library(
     ],
     merge_only_deps = [
         "//touchcontroller/resources/texture:vanilla_lib",
+        "//touchcontroller/versions/26.1/widget",
     ],
     resource_jars = [
         ":fabric_mod_json",
@@ -56,6 +57,9 @@ kt_merge_library(
         exclude = ["resources/fabric.mod.json"],
     ),
     visibility = ["//visibility:public"],
+    runtime_deps = [
+        "//combine/theme/blackstone:vanilla_lib_unmerged",
+    ],
     deps = [
         "//combine/backend/minecraft/26.1",
         "//combine/core/data",

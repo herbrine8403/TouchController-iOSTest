@@ -7,6 +7,7 @@ java_merge_library(
         "//touchcontroller/common/config/holder",
         "//touchcontroller/common/event/render",
         "//touchcontroller/common/model",
+        "//touchcontroller/common/ui/config/screen",
         "//touchcontroller/common/util/crosshair",
         "//touchcontroller/versions/26.1/event",
         "//touchcontroller/versions/26.1/extension",

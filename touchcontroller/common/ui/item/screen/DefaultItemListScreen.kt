@@ -19,7 +19,7 @@ import top.fifthlight.touchcontroller.common.gal.item.ItemProviderFactory
 class DefaultItemListScreen(
     val onItemSelected: (Item) -> Unit,
 ) : Screen {
-    private val allItems = ItemProviderFactory.create().allItems
+    private val allItems = ItemProviderFactory.of().allItems
 
     @Composable
     override fun Content() {

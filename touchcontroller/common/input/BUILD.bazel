@@ -4,7 +4,6 @@ kt_merge_library(
     name = "input",
     srcs = glob(["*.kt"]),
     merge_deps = [
-        "//touchcontroller/common/gal/dispatcher",
         "//touchcontroller/common/gal/window",
         "//touchcontroller/common/platform",
         "//touchcontroller/common/platform/capabilities",
@@ -16,6 +15,7 @@ kt_merge_library(
     visibility = ["//touchcontroller:__subpackages__"],
     deps = [
         "//combine/core/input/text",
+        "//combine/core/util/dispatcher",
         "//combine/data",
         "@maven//:org_jetbrains_kotlinx_kotlinx_coroutines_core_jvm",
     ],

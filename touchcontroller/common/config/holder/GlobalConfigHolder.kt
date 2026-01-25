@@ -34,13 +34,10 @@ import kotlin.runCatching
 object GlobalConfigHolder {
     private val logger = LoggerFactory.getLogger(GlobalConfigHolder::class.java)
     private val gameConfigEditor: GameConfigEditor = GameConfigEditorFactory.of()
-    private val defaultItemListProvider: DefaultItemListProvider = DefaultItemListProviderFactory.of()
     private val configDir = ConfigDirectoryProviderFactory.of().configDirectory
     private val configFile = configDir.resolve("config.json")
 
-    private val _config = MutableStateFlow(
-        GlobalConfig.default(defaultItemListProvider)
-    )
+    private val _config = MutableStateFlow(GlobalConfig.default)
     val config = _config.asStateFlow()
 
     // TODO: do some caching

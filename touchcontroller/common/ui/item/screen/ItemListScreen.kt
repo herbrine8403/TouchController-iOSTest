@@ -24,7 +24,7 @@ import top.fifthlight.combine.widget.ui.IconButton
 import top.fifthlight.combine.widget.ui.Text
 import top.fifthlight.touchcontroller.assets.Texts
 import top.fifthlight.touchcontroller.assets.Textures
-import top.fifthlight.touchcontroller.common.ui.component.*
+import top.fifthlight.touchcontroller.common.ui.widget.*
 import top.fifthlight.touchcontroller.common.ui.model.ItemListScreenModel
 
 class ItemListScreen(

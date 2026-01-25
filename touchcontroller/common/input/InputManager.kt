@@ -8,8 +8,8 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import top.fifthlight.combine.input.text.InputHandler
 import top.fifthlight.combine.input.text.TextInputState
+import top.fifthlight.combine.util.dispatcher.GameDispatcherProviderFactory
 import top.fifthlight.data.IntRect
-import top.fifthlight.touchcontroller.common.gal.dispatcher.GameDispatcherProviderFactory
 import top.fifthlight.touchcontroller.common.gal.window.WindowHandle
 import top.fifthlight.touchcontroller.common.gal.window.WindowHandleFactory
 import top.fifthlight.touchcontroller.common.platform.capabilities.PlatformCapabilitiesHolder

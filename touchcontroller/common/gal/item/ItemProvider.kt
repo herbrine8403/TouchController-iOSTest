@@ -9,6 +9,6 @@ interface ItemProvider {
 
     @ExpectFactory
     interface Factory {
-        fun create(): ItemProvider
+        fun of(): ItemProvider
     }
 }

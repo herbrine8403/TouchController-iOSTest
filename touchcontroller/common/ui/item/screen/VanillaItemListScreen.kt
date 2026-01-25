@@ -33,7 +33,7 @@ import top.fifthlight.data.IntSize
 import top.fifthlight.touchcontroller.assets.Texts
 import top.fifthlight.touchcontroller.common.gal.PlayerInventory
 import top.fifthlight.touchcontroller.common.gal.creativetab.CreativeTabsProvider
-import top.fifthlight.touchcontroller.common.ui.component.ListButton
+import top.fifthlight.touchcontroller.common.ui.widget.ListButton
 
 class VanillaItemListScreen(
     private val onItemSelected: (Item) -> Unit,
