@@ -55,5 +55,7 @@ maven.install(
         "org.lwjgl:lwjgl-stb:jar:natives-windows-arm64:3.3.3",
         "org.lwjgl:lwjgl-stb:jar:natives-windows-x86:3.3.3",
         "io.github.classgraph:classgraph:4.8.184",
+        "at.yawk.lz4:lz4-java:1.10.3",
+        "org.apache.commons:commons-compress:1.28.0",
     ],
 )

@@ -3,4 +3,5 @@ load("@rules_java//java:defs.bzl", "java_library")
 java_library(
     name = "bindeps",
     srcs = glob(["*.java"]),
+    visibility = ["//fastmerger:__subpackages__"],
 )

@@ -12,11 +12,13 @@ public class BindepsWriter implements AutoCloseable {
     private final ByteBuffer buffer = ByteBuffer.allocateDirect(BUFFER_SIZE);
     private final FileChannel channel;
 
-    public BindepsWriter(Path path) throws IOException {
-        channel = FileChannel.open(path, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+    public BindepsWriter(Path path, int stringPoolSize, int classInfoSize) throws IOException {
+        channel = FileChannel.open(path, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.WRITE);
         buffer.order(ByteOrder.BIG_ENDIAN);
         buffer.put(BindepsConstraints.MAGIC);
         buffer.putLong(BindepsConstraints.VERSION);
+        buffer.putInt(stringPoolSize);
+        buffer.putInt(classInfoSize);
     }
 
     private void flushIfNeeded(int size) throws IOException {
@@ -37,11 +39,6 @@ public class BindepsWriter implements AutoCloseable {
         buffer.clear();
     }
 
-    private void putString(String string) {
-        buffer.asCharBuffer().put(string);
-        buffer.position(buffer.position() + string.length() * 2);
-    }
-
     private void putIntArray(int[] array) {
         buffer.asIntBuffer().put(array);
         buffer.position(buffer.position() + array.length * 4);
@@ -58,18 +55,18 @@ public class BindepsWriter implements AutoCloseable {
      *
      * @param hash        XXHash of the entire name. For example, if this entry represents org.example, "org.example" should be
      *                    hashed, rather than "example"
-     * @param parentIndex The index of parent node.
-     * @param string      The content of this node
+     * @param parentIndex The index of parent node. If this is the root node, parentIndex should be -1.
+     * @param stringBytes The content of this node
      */
-    public void writeStringPoolEntry(long hash, int parentIndex, String string) throws IOException {
+    public void writeStringPoolEntry(long hash, int parentIndex, byte[] stringBytes) throws IOException {
         if (state != State.STRING_POOL) {
             throw new IllegalStateException("Bad state: Trying to write string pool when state is " + state);
         }
-        if (parentIndex < 0) {
+        if (parentIndex < -1) {
             throw new IllegalStateException("Bad parentIndex: " + parentIndex);
         }
-        if (string.length() > Short.MAX_VALUE) {
-            throw new IllegalArgumentException("String length exceeds maximum allowed: " + string.length() + ", maximum allowed: " + Short.MAX_VALUE);
+        if (stringBytes.length > Short.MAX_VALUE) {
+            throw new IllegalArgumentException("String length exceeds maximum allowed: " + stringBytes.length + ", maximum allowed: " + Short.MAX_VALUE);
         }
 
         /*
@@ -77,15 +74,15 @@ public class BindepsWriter implements AutoCloseable {
             uint64_t hash;
             int32_t parentIndex;
             uint16_t length;
-            uint16_t content[length];
+            uint8_t content[length];
         */
-        var length = 8 + 4 + 2 + string.length() * 2;
+        var length = 8 + 4 + 2 + stringBytes.length;
         flushIfNeeded(length);
 
         buffer.putLong(hash);
         buffer.putInt(parentIndex);
-        buffer.putShort((short) string.length());
-        putString(string);
+        buffer.putShort((short) stringBytes.length);
+        buffer.put(stringBytes);
     }
 
     public void startClassInfo() {
@@ -105,15 +102,12 @@ public class BindepsWriter implements AutoCloseable {
         if (superIndex < 0) {
             throw new IllegalStateException("Bad superIndex: " + superIndex);
         }
-        if (access > Short.MAX_VALUE) {
-            throw new IllegalStateException("Bad access flag: " + access);
-        }
 
         /*
         struct ClassInfoEntry {
             int32_t nameIndex;
             int32_t superIndex;
-            int16_t accessFlag;
+            int32_t accessFlag;
             int32_t interfaceLength;
             int32_t interfaces[];
             int32_t annotationLength;
@@ -122,12 +116,12 @@ public class BindepsWriter implements AutoCloseable {
             int32_t dependencies[];
         }
         */
-        var length = 4 + 4 + 2 + 4 + interfaces.length * 4 + 4 + annotations.length * 4 + 4 + dependencies.length * 4;
+        var length = 4 + 4 + 4 + 4 + interfaces.length * 4 + 4 + annotations.length * 4 + 4 + dependencies.length * 4;
         flushIfNeeded(length);
 
         buffer.putInt(nameIndex);
         buffer.putInt(superIndex);
-        buffer.putShort((short) access);
+        buffer.putInt(access);
         buffer.putInt(interfaces.length);
         putIntArray(interfaces);
         buffer.putInt(annotations.length);
