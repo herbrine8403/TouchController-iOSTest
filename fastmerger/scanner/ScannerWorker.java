@@ -27,6 +27,9 @@ public class ScannerWorker extends Worker {
         @Parameters(index = "1", description = "Output binary dependencies file")
         Path outputFile;
 
+        @Parameters(index = "2", description = "Output binary dependencies heap file")
+        Path outputHeapFile;
+
         private final Path sandboxDir;
 
         public Handler(Path sandboxDir) {
@@ -50,6 +53,7 @@ public class ScannerWorker extends Worker {
         public Integer call() throws Exception {
             var inputPath = sandboxDir.resolve(inputFile);
             var outputPath = sandboxDir.resolve(outputFile);
+            var heapPath = sandboxDir.resolve(outputHeapFile);
 
             var result = new ClassDepsScanner().scan(inputPath);
 
@@ -69,60 +73,35 @@ public class ScannerWorker extends Worker {
                         .forEachOrdered(e -> stack.push(e.getValue()));
             }
 
-            try (var writer = new BindepsWriter(outputPath, entries.size(), result.classInfos().size())) {
+            try (var writer = new BindepsWriter(outputPath, heapPath, entries.size(), result.classInfos().size())) {
                 for (var entry : entries) {
-                    var parentIndex = -1;
                     var parent = entry.parentEntry();
-                    if (parent != null) {
-                        parentIndex = entryMap.getInt(parent.fullName());
-                        if (parentIndex == -1) {
-                            throw new IllegalStateException("Parent entry not found for " + entry.fullName());
-                        }
-                    }
+                    var parentIndex = parent != null ? entryMap.getInt(parent.fullName()) : -1;
                     writer.writeStringPoolEntry(entry.hash(), parentIndex, entry.nameBytes());
                 }
 
-                writer.startClassInfo();
-                try {
-                    result.classInfos().values().stream()
-                            .map(classInfo -> {
-                                var nameIndex = entryMap.getInt(classInfo.getFullName());
-                                if (nameIndex == -1) {
-                                    throw new IllegalStateException("Class name entry not found for " + classInfo.getFullName());
-                                }
-                                return new IntObjectImmutablePair<>(nameIndex, classInfo);
-                            })
-                            .sorted(Comparator.comparingInt(IntObjectImmutablePair::leftInt))
-                            .forEachOrdered(pair -> {
-                                var nameIndex = pair.leftInt();
-                                var classInfo = pair.right();
+                result.classInfos().values().stream()
+                        .map(classInfo -> {
+                            var nameIndex = entryMap.getInt(classInfo.getFullName());
+                            return new IntObjectImmutablePair<>(nameIndex, classInfo);
+                        })
+                        .sorted(Comparator.comparingInt(IntObjectImmutablePair::leftInt))
+                        .forEachOrdered(pair -> {
+                            var classInfo = pair.right();
+                            var superEntry = classInfo.superClass();
+                            var superIndex = (superEntry != null) ? entryMap.getInt(superEntry.fullName()) : -1;
 
-                                var superNameIndex = -1;
-                                var superEntry = classInfo.superClass();
-                                if (superEntry != null) {
-                                    superNameIndex = entryMap.getInt(superEntry.fullName());
-                                    if (superNameIndex == -1) {
-                                        throw new IllegalStateException("Super class name entry not found for " + superEntry.fullName());
-                                    }
-                                }
+                            var interfaces = lookupClassEntries(entryMap, classInfo.interfaces());
+                            var annotations = lookupClassEntries(entryMap, classInfo.annotations());
+                            var dependencies = lookupClassEntries(entryMap, classInfo.dependencies());
 
-                                var interfaces = lookupClassEntries(entryMap, classInfo.interfaces());
-                                var annotations = lookupClassEntries(entryMap, classInfo.annotations());
-                                var dependencies = lookupClassEntries(entryMap, classInfo.dependencies());
-
-                                try {
-                                    writer.writeClassInfoEntry(nameIndex, superNameIndex, classInfo.accessFlag(), interfaces, annotations, dependencies);
-                                } catch (IOException e) {
-                                    throw new RuntimeException(e);
-                                }
-                            });
-                } catch (RuntimeException e) {
-                    if (e.getCause() instanceof IOException ioException) {
-                        throw ioException;
-                    } else {
-                        throw e;
-                    }
-                }
+                            try {
+                                writer.writeClassInfoEntry(pair.leftInt(), superIndex, classInfo.accessFlag(),
+                                        interfaces, annotations, dependencies);
+                            } catch (IOException e) {
+                                throw new RuntimeException(e);
+                            }
+                        });
             }
             return 0;
         }

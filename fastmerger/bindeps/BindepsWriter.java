@@ -9,130 +9,102 @@ import java.nio.file.StandardOpenOption;
 
 public class BindepsWriter implements AutoCloseable {
     private static final int BUFFER_SIZE = 256 * 1024;
-    private final ByteBuffer buffer = ByteBuffer.allocateDirect(BUFFER_SIZE);
-    private final FileChannel channel;
+    private final ByteBuffer indexBuffer = ByteBuffer.allocateDirect(BUFFER_SIZE);
+    private final ByteBuffer heapBuffer = ByteBuffer.allocateDirect(BUFFER_SIZE);
 
-    public BindepsWriter(Path path, int stringPoolSize, int classInfoSize) throws IOException {
-        channel = FileChannel.open(path, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.WRITE);
-        buffer.order(ByteOrder.BIG_ENDIAN);
-        buffer.put(BindepsConstraints.MAGIC);
-        buffer.putLong(BindepsConstraints.VERSION);
-        buffer.putInt(stringPoolSize);
-        buffer.putInt(classInfoSize);
+    private final FileChannel indexChannel;
+    private final FileChannel heapChannel;
+
+    private int currentHeapOffset = 0;
+
+    public BindepsWriter(Path indexPath, Path heapPath, int stringPoolSize, int classInfoSize) throws IOException {
+        this.indexChannel = FileChannel.open(indexPath, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.WRITE);
+        this.heapChannel = FileChannel.open(heapPath, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.WRITE);
+
+        indexBuffer.order(ByteOrder.BIG_ENDIAN);
+        heapBuffer.order(ByteOrder.BIG_ENDIAN);
+
+        indexBuffer.put(BindepsConstraints.MAGIC);
+        indexBuffer.putInt(BindepsConstraints.VERSION);
+        indexBuffer.putInt(stringPoolSize);
+        indexBuffer.putInt(classInfoSize);
     }
 
-    private void flushIfNeeded(int size) throws IOException {
-        if (buffer.remaining() >= size) {
-            return;
+    private void flushIfNeeded(FileChannel channel, ByteBuffer buf, int size) throws IOException {
+        if (buf.remaining() < size) {
+            flush(channel, buf);
         }
-        flush();
     }
 
-    private void flush() throws IOException {
-        if (buffer.position() <= 0) {
-            return;
+    private void flush(FileChannel channel, ByteBuffer buf) throws IOException {
+        buf.flip();
+        while (buf.hasRemaining()) {
+            channel.write(buf);
         }
-        buffer.flip();
-        while (buffer.hasRemaining()) {
-            channel.write(buffer);
-        }
-        buffer.clear();
+        buf.clear();
     }
 
-    private void putIntArray(int[] array) {
-        buffer.asIntBuffer().put(array);
-        buffer.position(buffer.position() + array.length * 4);
-    }
-
-    private enum State {
-        STRING_POOL, CLASS_INFO,
-    }
-
-    private State state = State.STRING_POOL;
-
-    /**
-     * Write a string pool entry to file.
-     *
-     * @param hash        XXHash of the entire name. For example, if this entry represents org.example, "org.example" should be
-     *                    hashed, rather than "example"
-     * @param parentIndex The index of parent node. If this is the root node, parentIndex should be -1.
-     * @param stringBytes The content of this node
-     */
     public void writeStringPoolEntry(long hash, int parentIndex, byte[] stringBytes) throws IOException {
-        if (state != State.STRING_POOL) {
-            throw new IllegalStateException("Bad state: Trying to write string pool when state is " + state);
-        }
-        if (parentIndex < -1) {
-            throw new IllegalStateException("Bad parentIndex: " + parentIndex);
-        }
-        if (stringBytes.length > Short.MAX_VALUE) {
-            throw new IllegalArgumentException("String length exceeds maximum allowed: " + stringBytes.length + ", maximum allowed: " + Short.MAX_VALUE);
-        }
+        var len = stringBytes.length;
 
-        /*
-        struct StringPoolEntry {
-            uint64_t hash;
-            int32_t parentIndex;
-            uint16_t length;
-            uint8_t content[length];
-        */
-        var length = 8 + 4 + 2 + stringBytes.length;
-        flushIfNeeded(length);
+        // Write index
+        flushIfNeeded(indexChannel, indexBuffer, 24);
+        indexBuffer.putLong(hash);
+        indexBuffer.putInt(parentIndex);
+        indexBuffer.putInt(currentHeapOffset);
+        indexBuffer.putShort((short) len);
+        indexBuffer.put(new byte[6]); // Padded to 24 bytes
 
-        buffer.putLong(hash);
-        buffer.putInt(parentIndex);
-        buffer.putShort((short) stringBytes.length);
-        buffer.put(stringBytes);
+        // Write heap
+        flushIfNeeded(heapChannel, heapBuffer, len);
+        heapBuffer.put(stringBytes);
+
+        currentHeapOffset += len;
     }
 
-    public void startClassInfo() {
-        if (state != State.STRING_POOL) {
-            throw new IllegalStateException("Bad state: Trying to start writing class info when state is " + state);
-        }
-        state = State.CLASS_INFO;
+    public void writeClassInfoEntry(int nameIndex, int superIndex, int access,
+                                    int[] interfaces, int[] annotations, int[] dependencies) throws IOException {
+        // Write heap
+        var interfaceOffset = writeIntArrayToHeap(interfaces);
+        var annotationOffset = writeIntArrayToHeap(annotations);
+        var dependenciesOffset = writeIntArrayToHeap(dependencies);
+
+        // Write index
+        flushIfNeeded(indexChannel, indexBuffer, 36);
+        indexBuffer.putInt(nameIndex);
+        indexBuffer.putInt(superIndex);
+        indexBuffer.putInt(access);
+
+        indexBuffer.putInt(interfaceOffset);
+        indexBuffer.putInt(interfaces.length);
+
+        indexBuffer.putInt(annotationOffset);
+        indexBuffer.putInt(annotations.length);
+
+        indexBuffer.putInt(dependenciesOffset);
+        indexBuffer.putInt(dependencies.length);
     }
 
-    public void writeClassInfoEntry(int nameIndex, int superIndex, int access, int[] interfaces, int[] annotations, int[] dependencies) throws IOException {
-        if (state != State.CLASS_INFO) {
-            throw new IllegalStateException("Bad state: Trying to write class info when state is " + state);
-        }
-        if (nameIndex < 0) {
-            throw new IllegalStateException("Bad nameIndex: " + nameIndex);
-        }
-        if (superIndex < 0) {
-            throw new IllegalStateException("Bad superIndex: " + superIndex);
+    private int writeIntArrayToHeap(int[] array) throws IOException {
+        if (array.length == 0) return -1;
+
+        var startOffset = currentHeapOffset;
+        var byteLen = array.length * 4;
+
+        flushIfNeeded(heapChannel, heapBuffer, byteLen);
+        for (var i : array) {
+            heapBuffer.putInt(i);
         }
 
-        /*
-        struct ClassInfoEntry {
-            int32_t nameIndex;
-            int32_t superIndex;
-            int32_t accessFlag;
-            int32_t interfaceLength;
-            int32_t interfaces[];
-            int32_t annotationLength;
-            int32_t annotations[];
-            int32_t dependencyLength;
-            int32_t dependencies[];
-        }
-        */
-        var length = 4 + 4 + 4 + 4 + interfaces.length * 4 + 4 + annotations.length * 4 + 4 + dependencies.length * 4;
-        flushIfNeeded(length);
-
-        buffer.putInt(nameIndex);
-        buffer.putInt(superIndex);
-        buffer.putInt(access);
-        buffer.putInt(interfaces.length);
-        putIntArray(interfaces);
-        buffer.putInt(annotations.length);
-        putIntArray(annotations);
-        buffer.putInt(dependencies.length);
-        putIntArray(dependencies);
+        currentHeapOffset += byteLen;
+        return startOffset;
     }
 
     @Override
     public void close() throws IOException {
-        flush();
-        channel.close();
+        flush(indexChannel, indexBuffer);
+        flush(heapChannel, heapBuffer);
+        indexChannel.close();
+        heapChannel.close();
     }
 }
