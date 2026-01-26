@@ -99,13 +99,13 @@ public class ClassInfoVisitor extends ClassVisitor {
 
         @Override
         public void visitEnum(String name, String descriptor, String value) {
-            ClassInfoVisitor.this.visitType(descriptor);
+            ClassInfoVisitor.this.visitDesc(descriptor);
             super.visitEnum(name, descriptor, value);
         }
 
         @Override
         public AnnotationVisitor visitAnnotation(String name, String descriptor) {
-            ClassInfoVisitor.this.visitType(descriptor);
+            ClassInfoVisitor.this.visitDesc(descriptor);
             return super.visitAnnotation(name, descriptor);
         }
 
