@@ -4,6 +4,8 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.IntBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.charset.*;
 import java.nio.file.Path;
@@ -139,6 +141,8 @@ public class BindepsReader {
     }
 
     public static class ClassInfoEntry {
+            private static final IntBuffer EMPTY_INT_BUFFER = IntBuffer.wrap(new int[0]).asReadOnlyBuffer();
+
         private final ByteBuffer buffer;
         private final int index;
 
@@ -154,9 +158,9 @@ public class BindepsReader {
 
         private StringPoolEntry name = null;
         private StringPoolEntry superClass = null;
-        private int[] interfaceIndices = null;
-        private int[] annotationIndices = null;
-        private int[] dependenciesIndices = null;
+        private IntBuffer interfaceIndices = null;
+        private IntBuffer annotationIndices = null;
+        private IntBuffer dependenciesIndices = null;
         private StringPoolEntry[] interfaces = null;
         private StringPoolEntry[] annotations = null;
         private StringPoolEntry[] dependencies = null;
@@ -210,15 +214,14 @@ public class BindepsReader {
             return access;
         }
 
-        public int[] getInterfaceIndices() {
+        public IntBuffer getInterfaceIndices() {
             if (interfaceIndices == null) {
                 if (interfaceCount == 0) {
-                    interfaces = new StringPoolEntry[0];
+                    interfaceIndices = EMPTY_INT_BUFFER;
                 } else {
-                    interfaceIndices = new int[interfaceCount];
-                    buffer.slice(interfaceOffset - BindepsConstants.HEADER_SIZE, interfaceCount * 4)
-                            .asIntBuffer()
-                            .get(interfaceIndices);
+                    interfaceIndices = buffer.slice(interfaceOffset - BindepsConstants.HEADER_SIZE, interfaceCount * 4)
+                            .order(ByteOrder.BIG_ENDIAN)
+                            .asIntBuffer();
                 }
             }
             return interfaceIndices;
@@ -229,21 +232,20 @@ public class BindepsReader {
                 var interfaceIndices = getInterfaceIndices();
                 interfaces = new StringPoolEntry[interfaceCount];
                 for (var i = 0; i < interfaceCount; i++) {
-                    interfaces[i] = new StringPoolEntry(buffer, interfaceIndices[i]);
+                    interfaces[i] = new StringPoolEntry(buffer, interfaceIndices.get(i));
                 }
             }
             return interfaces;
         }
 
-        public int[] getAnnotationIndices() {
+        public IntBuffer getAnnotationIndices() {
             if (annotationIndices == null) {
                 if (annotationCount == 0) {
-                    annotationIndices = new int[0];
+                    annotationIndices = EMPTY_INT_BUFFER;
                 } else {
-                    annotationIndices = new int[annotationCount];
-                    buffer.slice(annotationOffset - BindepsConstants.HEADER_SIZE, annotationCount * 4)
-                            .asIntBuffer()
-                            .get(annotationIndices);
+                    annotationIndices = buffer.slice(annotationOffset - BindepsConstants.HEADER_SIZE, annotationCount * 4)
+                            .order(ByteOrder.BIG_ENDIAN)
+                            .asIntBuffer();
                 }
             }
             return annotationIndices;
@@ -254,21 +256,20 @@ public class BindepsReader {
                 var annotationIndices = getAnnotationIndices();
                 annotations = new StringPoolEntry[annotationCount];
                 for (var i = 0; i < annotationCount; i++) {
-                    annotations[i] = new StringPoolEntry(buffer, annotationIndices[i]);
+                    annotations[i] = new StringPoolEntry(buffer, annotationIndices.get(i));
                 }
             }
             return annotations;
         }
 
-        public int[] getDependenciesIndices() {
+        public IntBuffer getDependenciesIndices() {
             if (dependenciesIndices == null) {
                 if (dependenciesCount == 0) {
-                    dependenciesIndices = new int[0];
+                    dependenciesIndices = EMPTY_INT_BUFFER;
                 } else {
-                    dependenciesIndices = new int[dependenciesCount];
-                    buffer.slice(dependenciesOffset - BindepsConstants.HEADER_SIZE, dependenciesCount * 4)
-                            .asIntBuffer()
-                            .get(dependenciesIndices);
+                    dependenciesIndices = buffer.slice(dependenciesOffset - BindepsConstants.HEADER_SIZE, dependenciesCount * 4)
+                            .order(ByteOrder.BIG_ENDIAN)
+                            .asIntBuffer();
                 }
             }
             return dependenciesIndices;
@@ -279,7 +280,7 @@ public class BindepsReader {
                 var dependenciesIndices = getDependenciesIndices();
                 dependencies = new StringPoolEntry[dependenciesCount];
                 for (var i = 0; i < dependenciesCount; i++) {
-                    dependencies[i] = new StringPoolEntry(buffer, dependenciesIndices[i]);
+                    dependencies[i] = new StringPoolEntry(buffer, dependenciesIndices.get(i));
                 }
             }
             return dependencies;
