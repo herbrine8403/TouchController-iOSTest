@@ -24,8 +24,8 @@ public class BindepsWriter implements AutoCloseable {
         indexBuffer.order(ByteOrder.BIG_ENDIAN);
         heapBuffer.order(ByteOrder.BIG_ENDIAN);
 
-        indexBuffer.put(BindepsConstraints.MAGIC);
-        indexBuffer.putInt(BindepsConstraints.VERSION);
+        indexBuffer.put(BindepsConstants.MAGIC);
+        indexBuffer.putInt(BindepsConstants.VERSION);
         indexBuffer.putInt(stringPoolSize);
         indexBuffer.putInt(classInfoSize);
     }
@@ -49,7 +49,7 @@ public class BindepsWriter implements AutoCloseable {
         var fullNameLength = fullNameBytes.length;
 
         // Write index
-        flushIfNeeded(indexChannel, indexBuffer, BindepsConstraints.STRING_RECORD_SIZE);
+        flushIfNeeded(indexChannel, indexBuffer, BindepsConstants.STRING_RECORD_SIZE);
         indexBuffer.putLong(hash);
         indexBuffer.putInt(parentIndex);
         indexBuffer.putInt(currentHeapOffset);
@@ -72,7 +72,7 @@ public class BindepsWriter implements AutoCloseable {
         var dependenciesOffset = writeIntArrayToHeap(dependencies);
 
         // Write index
-        flushIfNeeded(indexChannel, indexBuffer, BindepsConstraints.CLASS_RECORD_SIZE);
+        flushIfNeeded(indexChannel, indexBuffer, BindepsConstants.CLASS_RECORD_SIZE);
         indexBuffer.putInt(nameIndex);
         indexBuffer.putInt(superIndex);
         indexBuffer.putInt(access);
@@ -85,6 +85,8 @@ public class BindepsWriter implements AutoCloseable {
 
         indexBuffer.putInt(dependenciesOffset);
         indexBuffer.putInt(dependencies.length);
+
+        indexBuffer.put(new byte[12]); // Padded to 48 bytes
     }
 
     private int writeIntArrayToHeap(int[] array) throws IOException {
