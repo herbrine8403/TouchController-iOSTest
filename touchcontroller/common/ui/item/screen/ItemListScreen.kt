@@ -25,6 +25,8 @@ import top.fifthlight.combine.widget.ui.Text
 import top.fifthlight.touchcontroller.assets.Texts
 import top.fifthlight.touchcontroller.assets.Textures
 import top.fifthlight.touchcontroller.common.ui.widget.*
+import top.fifthlight.touchcontroller.common.ui.widget.navigation.AppBar
+import top.fifthlight.touchcontroller.common.ui.widget.navigation.BackButton
 import top.fifthlight.touchcontroller.common.ui.model.ItemListScreenModel
 
 class ItemListScreen(
@@ -91,7 +93,7 @@ class ItemListScreen(
                     modifier = Modifier
                         .border(BlackstoneTextures.widget_background_background_dark)
                         .fillMaxHeight()
-                        .weight(.6f)
+                        .weight(.6f),
                 ) {
                     ItemChooser(screenModel::addItem)
                 }
