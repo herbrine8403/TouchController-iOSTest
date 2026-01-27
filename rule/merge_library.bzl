@@ -2,7 +2,6 @@
 
 load("@rules_java//java:defs.bzl", _JavaInfo = "JavaInfo")
 load("@rules_java//java/bazel/rules:bazel_java_library.bzl", _java_library = "java_library")
-load("@rules_java//java/common:java_info.bzl", "JavaInfo")
 load("@rules_java//java/common:java_common.bzl", "java_common")
 load("@rules_kotlin//kotlin:jvm.bzl", _kt_jvm_library = "kt_jvm_library")
 load("@rules_kotlin//src/main/starlark/core/compile:common.bzl", _KtJvmInfo = "KtJvmInfo")
@@ -36,15 +35,11 @@ MergeLibraryInfo, _ = provider(
 )
 
 def _merge_library_group_impl(ctx):
-    java_infos = []
-    for dep in ctx.attr.deps:
-        if JavaInfo in dep:
-            java_infos.append(dep[JavaInfo])
     return [MergeLibraryInfo(
         merge_jars = depset(),
         merge_source_jars = depset(),
         deps = [dep[MergeLibraryInfo] for dep in ctx.attr.deps],
-    ), java_common.merge(java_infos)]
+    )]
 
 merge_library_group = rule(
     implementation = _merge_library_group_impl,
@@ -56,7 +51,7 @@ merge_library_group = rule(
     },
 )
 
-def _modify_deps(deps, runtime_deps, associates, merge_deps, merge_only_deps, plugins, expect, actual):
+def _modify_deps(deps, runtime_deps, associates, merge_deps, merge_runtime_deps, plugins, expect, actual):
     real_deps = [dep for dep in deps]
     for merge_dep in merge_deps:
         if not merge_dep in associates:
@@ -68,7 +63,7 @@ def _modify_deps(deps, runtime_deps, associates, merge_deps, merge_only_deps, pl
         real_plugins.append("//rule/expect_actual_tools/processor/java:expect_processor")
     if actual:
         real_plugins.append("//rule/expect_actual_tools/processor/java:actual_processor")
-    runtime_deps = runtime_deps + merge_only_deps
+    runtime_deps = runtime_deps + merge_runtime_deps
     args = {"deps": real_deps, "plugins": real_plugins, "runtime_deps": runtime_deps}
     if associates != []:
         args["associates"] = associates
@@ -79,11 +74,11 @@ def _merge_library_macro(**kwargs):
     runtime_deps = kwargs.get("runtime_deps", [])
     associates = kwargs.get("associates", [])
     merge_deps = kwargs.get("merge_deps", [])
-    merge_only_deps = kwargs.get("merge_only_deps", [])
+    merge_runtime_deps = kwargs.get("merge_runtime_deps", [])
     plugins = kwargs.get("plugins", [])
     expect = kwargs.get("expect", False)
     actual = kwargs.get("actual", False)
-    return kwargs | _modify_deps(deps, runtime_deps, associates, merge_deps, merge_only_deps, plugins, expect, actual)
+    return kwargs | _modify_deps(deps, runtime_deps, associates, merge_deps, merge_runtime_deps, plugins, expect, actual)
 
 def _java_merge_library_import_impl(ctx):
     return [
@@ -115,6 +110,7 @@ def _java_merge_library_impl(ctx):
             merge_jars = java_info.full_compile_jars,
             merge_source_jars = depset(java_info.source_jars),
             deps = [dep[MergeLibraryInfo] for dep in ctx.attr.merge_deps] +
+                   [dep[MergeLibraryInfo] for dep in ctx.attr.merge_runtime_deps] +
                    [dep[MergeLibraryInfo] for dep in ctx.attr.merge_only_deps],
         ),
     ] + target
@@ -125,6 +121,9 @@ java_merge_library = rule(
     initializer = _merge_library_macro,
     attrs = {
         "merge_deps": attr.label_list(
+            providers = [[_JavaInfo, MergeLibraryInfo]],
+        ),
+        "merge_runtime_deps": attr.label_list(
             providers = [[_JavaInfo, MergeLibraryInfo]],
         ),
         "merge_only_deps": attr.label_list(
@@ -146,8 +145,7 @@ def _kt_merge_library_import_impl(ctx):
         MergeLibraryInfo(
             merge_jars = ctx.attr.src[_JavaInfo].full_compile_jars,
             merge_source_jars = ctx.attr.src[_JavaInfo].source_jars,
-            deps = [dep[MergeLibraryInfo] for dep in ctx.attr.merge_deps] +
-                   [dep[MergeLibraryInfo] for dep in ctx.attr.merge_only_deps],
+            deps = [dep[MergeLibraryInfo] for dep in ctx.attr.deps],
         ),
         ctx.attr.src[_JavaInfo],
         ctx.attr.src[_KtJvmInfo],
@@ -173,7 +171,9 @@ def _kt_merge_library_impl(ctx):
         MergeLibraryInfo(
             merge_jars = depset(kt_info.all_output_jars),
             merge_source_jars = depset(java_info.source_jars),
-            deps = [dep[MergeLibraryInfo] for dep in ctx.attr.merge_deps],
+            deps = [dep[MergeLibraryInfo] for dep in ctx.attr.merge_deps] +
+                   [dep[MergeLibraryInfo] for dep in ctx.attr.merge_runtime_deps] +
+                   [dep[MergeLibraryInfo] for dep in ctx.attr.merge_only_deps],
         ),
     ] + target
 
@@ -183,6 +183,9 @@ kt_merge_library = rule(
     implementation = _kt_merge_library_impl,
     attrs = {
         "merge_deps": attr.label_list(
+            providers = [[_JavaInfo, MergeLibraryInfo]],
+        ),
+        "merge_runtime_deps": attr.label_list(
             providers = [[_JavaInfo, MergeLibraryInfo]],
         ),
         "merge_only_deps": attr.label_list(

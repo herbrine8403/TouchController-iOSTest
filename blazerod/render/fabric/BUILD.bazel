@@ -38,13 +38,15 @@ kt_merge_library(
         "//blazerod/render/api/resource",
         "//blazerod/render/expect",
         "//blazerod/render/main",
-        "//blazerod/render/main:main_deps",
         "//blazerod/render/main/debug",
         "//blazerod/render/main/layout",
         "//blazerod/render/main/runtime",
         "//blazerod/render/main/runtime/uniform",
         "//blazerod/render/main/util/dispatchers",
         "//blazerod/render/main/util/objectpool",
+    ],
+    merge_only_deps = [
+        "//blazerod/render/main:main_deps",
     ],
     resource_jars = [
         "//blazerod:icon",

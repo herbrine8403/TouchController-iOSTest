@@ -13,7 +13,7 @@ kt_merge_library(
         "//touchcontroller/resources/lang:text_binding",
         "//touchcontroller/resources/texture:texture_lib",
     ],
-    merge_only_deps = [
+    merge_runtime_deps = [
         "//touchcontroller/common/about/resources",
     ],
     visibility = ["//touchcontroller:__subpackages__"],

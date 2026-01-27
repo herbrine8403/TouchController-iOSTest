@@ -57,5 +57,7 @@ maven.install(
         "io.github.classgraph:classgraph:4.8.184",
         "at.yawk.lz4:lz4-java:1.10.3",
         "org.apache.commons:commons-compress:1.28.0",
+        "org.antlr:antlr4:4.13.2",
+        "org.antlr:antlr4-runtime:4.13.2",
     ],
 )
