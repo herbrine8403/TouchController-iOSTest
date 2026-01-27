@@ -16,6 +16,7 @@ public class BindepsReader {
 
     private final int stringPoolSize;
     private final int classInfoSize;
+    private final int classInfoOffset;
 
     public BindepsReader(Path inputPath) throws IOException {
         var buffer = ByteBuffer.allocateDirect(BindepsConstants.HEADER_SIZE);
@@ -47,6 +48,7 @@ public class BindepsReader {
             if (classInfoSize < 0) {
                 throw new IOException("Invalid class info size: %d".formatted(classInfoSize));
             }
+            classInfoOffset = BindepsConstants.STRING_RECORD_SIZE * stringPoolSize;
 
             var heapSize = buffer.getInt();
             var dataSize = BindepsConstants.STRING_RECORD_SIZE * stringPoolSize + BindepsConstants.CLASS_RECORD_SIZE * classInfoSize + heapSize;
@@ -65,7 +67,7 @@ public class BindepsReader {
                 }
                 dataBuffer.flip();
             }
-            this.dataBuffer = dataBuffer;
+            this.dataBuffer = dataBuffer.asReadOnlyBuffer();
         }
     }
 
@@ -73,8 +75,47 @@ public class BindepsReader {
         return StandardCharsets.UTF_8.decode(buffer.slice(offset, length)).toString();
     }
 
-    public static class StringPoolEntry {
-        private final ByteBuffer buffer;
+    public String readHeapString(int offset, int length) {
+        return decodeCharBuffer(dataBuffer, offset, length);
+    }
+
+    public IntBuffer readHeapIntBuffer(int offset, int length) {
+        return dataBuffer.slice(offset, length * 4).order(ByteOrder.BIG_ENDIAN).asIntBuffer();
+    }
+
+    public int readHeapInt(int offset) {
+        return dataBuffer.getInt(offset);
+    }
+
+    public class StringPoolReader {
+        public long getHash(int offset) {
+            return BindepsReader.this.dataBuffer.getLong(offset);
+        }
+
+        public int getParentIndex(int offset) {
+            return BindepsReader.this.dataBuffer.getInt(offset + 8);
+        }
+
+        public int getHeapOffset(int offset) {
+            return BindepsReader.this.dataBuffer.getInt(offset + 12) - BindepsConstants.HEADER_SIZE;
+        }
+
+        public int getNameLength(int offset) {
+            return Short.toUnsignedInt(BindepsReader.this.dataBuffer.getShort(offset + 16));
+        }
+
+        public int getFullNameLength(int offset) {
+            return Short.toUnsignedInt(BindepsReader.this.dataBuffer.getShort(offset + 18));
+        }
+    }
+
+    public final StringPoolReader stringPoolReader = new StringPoolReader();
+
+    public int getStringPoolOffset(int index) {
+        return BindepsConstants.STRING_RECORD_SIZE * index;
+    }
+
+    public class StringPoolEntry {
         private final int index;
 
         private final long hash;
@@ -87,15 +128,15 @@ public class BindepsReader {
         private String name = null;
         private String fullName = null;
 
-        public StringPoolEntry(ByteBuffer buffer, int index) {
-            this.buffer = buffer;
+        public StringPoolEntry(int index) {
+            var reader = BindepsReader.this.stringPoolReader;
+            var offset = getStringPoolOffset(index);
             this.index = index;
-            var offset = index * BindepsConstants.STRING_RECORD_SIZE;
-            this.hash = buffer.getLong(offset);
-            this.parentIndex = buffer.getInt(offset + 8);
-            this.heapOffset = buffer.getInt(offset + 12) - BindepsConstants.HEADER_SIZE;
-            this.nameLength = Short.toUnsignedInt(buffer.getShort(offset + 16));
-            this.fullNameLength = Short.toUnsignedInt(buffer.getShort(offset + 18));
+            this.hash = reader.getHash(offset);
+            this.parentIndex = reader.getParentIndex(offset);
+            this.heapOffset = reader.getHeapOffset(offset);
+            this.nameLength = reader.getNameLength(offset);
+            this.fullNameLength = reader.getFullNameLength(offset);
         }
 
         public long getHash() {
@@ -112,21 +153,21 @@ public class BindepsReader {
 
         public StringPoolEntry getParent() {
             if (parent == null) {
-                parent = new StringPoolEntry(buffer, parentIndex);
+                parent = new StringPoolEntry(parentIndex);
             }
             return parent;
         }
 
         public String getName() {
             if (name == null) {
-                name = decodeCharBuffer(buffer, heapOffset, nameLength);
+                name = readHeapString(heapOffset, nameLength);
             }
             return name;
         }
 
         public String getFullName() {
             if (fullName == null) {
-                fullName = decodeCharBuffer(buffer, heapOffset + nameLength, fullNameLength);
+                fullName = readHeapString(heapOffset + nameLength, fullNameLength);
             }
             return fullName;
         }
@@ -137,13 +178,56 @@ public class BindepsReader {
     }
 
     public StringPoolEntry getStringPoolEntry(int index) {
-        return new StringPoolEntry(dataBuffer, index);
+        return new StringPoolEntry(index);
     }
 
-    public static class ClassInfoEntry {
-            private static final IntBuffer EMPTY_INT_BUFFER = IntBuffer.wrap(new int[0]).asReadOnlyBuffer();
+    public class ClassInfoReader {
+        public int getNameIndex(int offset) {
+            return BindepsReader.this.dataBuffer.getInt(offset);
+        }
 
-        private final ByteBuffer buffer;
+        public int getSuperIndex(int offset) {
+            return BindepsReader.this.dataBuffer.getInt(offset + 4);
+        }
+
+        public int getAccess(int offset) {
+            return BindepsReader.this.dataBuffer.getInt(offset + 8);
+        }
+
+        public int getInterfaceOffset(int offset) {
+            return BindepsReader.this.dataBuffer.getInt(offset + 12);
+        }
+
+        public int getInterfaceCount(int offset) {
+            return BindepsReader.this.dataBuffer.getInt(offset + 16);
+        }
+
+        public int getAnnotationOffset(int offset) {
+            return BindepsReader.this.dataBuffer.getInt(offset + 20);
+        }
+
+        public int getAnnotationCount(int offset) {
+            return BindepsReader.this.dataBuffer.getInt(offset + 24);
+        }
+
+        public int getDependenciesOffset(int offset) {
+            return BindepsReader.this.dataBuffer.getInt(offset + 28);
+        }
+
+        public int getDependenciesCount(int offset) {
+            return BindepsReader.this.dataBuffer.getInt(offset + 32);
+        }
+    }
+
+    public final ClassInfoReader classInfoReader = new ClassInfoReader();
+
+    public int getClassInfoOffset(int index) {
+        return classInfoOffset + BindepsConstants.CLASS_RECORD_SIZE * index;
+    }
+
+    public class ClassInfoEntry {
+        private static final IntBuffer EMPTY_INT_BUFFER = IntBuffer.wrap(new int[0]).asReadOnlyBuffer();
+
         private final int index;
 
         private final int nameIndex;
@@ -165,19 +249,19 @@ public class BindepsReader {
         private StringPoolEntry[] annotations = null;
         private StringPoolEntry[] dependencies = null;
 
-        public ClassInfoEntry(ByteBuffer buffer, int classInfoOffset, int index) {
-            this.buffer = buffer;
+        public ClassInfoEntry(int index) {
             this.index = index;
-            var offset = classInfoOffset + index * BindepsConstants.CLASS_RECORD_SIZE;
-            nameIndex = buffer.getInt(offset);
-            superIndex = buffer.getInt(offset + 4);
-            access = buffer.getInt(offset + 8);
-            interfaceOffset = buffer.getInt(offset + 12);
-            interfaceCount = buffer.getInt(offset + 16);
-            annotationOffset = buffer.getInt(offset + 20);
-            annotationCount = buffer.getInt(offset + 24);
-            dependenciesOffset = buffer.getInt(offset + 28);
-            dependenciesCount = buffer.getInt(offset + 32);
+            var reader = BindepsReader.this.classInfoReader;
+            var offset = getClassInfoOffset(index);
+            this.nameIndex = reader.getNameIndex(offset);
+            this.superIndex = reader.getSuperIndex(offset);
+            this.access = reader.getAccess(offset);
+            this.interfaceOffset = reader.getInterfaceOffset(offset);
+            this.interfaceCount = reader.getInterfaceCount(offset);
+            this.annotationOffset = reader.getAnnotationOffset(offset);
+            this.annotationCount = reader.getAnnotationCount(offset);
+            this.dependenciesOffset = reader.getDependenciesOffset(offset);
+            this.dependenciesCount = reader.getDependenciesCount(offset);
         }
 
         public int getIndex() {
@@ -190,7 +274,7 @@ public class BindepsReader {
 
         public StringPoolEntry getName() {
             if (name == null) {
-                name = new StringPoolEntry(buffer, nameIndex);
+                name = new StringPoolEntry(nameIndex);
             }
             return name;
         }
@@ -205,7 +289,7 @@ public class BindepsReader {
                 return null;
             }
             if (superClass == null) {
-                superClass = new StringPoolEntry(buffer, superIndex);
+                superClass = new StringPoolEntry(superIndex);
             }
             return superClass;
         }
@@ -219,9 +303,7 @@ public class BindepsReader {
                 if (interfaceCount == 0) {
                     interfaceIndices = EMPTY_INT_BUFFER;
                 } else {
-                    interfaceIndices = buffer.slice(interfaceOffset - BindepsConstants.HEADER_SIZE, interfaceCount * 4)
-                            .order(ByteOrder.BIG_ENDIAN)
-                            .asIntBuffer();
+                    interfaceIndices = readHeapIntBuffer(interfaceOffset - BindepsConstants.HEADER_SIZE, interfaceCount);
                 }
             }
             return interfaceIndices;
@@ -232,7 +314,7 @@ public class BindepsReader {
                 var interfaceIndices = getInterfaceIndices();
                 interfaces = new StringPoolEntry[interfaceCount];
                 for (var i = 0; i < interfaceCount; i++) {
-                    interfaces[i] = new StringPoolEntry(buffer, interfaceIndices.get(i));
+                    interfaces[i] = new StringPoolEntry(interfaceIndices.get(i));
                 }
             }
             return interfaces;
@@ -243,9 +325,7 @@ public class BindepsReader {
                 if (annotationCount == 0) {
                     annotationIndices = EMPTY_INT_BUFFER;
                 } else {
-                    annotationIndices = buffer.slice(annotationOffset - BindepsConstants.HEADER_SIZE, annotationCount * 4)
-                            .order(ByteOrder.BIG_ENDIAN)
-                            .asIntBuffer();
+                    annotationIndices = readHeapIntBuffer(annotationOffset - BindepsConstants.HEADER_SIZE, annotationCount);
                 }
             }
             return annotationIndices;
@@ -256,7 +336,7 @@ public class BindepsReader {
                 var annotationIndices = getAnnotationIndices();
                 annotations = new StringPoolEntry[annotationCount];
                 for (var i = 0; i < annotationCount; i++) {
-                    annotations[i] = new StringPoolEntry(buffer, annotationIndices.get(i));
+                    annotations[i] = new StringPoolEntry(annotationIndices.get(i));
                 }
             }
             return annotations;
@@ -267,9 +347,7 @@ public class BindepsReader {
                 if (dependenciesCount == 0) {
                     dependenciesIndices = EMPTY_INT_BUFFER;
                 } else {
-                    dependenciesIndices = buffer.slice(dependenciesOffset - BindepsConstants.HEADER_SIZE, dependenciesCount * 4)
-                            .order(ByteOrder.BIG_ENDIAN)
-                            .asIntBuffer();
+                    dependenciesIndices = readHeapIntBuffer(dependenciesOffset - BindepsConstants.HEADER_SIZE, dependenciesCount);
                 }
             }
             return dependenciesIndices;
@@ -280,7 +358,7 @@ public class BindepsReader {
                 var dependenciesIndices = getDependenciesIndices();
                 dependencies = new StringPoolEntry[dependenciesCount];
                 for (var i = 0; i < dependenciesCount; i++) {
-                    dependencies[i] = new StringPoolEntry(buffer, dependenciesIndices.get(i));
+                    dependencies[i] = new StringPoolEntry(dependenciesIndices.get(i));
                 }
             }
             return dependencies;
@@ -292,6 +370,6 @@ public class BindepsReader {
     }
 
     public ClassInfoEntry getClassInfoEntry(int index) {
-        return new ClassInfoEntry(dataBuffer, BindepsConstants.STRING_RECORD_SIZE * stringPoolSize, index);
+        return new ClassInfoEntry(index);
     }
 }
