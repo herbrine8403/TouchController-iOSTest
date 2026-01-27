@@ -4,7 +4,6 @@ import java.util.Objects;
 
 import org.jetbrains.annotations.NotNull;
 import org.objectweb.asm.*;
-import org.objectweb.asm.signature.SignatureVisitor;
 
 public class ClassInfoVisitor extends ClassVisitor {
     private final Consumer consumer;
@@ -135,7 +134,7 @@ public class ClassInfoVisitor extends ClassVisitor {
     @Override
     public AnnotationVisitor visitTypeAnnotation(
             int typeRef, TypePath typePath, String descriptor, boolean visible) {
-        visitMethodDesc(descriptor);
+        visitDesc(descriptor);
         return new PkgDepsAnnotationVisitor(
                 super.visitTypeAnnotation(typeRef, typePath, descriptor, visible));
     }

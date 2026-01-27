@@ -8,9 +8,9 @@ public class ClassInfoCollector implements ClassInfoVisitor.Consumer {
     private ClassNameMap.Entry entry;
     private int accessFlag;
     private ClassNameMap.Entry superClass;
-    private ArrayList<ClassNameMap.Entry> interfaces = new ArrayList<>();
-    private HashSet<ClassNameMap.Entry> annotations = new HashSet<>();
-    private HashSet<ClassNameMap.Entry> dependencies = new HashSet<>(16);
+    private final ArrayList<ClassNameMap.Entry> interfaces = new ArrayList<>();
+    private final HashSet<ClassNameMap.Entry> annotations = new HashSet<>();
+    private final HashSet<ClassNameMap.Entry> dependencies = new HashSet<>(16);
 
     public ClassInfoCollector(ClassNameMap classNameMap) {
         this.classNameMap = classNameMap;
@@ -20,7 +20,9 @@ public class ClassInfoCollector implements ClassInfoVisitor.Consumer {
     public void acceptClassInfo(String className, int accessFlag, String superClass) {
         entry = classNameMap.getOrCreate(className);
         this.accessFlag = accessFlag;
-        this.superClass = classNameMap.getOrCreate(superClass);
+        if (superClass != null) {
+            this.superClass = classNameMap.getOrCreate(superClass);
+        }
     }
 
     @Override
