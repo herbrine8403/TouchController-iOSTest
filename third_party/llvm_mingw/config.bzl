@@ -6,7 +6,10 @@ load("@rules_cc//cc:defs.bzl", "CcToolchainConfigInfo")
 load("@rules_cc//cc/common:cc_common.bzl", "cc_common")
 
 def _impl(ctx):
-    SDK_PATH_PREFIX = "wrapper/%s-{}" % ctx.attr.triple
+    if ctx.attr.use_wrapper:
+        SDK_PATH_PREFIX = "wrapper/%s-{}%s" % (ctx.attr.triple, ctx.attr.binary_extension)
+    else:
+        SDK_PATH_PREFIX = "bin/%s-{}%s" % (ctx.attr.triple, ctx.attr.binary_extension)
 
     tool_paths = [
         tool_path(
@@ -118,6 +121,7 @@ def _impl(ctx):
         ctx = ctx,
         features = features,
         cxx_builtin_include_directories = [
+            "%s/include" % ctx.attr.execroot,
             "%s/%s/include" % (ctx.attr.execroot, ctx.attr.triple),
             "%s/lib/clang/21/include" % ctx.attr.execroot,
         ],
@@ -140,6 +144,8 @@ config = rule(
         "execroot": attr.string(mandatory = True),
         "c_opts": attr.string_list(mandatory = False, default = []),
         "link_opts": attr.string_list(mandatory = False, default = []),
+        "binary_extension": attr.string(mandatory = True),
+        "use_wrapper": attr.bool(default = True),
     },
     provides = [CcToolchainConfigInfo],
 )

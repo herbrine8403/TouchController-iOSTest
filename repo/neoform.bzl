@@ -560,6 +560,10 @@ def _neoform_repo_impl(rctx):
 
     _generate_steps(rctx, version_info, config_data)
 
+    for jar in function_jars.values():
+        for entry in jar:
+            entry.token.wait()
+
 _neoform_repo = repository_rule(
     implementation = _neoform_repo_impl,
     attrs = {

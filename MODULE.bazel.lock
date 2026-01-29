@@ -84,8 +84,6 @@
     "https://bcr.bazel.build/modules/hermetic_cc_toolchain/4.0.1/source.json": "527d73a9964cd34ceeb73a1d5e5d04d9e6238401363c783c1f3021d5b25b8a63",
     "https://bcr.bazel.build/modules/jsoncpp/1.9.6/MODULE.bazel": "2f8d20d3b7d54143213c4dfc3d98225c42de7d666011528dc8fe91591e2e17b0",
     "https://bcr.bazel.build/modules/jsoncpp/1.9.6/source.json": "a04756d367a2126c3541682864ecec52f92cdee80a35735a3cb249ce015ca000",
-    "https://bcr.bazel.build/modules/libexpat/2.7.1/MODULE.bazel": "a6e9d5b98a5b9a50d0235a06218a8d1e83d5ee2118af2196bf66f2b3255fc7ab",
-    "https://bcr.bazel.build/modules/libexpat/2.7.1/source.json": "a5774b85d200165ae3741fb1187b5d9b9916b3810805d6f6805b3bb553dd7301",
     "https://bcr.bazel.build/modules/libffi/3.4.7.bcr.3/MODULE.bazel": "2aaa0e32669002a26ffe421e98913ed70fa5ee21c36fc51d2d51053a5ed07420",
     "https://bcr.bazel.build/modules/libffi/3.4.7.bcr.3/source.json": "fdffd7d4e35124905988e03a5f7ced705df34f5e5134445b7f17f1ecaede9df2",
     "https://bcr.bazel.build/modules/libpfm/4.11.0/MODULE.bazel": "45061ff025b301940f1e30d2c16bea596c25b176c8b6b3087e92615adbd52902",
@@ -257,14 +255,14 @@
   "moduleExtensions": {
     "//repo:llvm_mingw.bzl%llvm_mingw": {
       "general": {
-        "bzlTransitiveDigest": "orI74pnlX0TMKnjW+bZWYBs+AFX/YsDChDr/Ie11g1A=",
-        "usagesDigest": "ugan3MgKZD2xOvNqhonRN0vLWyK6kdFDi0RygU5m3qs=",
+        "bzlTransitiveDigest": "JuARQ9nevK0XZrDDlUagtolYaCbX846zP7XZj9hih9U=",
+        "usagesDigest": "oBdMN5D9HUehj5Wqr9XQO1LdBdp7UWC8K+80m5FAE9w=",
         "recordedFileInputs": {},
         "recordedDirentsInputs": {},
         "envVariables": {},
         "generatedRepoSpecs": {
-          "llvm_mingw_toolchain_linux_x86_64": {
-            "repoRuleId": "@@//repo:llvm_mingw.bzl%_llvm_mingw_toolchain",
+          "llvm_mingw_toolchain_linux_x86_64_files": {
+            "repoRuleId": "@@//repo:llvm_mingw.bzl%_llvm_mingw_files",
             "attributes": {
               "url": "https://github.com/mstorsjo/llvm-mingw/releases/download/20251216/llvm-mingw-20251216-ucrt-ubuntu-22.04-x86_64.tar.xz",
               "sha256": "db561734a05eb4a0695d5e901aadd6c1cda74bba4c9e102b677f81c6fd59849a",
@@ -275,14 +273,27 @@
                 "x86_32": "i686-w64-mingw32",
                 "aarch64": "aarch64-w64-mingw32"
               },
-              "exec_compatible_with": [
-                "@platforms//os:linux",
-                "@platforms//cpu:x86_64"
-              ]
+              "binary_extension": "",
+              "use_wrapper": true
             }
           },
-          "llvm_mingw_toolchain_linux_aarch64": {
-            "repoRuleId": "@@//repo:llvm_mingw.bzl%_llvm_mingw_toolchain",
+          "llvm_mingw_toolchain_linux_x86_64": {
+            "repoRuleId": "@@//repo:llvm_mingw.bzl%_llvm_mingw_config",
+            "attributes": {
+              "targets": {
+                "x86_64": "x86_64-w64-mingw32",
+                "x86_32": "i686-w64-mingw32",
+                "aarch64": "aarch64-w64-mingw32"
+              },
+              "exec_compatible_with": [
+                "@@platforms//os:linux",
+                "@@platforms//cpu:x86_64"
+              ],
+              "files_repo": "@@+llvm_mingw+llvm_mingw_toolchain_linux_x86_64_files//:llvm_mingw_toolchain_linux_x86_64_files"
+            }
+          },
+          "llvm_mingw_toolchain_linux_aarch64_files": {
+            "repoRuleId": "@@//repo:llvm_mingw.bzl%_llvm_mingw_files",
             "attributes": {
               "url": "https://github.com/mstorsjo/llvm-mingw/releases/download/20251216/llvm-mingw-20251216-ucrt-ubuntu-22.04-aarch64.tar.xz",
               "sha256": "2950bc65bdd289a2138f48ffb4b200c06c6dc71d8c105452ebd9fa7d567497ec",
@@ -293,14 +304,27 @@
                 "x86_32": "i686-w64-mingw32",
                 "aarch64": "aarch64-w64-mingw32"
               },
-              "exec_compatible_with": [
-                "@platforms//os:linux",
-                "@platforms//cpu:aarch64"
-              ]
+              "binary_extension": "",
+              "use_wrapper": true
             }
           },
-          "llvm_mingw_toolchain_macos": {
-            "repoRuleId": "@@//repo:llvm_mingw.bzl%_llvm_mingw_toolchain",
+          "llvm_mingw_toolchain_linux_aarch64": {
+            "repoRuleId": "@@//repo:llvm_mingw.bzl%_llvm_mingw_config",
+            "attributes": {
+              "targets": {
+                "x86_64": "x86_64-w64-mingw32",
+                "x86_32": "i686-w64-mingw32",
+                "aarch64": "aarch64-w64-mingw32"
+              },
+              "exec_compatible_with": [
+                "@@platforms//os:linux",
+                "@@platforms//cpu:aarch64"
+              ],
+              "files_repo": "@@+llvm_mingw+llvm_mingw_toolchain_linux_aarch64_files//:llvm_mingw_toolchain_linux_aarch64_files"
+            }
+          },
+          "llvm_mingw_toolchain_macos_files": {
+            "repoRuleId": "@@//repo:llvm_mingw.bzl%_llvm_mingw_files",
             "attributes": {
               "url": "https://github.com/mstorsjo/llvm-mingw/releases/download/20251216/llvm-mingw-20251216-ucrt-macos-universal.tar.xz",
               "sha256": "38bb5e48ec3e0ce95fb901f4efff0bd6ffa966d1b32539a6510af816a959d160",
@@ -311,13 +335,156 @@
                 "x86_32": "i686-w64-mingw32",
                 "aarch64": "aarch64-w64-mingw32"
               },
+              "binary_extension": "",
+              "use_wrapper": true
+            }
+          },
+          "llvm_mingw_toolchain_macos": {
+            "repoRuleId": "@@//repo:llvm_mingw.bzl%_llvm_mingw_config",
+            "attributes": {
+              "targets": {
+                "x86_64": "x86_64-w64-mingw32",
+                "x86_32": "i686-w64-mingw32",
+                "aarch64": "aarch64-w64-mingw32"
+              },
               "exec_compatible_with": [
-                "@platforms//os:macos"
-              ]
+                "@@platforms//os:macos"
+              ],
+              "files_repo": "@@+llvm_mingw+llvm_mingw_toolchain_macos_files//:llvm_mingw_toolchain_macos_files"
+            }
+          },
+          "llvm_mingw_toolchain_windows_x86_64_files": {
+            "repoRuleId": "@@//repo:llvm_mingw.bzl%_llvm_mingw_files",
+            "attributes": {
+              "url": "https://github.com/mstorsjo/llvm-mingw/releases/download/20251216/llvm-mingw-20251216-ucrt-x86_64.zip",
+              "sha256": "2d96a4b758f7f8deaec5065833fe025aa53cfc5f704d0524002510984da0ccf4",
+              "strip_prefix": "llvm-mingw-20251216-ucrt-x86_64",
+              "type": "zip",
+              "targets": {
+                "x86_64": "x86_64-w64-mingw32",
+                "x86_32": "i686-w64-mingw32",
+                "aarch64": "aarch64-w64-mingw32"
+              },
+              "binary_extension": ".exe",
+              "use_wrapper": false
+            }
+          },
+          "llvm_mingw_toolchain_windows_x86_64": {
+            "repoRuleId": "@@//repo:llvm_mingw.bzl%_llvm_mingw_config",
+            "attributes": {
+              "targets": {
+                "x86_64": "x86_64-w64-mingw32",
+                "x86_32": "i686-w64-mingw32",
+                "aarch64": "aarch64-w64-mingw32"
+              },
+              "exec_compatible_with": [
+                "@@platforms//os:windows",
+                "@@platforms//cpu:x86_64"
+              ],
+              "files_repo": "@@+llvm_mingw+llvm_mingw_toolchain_windows_x86_64_files//:llvm_mingw_toolchain_windows_x86_64_files"
+            }
+          },
+          "llvm_mingw_toolchain_windows_aarch64_files": {
+            "repoRuleId": "@@//repo:llvm_mingw.bzl%_llvm_mingw_files",
+            "attributes": {
+              "url": "https://github.com/mstorsjo/llvm-mingw/releases/download/20251216/llvm-mingw-20251216-ucrt-aarch64.zip",
+              "sha256": "60c06bd255feb2ef1eb6fce7ee6b307d8f78ee6639660f49861c7c10a8a86164",
+              "strip_prefix": "llvm-mingw-20251216-ucrt-aarch64",
+              "type": "zip",
+              "targets": {
+                "x86_64": "x86_64-w64-mingw32",
+                "x86_32": "i686-w64-mingw32",
+                "aarch64": "aarch64-w64-mingw32"
+              },
+              "binary_extension": ".exe",
+              "use_wrapper": false
+            }
+          },
+          "llvm_mingw_toolchain_windows_aarch64": {
+            "repoRuleId": "@@//repo:llvm_mingw.bzl%_llvm_mingw_config",
+            "attributes": {
+              "targets": {
+                "x86_64": "x86_64-w64-mingw32",
+                "x86_32": "i686-w64-mingw32",
+                "aarch64": "aarch64-w64-mingw32"
+              },
+              "exec_compatible_with": [
+                "@@platforms//os:windows",
+                "@@platforms//cpu:aarch64"
+              ],
+              "files_repo": "@@+llvm_mingw+llvm_mingw_toolchain_windows_aarch64_files//:llvm_mingw_toolchain_windows_aarch64_files"
+            }
+          },
+          "llvm_mingw_toolchain_windows_x86_32_files": {
+            "repoRuleId": "@@//repo:llvm_mingw.bzl%_llvm_mingw_files",
+            "attributes": {
+              "url": "https://github.com/mstorsjo/llvm-mingw/releases/download/20251216/llvm-mingw-20251216-ucrt-i686.zip",
+              "sha256": "c6b17faa808f412ec8ef2086994b3fc3c16e8c7292bbaf275254d0acfa18f54d",
+              "strip_prefix": "llvm-mingw-20251216-ucrt-i686",
+              "type": "zip",
+              "targets": {
+                "x86_64": "x86_64-w64-mingw32",
+                "x86_32": "i686-w64-mingw32",
+                "aarch64": "aarch64-w64-mingw32"
+              },
+              "binary_extension": ".exe",
+              "use_wrapper": false
+            }
+          },
+          "llvm_mingw_toolchain_windows_x86_32": {
+            "repoRuleId": "@@//repo:llvm_mingw.bzl%_llvm_mingw_config",
+            "attributes": {
+              "targets": {
+                "x86_64": "x86_64-w64-mingw32",
+                "x86_32": "i686-w64-mingw32",
+                "aarch64": "aarch64-w64-mingw32"
+              },
+              "exec_compatible_with": [
+                "@@platforms//os:windows",
+                "@@platforms//cpu:x86_32"
+              ],
+              "files_repo": "@@+llvm_mingw+llvm_mingw_toolchain_windows_x86_32_files//:llvm_mingw_toolchain_windows_x86_32_files"
+            }
+          },
+          "llvm_mingw_toolchain_windows_armv7_files": {
+            "repoRuleId": "@@//repo:llvm_mingw.bzl%_llvm_mingw_files",
+            "attributes": {
+              "url": "https://github.com/mstorsjo/llvm-mingw/releases/download/20251216/llvm-mingw-20251216-ucrt-armv7.zip",
+              "sha256": "84aba9a04e23af4bbf90a742d7045f9f5ce2a233caa73e9a5e3990334e1e3109",
+              "strip_prefix": "llvm-mingw-20251216-ucrt-armv7",
+              "type": "zip",
+              "targets": {
+                "x86_64": "x86_64-w64-mingw32",
+                "x86_32": "i686-w64-mingw32",
+                "aarch64": "aarch64-w64-mingw32"
+              },
+              "binary_extension": ".exe",
+              "use_wrapper": false
+            }
+          },
+          "llvm_mingw_toolchain_windows_armv7": {
+            "repoRuleId": "@@//repo:llvm_mingw.bzl%_llvm_mingw_config",
+            "attributes": {
+              "targets": {
+                "x86_64": "x86_64-w64-mingw32",
+                "x86_32": "i686-w64-mingw32",
+                "aarch64": "aarch64-w64-mingw32"
+              },
+              "exec_compatible_with": [
+                "@@platforms//os:windows",
+                "@@platforms//cpu:armv7"
+              ],
+              "files_repo": "@@+llvm_mingw+llvm_mingw_toolchain_windows_armv7_files//:llvm_mingw_toolchain_windows_armv7_files"
             }
           }
         },
-        "recordedRepoMappingEntries": []
+        "recordedRepoMappingEntries": [
+          [
+            "",
+            "platforms",
+            "platforms"
+          ]
+        ]
       }
     },
     "//repo:minecraft.bzl%minecraft": {
@@ -10640,17 +10807,17 @@
                 "1.17": "f425401a00adf0112fde624ee80c66333530f8a1",
                 "1.18": "d31a2e85ae149dd1b1a7070b22cb8887892fda6c",
                 "1.19": "a9c8b05a8082a65678beda6dfa2b8f21fa627bce",
-                "5": "95cbb98e47f72b53f6158439b1860ce8d69afd9c",
-                "12": "b7f27a49a33c939ff5d063f6324476998bd18649",
-                "16": "39ea43a203e87002435f87b38d70b26c78b7f249",
-                "17": "31397b2632419fc26f364de8c3368096dac84ed1",
-                "18": "7a4a009b2bc20175701896b4b20305c819e26b2a",
-                "19": "dd6d5ddfdceaf211d92c0c1cec84c46ef5554a97",
-                "24": "f5382825ace88cd56728eaf0394ac244bb01dfc7",
-                "26": "760499b7df746846c8a322746082fbc50ae0344b",
-                "27": "8f55c1e8aa7b342933be9f8da910bb71a72f9ca3",
-                "29": "6c7ffa1ae18c954e57a94f67e3bbd9031d8d588c",
-                "30": "86abfe2f1a9ac12c6287a0c7daaf4569d2c2b617"
+                "5": "9f45dc6ca82921ea40fa32be03d1b321156d14e7",
+                "12": "c25a94f7fd0bbae70107c1cd61ad284c63a980ca",
+                "16": "8a180748f1078a0437bf599b1f98314dd943d2ca",
+                "17": "50752437fc06162c9a4688a42a88313f3578c23b",
+                "18": "4ff537eba78ad49a7d247686ba7ede4612006207",
+                "19": "b6ea08208b94d516ec178d5315758c2108dd8cc4",
+                "24": "8c2f2c8454a01df589277ef0d30403da76e21caa",
+                "26": "bc541c828b7a789519728e61daaaa92a89dcacc0",
+                "27": "b30615a3143fe3fde9152a67f9e7b8a864df49bc",
+                "29": "ab9ed0cbe6544ac173bd466027529651e092934d",
+                "30": "f1ef4cb2ff88976aeffcc20efff76648acc01a02"
               },
               "asset_urls": {
                 "pre-1.6": "https://launchermeta.mojang.com/v1/packages/3d8e55480977e32acd9844e545177e69a52f594b/pre-1.6.json",
@@ -10662,17 +10829,17 @@
                 "1.17": "https://piston-meta.mojang.com/v1/packages/f425401a00adf0112fde624ee80c66333530f8a1/1.17.json",
                 "1.18": "https://piston-meta.mojang.com/v1/packages/d31a2e85ae149dd1b1a7070b22cb8887892fda6c/1.18.json",
                 "1.19": "https://piston-meta.mojang.com/v1/packages/a9c8b05a8082a65678beda6dfa2b8f21fa627bce/1.19.json",
-                "5": "https://piston-meta.mojang.com/v1/packages/95cbb98e47f72b53f6158439b1860ce8d69afd9c/5.json",
-                "12": "https://piston-meta.mojang.com/v1/packages/b7f27a49a33c939ff5d063f6324476998bd18649/12.json",
-                "16": "https://piston-meta.mojang.com/v1/packages/39ea43a203e87002435f87b38d70b26c78b7f249/16.json",
-                "17": "https://piston-meta.mojang.com/v1/packages/31397b2632419fc26f364de8c3368096dac84ed1/17.json",
-                "18": "https://piston-meta.mojang.com/v1/packages/7a4a009b2bc20175701896b4b20305c819e26b2a/18.json",
-                "19": "https://piston-meta.mojang.com/v1/packages/dd6d5ddfdceaf211d92c0c1cec84c46ef5554a97/19.json",
-                "24": "https://piston-meta.mojang.com/v1/packages/f5382825ace88cd56728eaf0394ac244bb01dfc7/24.json",
-                "26": "https://piston-meta.mojang.com/v1/packages/760499b7df746846c8a322746082fbc50ae0344b/26.json",
-                "27": "https://piston-meta.mojang.com/v1/packages/8f55c1e8aa7b342933be9f8da910bb71a72f9ca3/27.json",
-                "29": "https://piston-meta.mojang.com/v1/packages/6c7ffa1ae18c954e57a94f67e3bbd9031d8d588c/29.json",
-                "30": "https://piston-meta.mojang.com/v1/packages/86abfe2f1a9ac12c6287a0c7daaf4569d2c2b617/30.json"
+                "5": "https://piston-meta.mojang.com/v1/packages/9f45dc6ca82921ea40fa32be03d1b321156d14e7/5.json",
+                "12": "https://piston-meta.mojang.com/v1/packages/c25a94f7fd0bbae70107c1cd61ad284c63a980ca/12.json",
+                "16": "https://piston-meta.mojang.com/v1/packages/8a180748f1078a0437bf599b1f98314dd943d2ca/16.json",
+                "17": "https://piston-meta.mojang.com/v1/packages/50752437fc06162c9a4688a42a88313f3578c23b/17.json",
+                "18": "https://piston-meta.mojang.com/v1/packages/4ff537eba78ad49a7d247686ba7ede4612006207/18.json",
+                "19": "https://piston-meta.mojang.com/v1/packages/b6ea08208b94d516ec178d5315758c2108dd8cc4/19.json",
+                "24": "https://piston-meta.mojang.com/v1/packages/8c2f2c8454a01df589277ef0d30403da76e21caa/24.json",
+                "26": "https://piston-meta.mojang.com/v1/packages/bc541c828b7a789519728e61daaaa92a89dcacc0/26.json",
+                "27": "https://piston-meta.mojang.com/v1/packages/b30615a3143fe3fde9152a67f9e7b8a864df49bc/27.json",
+                "29": "https://piston-meta.mojang.com/v1/packages/ab9ed0cbe6544ac173bd466027529651e092934d/29.json",
+                "30": "https://piston-meta.mojang.com/v1/packages/f1ef4cb2ff88976aeffcc20efff76648acc01a02/30.json"
               },
               "version_assets": {
                 "b1.7.3": "pre-1.6",
@@ -14073,7 +14240,7 @@
     },
     "//repo:neoform.bzl%neoform": {
       "general": {
-        "bzlTransitiveDigest": "tx0oio85f+keBekiVl4d4I6E5Eooo1sNKXW6fmcXFWg=",
+        "bzlTransitiveDigest": "kijlrlK/OAkHWh89pDv9mIvRKoLhMcjyTW2u7o+VMpI=",
         "usagesDigest": "XX0TPfq3K2A+83EK1C9CFINSEfZl9LCtqKMTQ4l/8a4=",
         "recordedFileInputs": {
           "@@//neoform_pin.txt": "f5f349c33255eb0173480b40bd5ae23a8309aac7342a8267bffb9294168be7c6"
