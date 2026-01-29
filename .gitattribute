@@ -1,0 +1,2 @@
+# Set all files to LF line ending for reproducibility
+* auto text=eol eol=lf
