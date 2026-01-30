@@ -176,7 +176,8 @@ def _llvm_mingw_toolchain_impl(name, visibility, include_files, bin_files, lib_f
         linker_files = ":%s_linker_files" % name,
         objcopy_files = ":%s_objcopy_files" % name,
         strip_files = ":%s_strip_files" % name,
-        supports_param_files = 1,
+        supports_param_files = True,
+        supports_header_parsing = True,
         toolchain_config = ":%s_config" % name,
         toolchain_identifier = "llvm-mingw-%s" % triple,
     )

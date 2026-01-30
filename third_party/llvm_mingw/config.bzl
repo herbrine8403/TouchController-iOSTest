@@ -1,7 +1,7 @@
 """Configuration for LLVM-MinGW toolchain."""
 
 load("@rules_cc//cc:action_names.bzl", "ALL_CC_LINK_ACTION_NAMES", "ALL_CPP_COMPILE_ACTION_NAMES")
-load("@rules_cc//cc:cc_toolchain_config_lib.bzl", "feature", "flag_group", "flag_set", "tool_path", "with_feature_set")
+load("@rules_cc//cc:cc_toolchain_config_lib.bzl", "feature", "flag_group", "flag_set", "tool_path", "with_feature_set", "artifact_name_pattern")
 load("@rules_cc//cc:defs.bzl", "CcToolchainConfigInfo")
 load("@rules_cc//cc/common:cc_common.bzl", "cc_common")
 
@@ -134,6 +134,23 @@ def _impl(ctx):
         abi_version = "unknown",
         abi_libc_version = "unknown",
         tool_paths = tool_paths,
+        artifact_name_patterns = [
+            artifact_name_pattern(
+                category_name = "static_library",
+                prefix = "",
+                extension = ".lib",
+            ),
+            artifact_name_pattern(
+                category_name = "dynamic_library",
+                prefix = "dynamic_",
+                extension = ".dll",
+            ),
+            artifact_name_pattern(
+                category_name = "executable",
+                prefix = "",
+                extension = ".exe",
+            ),
+        ]
     )
 
 config = rule(
