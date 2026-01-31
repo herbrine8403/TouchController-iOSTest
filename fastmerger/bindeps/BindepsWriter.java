@@ -107,8 +107,8 @@ public class BindepsWriter implements AutoCloseable {
         }
     }
 
-    public void writeClassInfoEntry(int nameIndex, int superIndex, int access,
-                                    int[] interfaces, int[] annotations, int[] dependencies, int resourceIndex) {
+    public void writeClassInfoEntry(int nameIndex, int superIndex, int access, int resourceIndex, int release,
+                                    int[] interfaces, int[] annotations, int[] dependencies) {
         if (closed) {
             throw new IllegalStateException("Writer is closed");
         }
@@ -123,6 +123,7 @@ public class BindepsWriter implements AutoCloseable {
         indexBuffer.putInt(superIndex);
         indexBuffer.putInt(access);
         indexBuffer.putInt(resourceIndex);
+        indexBuffer.putInt(release);
 
         indexBuffer.putInt(interfaceOffset);
         indexBuffer.putInt(interfaces.length);
@@ -133,7 +134,7 @@ public class BindepsWriter implements AutoCloseable {
         indexBuffer.putInt(dependenciesOffset);
         indexBuffer.putInt(dependencies.length);
 
-        indexBuffer.put(new byte[8]); // Pad to 48 bytes
+        indexBuffer.put(new byte[4]); // Pad to 48 bytes
     }
 
     private int writeIntArrayToHeap(int[] array) {

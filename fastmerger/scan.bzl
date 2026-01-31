@@ -1,5 +1,8 @@
 BdepsInfo = provider(fields = {
-    "bdeps": "depset of scanned .bdeps files",
+    "bdeps": ".bdeps files",
+    "bdeps_pairs": "Array of jar -> bdeps pair",
+    "transitive_bdeps": "Transitive depset of bdeps",
+    "transitive_bdeps_pair": "Transitive depset of jar -> bdeps pair",
 })
 
 _DEPS_ATTRS = [
@@ -11,24 +14,32 @@ _DEPS_ATTRS = [
 ]
 
 def _bdeps_scan_impl(target, ctx):
-    transitive_bdeps = []
+    bdeps_depsets = []
+    bdeps_pair_depsets = []
 
     if hasattr(ctx.rule.attr, "deps"):
         for dep in ctx.rule.attr.deps:
             if BdepsInfo in dep:
-                transitive_bdeps.append(dep[BdepsInfo].bdeps)
+                bdeps_info = dep[BdepsInfo]
+                bdeps_depsets.append(bdeps_info.transitive_bdeps)
+                bdeps_pair_depsets.append(bdeps_info.transitive_bdeps_pair)
 
     if hasattr(ctx.rule.attr, "runtime_deps"):
         for dep in ctx.rule.attr.runtime_deps:
             if BdepsInfo in dep:
-                transitive_bdeps.append(dep[BdepsInfo].bdeps)
+                bdeps_info = dep[BdepsInfo]
+                bdeps_depsets.append(bdeps_info.transitive_bdeps)
+                bdeps_pair_depsets.append(bdeps_info.transitive_bdeps_pair)
 
     if hasattr(ctx.rule.attr, "merge_only_deps"):
         for dep in ctx.rule.attr.merge_only_deps:
             if BdepsInfo in dep:
-                transitive_bdeps.append(dep[BdepsInfo].bdeps)
+                bdeps_info = dep[BdepsInfo]
+                bdeps_depsets.append(bdeps_info.transitive_bdeps)
+                bdeps_pair_depsets.append(bdeps_info.transitive_bdeps_pair)
 
     current_bdeps = []
+    current_bdeps_pairs = []
     if JavaInfo in target:
         for jar in target[JavaInfo].runtime_output_jars:
             out_bdeps = ctx.actions.declare_file(jar.basename + ".bdeps")
@@ -55,11 +66,23 @@ def _bdeps_scan_impl(target, ctx):
                 },
             )
             current_bdeps.append(out_bdeps)
+            current_bdeps_pairs.append(struct(
+                jar = jar,
+                bdeps = out_bdeps,
+            ))
 
-    res_depset = depset(direct = current_bdeps, transitive = transitive_bdeps)
+    result_bdeps_depset = depset(direct = current_bdeps, transitive = bdeps_depsets)
+    result_bdeps_pair_depset = depset(direct = current_bdeps_pairs, transitive = bdeps_pair_depsets)
     return [
-        BdepsInfo(bdeps = res_depset),
-        OutputGroupInfo(bdeps = res_depset),
+        BdepsInfo(
+            bdeps = current_bdeps,
+            bdeps_pairs = current_bdeps_pairs,
+            transitive_bdeps = result_bdeps_depset,
+            transitive_bdeps_pair = result_bdeps_pair_depset,
+        ),
+        OutputGroupInfo(
+            bdeps = current_bdeps,
+        ),
     ]
 
 bdeps_scan = aspect(

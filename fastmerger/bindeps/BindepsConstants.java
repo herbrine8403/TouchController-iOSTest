@@ -10,9 +10,9 @@ public class BindepsConstants {
     public static final byte[] MAGIC = new byte[]{'B', 'I', 'N', 'D', 'E', 'P', 'S', 0x03};
 
     /**
-     * File version. Current version is 2.
+     * File version. Current version is 3.
      */
-    public static final int VERSION = 2;
+    public static final int VERSION = 3;
 
     /**
      * Size of file header.
@@ -32,7 +32,7 @@ public class BindepsConstants {
     /**
      * Size of a class info record.
      */
-    public static final int CLASS_RECORD_SIZE = 48;  // 10 ints: name, super, access, resource index + 3 x (offset, count) + 8(padding)
+    public static final int CLASS_RECORD_SIZE = 48;  // 11 ints: name, super, access, resource index, release + 3 x (offset, count) + 8(padding)
 
     /**
      * This resource is stored in heap.

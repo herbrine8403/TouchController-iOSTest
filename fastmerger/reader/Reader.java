@@ -36,6 +36,7 @@ public class Reader implements Callable<Integer> {
         for (var i = 0; i < reader.getClassInfoSize(); i++) {
             var entry = reader.getClassInfoEntry(i);
             System.out.println("Class name: " + entry.getName().getFullName());
+            System.out.println("Release: " + entry.getRelease());
 
             var superClass = entry.getSuperClass();
             if (superClass == null) {

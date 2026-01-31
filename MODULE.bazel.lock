@@ -255,7 +255,7 @@
   "moduleExtensions": {
     "//repo:llvm_mingw.bzl%llvm_mingw": {
       "general": {
-        "bzlTransitiveDigest": "ZRmMEZrEyd/S9tdbiVirtcpGNRVn9rwTtmX7Bk+zBHY=",
+        "bzlTransitiveDigest": "JuARQ9nevK0XZrDDlUagtolYaCbX846zP7XZj9hih9U=",
         "usagesDigest": "oBdMN5D9HUehj5Wqr9XQO1LdBdp7UWC8K+80m5FAE9w=",
         "recordedFileInputs": {},
         "recordedDirentsInputs": {},
@@ -489,7 +489,7 @@
     },
     "//repo:minecraft.bzl%minecraft": {
       "general": {
-        "bzlTransitiveDigest": "Ylh9rnv0z7IJWl3F9IPwx3PtVZp4m9t0llKUFD3ODWw=",
+        "bzlTransitiveDigest": "tdu/lqD/N9ro0iiNrQIAtHEzI5zWAxWdK59sAPTqnAU=",
         "usagesDigest": "l612VaRgr+sfM1A+WvMoFuUWiwg8jCUtsmkVnaQtbCQ=",
         "recordedFileInputs": {},
         "recordedDirentsInputs": {},
@@ -10885,10 +10885,10 @@
     },
     "//repo:modrinth.bzl%modrinth": {
       "general": {
-        "bzlTransitiveDigest": "I9wVrXnkpxbYFtlXEU0SxE1MWxmxyCWPHkPCxc+skd4=",
+        "bzlTransitiveDigest": "6afW+cPgSP5Ms8rL+f1Jvm0fhJm9dYaqURyghYx3q3M=",
         "usagesDigest": "c3FRxP62obdnUseiROjVE9xIwHs8z9xp5Qexck6Ypas=",
         "recordedFileInputs": {
-          "@@//modrinth_lock.json": "e497d899a94891954f7832da2ee5ab4bcb3574abbbdd996354e15e3dd9c2b525"
+          "@@//modrinth_lock.json": "5d261a40c4ec173c389374f3945961a1153f36e62518dd0fe495717a2cc3dd22"
         },
         "recordedDirentsInputs": {},
         "envVariables": {},
@@ -11106,10 +11106,10 @@
     },
     "//repo:neoforge.bzl%neoforge": {
       "general": {
-        "bzlTransitiveDigest": "9KDtfbLiwb4YkmTpcx3A9GZ9hE/CbufCxxDYzPZo/0k=",
+        "bzlTransitiveDigest": "vBupoC9MKEsdZzAVFbXpOYippduhV+bxs8EHjMR8qMU=",
         "usagesDigest": "Zy0QzfPGi44mbo5unPjNOk9NKLwoaRCNXqXi5EVvKmk=",
         "recordedFileInputs": {
-          "@@//neoforge_pin.txt": "9a761dbbb66661b206fd9144172d8ea077baf693fd06e9d6df663aa75424b6e5"
+          "@@//neoforge_pin.txt": "84c9d1c76cd4796b9a68ec93219caa83ea64bb8d8a6c7f9b79c87685dc298e0e"
         },
         "recordedDirentsInputs": {},
         "envVariables": {},
@@ -14240,10 +14240,10 @@
     },
     "//repo:neoform.bzl%neoform": {
       "general": {
-        "bzlTransitiveDigest": "++0KA0oaKBhIdziqQBkM24wTisQtKGAsIbcJHxdmDbQ=",
+        "bzlTransitiveDigest": "kijlrlK/OAkHWh89pDv9mIvRKoLhMcjyTW2u7o+VMpI=",
         "usagesDigest": "XX0TPfq3K2A+83EK1C9CFINSEfZl9LCtqKMTQ4l/8a4=",
         "recordedFileInputs": {
-          "@@//neoform_pin.txt": "282910c601f16b7242962c07c5e2fad7f113faa4e2a8927c429eaa0619cc654e"
+          "@@//neoform_pin.txt": "f5f349c33255eb0173480b40bd5ae23a8309aac7342a8267bffb9294168be7c6"
         },
         "recordedDirentsInputs": {},
         "envVariables": {},
@@ -15076,7 +15076,7 @@
     },
     "//repo:parchment.bzl%parchment": {
       "general": {
-        "bzlTransitiveDigest": "53mFFyfTzuskRyNXABfxe9IiNvcSMe2L5raEZ6TGsGo=",
+        "bzlTransitiveDigest": "E5fBjpsogdu8/8DhhHroYoRW21JuQmcGauw3Q7BXfOE=",
         "usagesDigest": "5o2wtXkABpNh800+HXz6LH2+7YXznk3cfsMf2fPx/lM=",
         "recordedFileInputs": {},
         "recordedDirentsInputs": {},

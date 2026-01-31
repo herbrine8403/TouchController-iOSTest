@@ -335,28 +335,32 @@ public class BindepsReader {
             return BindepsReader.this.dataBuffer.getInt(offset + 12);
         }
 
-        public int getInterfaceOffset(int offset) {
+        public int getRelease(int offset) {
             return BindepsReader.this.dataBuffer.getInt(offset + 16);
         }
 
-        public int getInterfaceCount(int offset) {
+        public int getInterfaceOffset(int offset) {
             return BindepsReader.this.dataBuffer.getInt(offset + 20);
         }
 
-        public int getAnnotationOffset(int offset) {
+        public int getInterfaceCount(int offset) {
             return BindepsReader.this.dataBuffer.getInt(offset + 24);
         }
 
-        public int getAnnotationCount(int offset) {
+        public int getAnnotationOffset(int offset) {
             return BindepsReader.this.dataBuffer.getInt(offset + 28);
         }
 
-        public int getDependenciesOffset(int offset) {
+        public int getAnnotationCount(int offset) {
             return BindepsReader.this.dataBuffer.getInt(offset + 32);
         }
 
-        public int getDependenciesCount(int offset) {
+        public int getDependenciesOffset(int offset) {
             return BindepsReader.this.dataBuffer.getInt(offset + 36);
+        }
+
+        public int getDependenciesCount(int offset) {
+            return BindepsReader.this.dataBuffer.getInt(offset + 40);
         }
     }
 
@@ -375,6 +379,7 @@ public class BindepsReader {
         private final int superIndex;
         private final int access;
         private final int resourceIndex;
+        private final int release;
         private final int interfaceOffset;
         private final int interfaceCount;
         private final int annotationOffset;
@@ -399,13 +404,14 @@ public class BindepsReader {
             this.nameIndex = reader.getNameIndex(offset);
             this.superIndex = reader.getSuperIndex(offset);
             this.access = reader.getAccess(offset);
+            this.resourceIndex = reader.getResourceIndex(offset);
+            this.release = reader.getRelease(offset);
             this.interfaceOffset = reader.getInterfaceOffset(offset);
             this.interfaceCount = reader.getInterfaceCount(offset);
             this.annotationOffset = reader.getAnnotationOffset(offset);
             this.annotationCount = reader.getAnnotationCount(offset);
             this.dependenciesOffset = reader.getDependenciesOffset(offset);
             this.dependenciesCount = reader.getDependenciesCount(offset);
-            this.resourceIndex = reader.getResourceIndex(offset);
         }
 
         public int getIndex() {
@@ -440,6 +446,23 @@ public class BindepsReader {
 
         public int getAccess() {
             return access;
+        }
+
+        public int getResourceIndex() {
+            return resourceIndex;
+        }
+
+        @Nullable
+        public ResourceInfoEntry getResourceInfo() {
+            if (resource == null) {
+                resource = getResourceInfoEntry(resourceIndex);
+            }
+            return resource;
+        }
+
+
+        public int getRelease() {
+            return release;
         }
 
         public IntBuffer getInterfaceIndices() {
@@ -506,18 +529,6 @@ public class BindepsReader {
                 }
             }
             return dependencies;
-        }
-
-        public int getResourceIndex() {
-            return resourceIndex;
-        }
-
-        @Nullable
-        public ResourceInfoEntry getResourceInfo() {
-            if (resource == null) {
-                resource = getResourceInfoEntry(resourceIndex);
-            }
-            return resource;
         }
     }
 

@@ -1,6 +1,5 @@
 package top.fifthlight.fastmerger.scanner;
 
-import it.unimi.dsi.fastutil.ints.IntObjectImmutablePair;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
@@ -18,6 +17,7 @@ import java.io.PrintWriter;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.jar.Manifest;
 
 import static picocli.CommandLine.*;
 
@@ -32,12 +32,30 @@ public class ScannerWorker extends Worker {
             this.outputPath = outputPath;
         }
 
-        private record ClassInfoEntry(ClassInfo classInfo, ResourceInfo resourceInfo) {
+        private record ClassInfoKey(PathMap.Entry nameKey, int release) {
+            @Override
+            public String toString() {
+                return "ClassInfoKey[fullName=" + nameKey.fullName() + ", release=" + release + "]";
+            }
+
+            @Override
+            public boolean equals(Object o) {
+                if (!(o instanceof ClassInfoKey(PathMap.Entry otherNameKey, int otherRelease))) return false;
+                return release == otherRelease && Objects.equals(nameKey, otherNameKey);
+            }
+
+            @Override
+            public int hashCode() {
+                return Objects.hash(nameKey, release);
+            }
+        }
+
+        private record ClassInfoEntry(ClassInfo classInfo, int release, ResourceInfo resourceInfo) {
         }
 
         private final PathMap pathMap = new PathMap();
         private final Map<String, ResourceInfo> resourceInfoNameMap = new HashMap<>();
-        private final Map<String, ClassInfoEntry> classInfoNameMap = new HashMap<>();
+        private final Map<ClassInfoKey, ClassInfoEntry> classInfoNameMap = new HashMap<>();
 
         private static int getFlag(ZipArchiveEntry entry, String entryName) {
             var flag = 0;
@@ -117,9 +135,24 @@ public class ScannerWorker extends Worker {
             return new ResourceInfo(flag, name, crc32, dataOffset, compressedSize, uncompressedSize, compressMethod, data);
         }
 
+        private static final String multiReleasePrefix = "META-INF/versions/";
+
         private ClassInfoEntry scanClassInfo(ResourceInfo resourceInfo, byte[] entry) {
             var classInfo = ClassDepsScanner.scan(pathMap, entry);
-            return new ClassInfoEntry(classInfo, resourceInfo);
+            var release = -1;
+            var resourcePath = resourceInfo.name().fullName();
+            if (resourcePath.startsWith(multiReleasePrefix)) {
+                var builder = new StringBuilder();
+                for (var i = multiReleasePrefix.length(); i < resourcePath.length(); i++) {
+                    var ch = resourcePath.charAt(i);
+                    if (!Character.isDigit(ch)) {
+                        break;
+                    }
+                    builder.append(ch);
+                }
+                release = Integer.parseInt(builder.toString());
+            }
+            return new ClassInfoEntry(classInfo, release, resourceInfo);
         }
 
         private void scanJar() throws Exception {
@@ -132,8 +165,9 @@ public class ScannerWorker extends Worker {
                     new ArrayBlockingQueue<>(maxConcurrency),
                     new ThreadPoolExecutor.CallerRunsPolicy()
             )) {
-                var futures = new ArrayList<CompletableFuture<ClassInfoEntry>>();
                 try (var zipFile = ZipFile.builder().setPath(inputPath).get()) {
+                    var futures = new ArrayList<CompletableFuture<ClassInfoEntry>>();
+                    Manifest manifest = null;
                     var entries = zipFile.getEntriesInPhysicalOrder();
                     while (entries.hasMoreElements()) {
                         var entry = entries.nextElement();
@@ -145,18 +179,28 @@ public class ScannerWorker extends Worker {
                         resourceInfoNameMap.put(resourceEntry.name().fullName(), resourceEntry);
 
                         var name = entry.getName();
-                        if (!name.endsWith(".class")) {
-                            continue;
+                        if (name.equals("META-INF/MANIFEST.MF")) {
+                            manifest = new Manifest(zipFile.getInputStream(entry));
+                        } else if (name.endsWith(".class")) {
+                            byte[] content;
+                            try (var stream = zipFile.getInputStream(entry)) {
+                                content = stream.readAllBytes();
+                            }
+                            futures.add(CompletableFuture.supplyAsync(() -> scanClassInfo(resourceEntry, content), executor));
                         }
-                        byte[] content;
-                        try (var stream = zipFile.getInputStream(entry)) {
-                            content = stream.readAllBytes();
-                        }
-                        futures.add(CompletableFuture.supplyAsync(() -> scanClassInfo(resourceEntry, content), executor));
                     }
+
+                    var isMultiReleaseJar = manifest != null && "true".equalsIgnoreCase(manifest.getMainAttributes().getValue("Multi-Release"));
+
                     for (var future : futures) {
                         var entry = future.get();
-                        classInfoNameMap.put(entry.classInfo.getFullName(), entry);
+                        var release = isMultiReleaseJar ? entry.release() : -1;
+                        var key = new ClassInfoKey(entry.classInfo.entry(), release);
+                        if (classInfoNameMap.containsKey(key)) {
+                            throw new IllegalStateException("Duplicate class entry: " + key);
+                        } else {
+                            classInfoNameMap.put(key, entry);
+                        }
                     }
                 } finally {
                     executor.shutdownNow();
@@ -235,21 +279,33 @@ public class ScannerWorker extends Worker {
                     .toArray();
         }
 
+        private record ClassSortEntry(int entryIndex, int release, ClassInfo classInfo,
+                                      ResourceInfo resourceInfo) implements Comparable<ClassSortEntry> {
+            @Override
+            public int compareTo(ClassSortEntry o) {
+                var result = Integer.compare(entryIndex, o.entryIndex);
+                // Compare in reverse, so latest release appears first
+                result = result == 0 ? Integer.compare(o.release, release) : result;
+                return result;
+            }
+        }
+
         private void writeClassInfo(BindepsWriter writer) {
-            classInfoNameMap.values().stream()
-                    .map(classInfo -> {
-                        var nameIndex = pathMapEntriesIndexMap.getInt(classInfo.classInfo().entry());
-                        return new IntObjectImmutablePair<>(nameIndex, classInfo);
-                    })
-                    .sorted(Comparator.comparingInt(IntObjectImmutablePair::leftInt))
-                    .forEachOrdered(pair -> {
-                        var resourceInfo = pair.right().resourceInfo();
+            classInfoNameMap.entrySet().stream()
+                    .map(entry -> new ClassSortEntry(
+                            pathMapEntriesIndexMap.getInt(entry.getKey().nameKey()),
+                            entry.getKey().release,
+                            entry.getValue().classInfo(),
+                            entry.getValue().resourceInfo))
+                    .sorted()
+                    .forEachOrdered(entry -> {
+                        var resourceInfo = entry.resourceInfo();
                         var resourceIndex = resourceInfoIndexMap.getInt(resourceInfo);
                         if (resourceIndex == -1) {
                             throw new IllegalStateException("Resource index not found for " + resourceInfo.name().fullName());
                         }
 
-                        var classInfo = pair.right().classInfo();
+                        var classInfo = entry.classInfo();
                         var superEntry = classInfo.superClass();
                         var superIndex = (superEntry != null) ? pathMapEntriesIndexMap.getInt(superEntry) : -1;
 
@@ -257,8 +313,8 @@ public class ScannerWorker extends Worker {
                         var annotations = lookupClassEntries(pathMapEntriesIndexMap, classInfo.annotations());
                         var dependencies = lookupClassEntries(pathMapEntriesIndexMap, classInfo.dependencies());
 
-                        writer.writeClassInfoEntry(pair.leftInt(), superIndex, classInfo.accessFlag(),
-                                interfaces, annotations, dependencies, resourceIndex);
+                        writer.writeClassInfoEntry(entry.entryIndex(), superIndex, classInfo.accessFlag(),
+                                resourceIndex, entry.release(), interfaces, annotations, dependencies);
                     });
         }
 
