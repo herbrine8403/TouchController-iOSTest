@@ -6,7 +6,7 @@ maven.install(
         "net.fabricmc:tiny-remapper:0.12.1",
         "net.fabricmc:mapping-io:0.8.0",
         "net.fabricmc:mapping-io-extras:0.8.0",
-        "net.fabricmc:access-widener:2.1.0",
+        "net.fabricmc:class-tweaker:0.2",
         "org.ow2.asm:asm:9.9.1",
         "org.ow2.asm:asm-commons:9.9.1",
         "org.vineflower:vineflower:1.11.2",

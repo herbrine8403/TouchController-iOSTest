@@ -490,7 +490,7 @@
     "//repo:minecraft.bzl%minecraft": {
       "general": {
         "bzlTransitiveDigest": "tdu/lqD/N9ro0iiNrQIAtHEzI5zWAxWdK59sAPTqnAU=",
-        "usagesDigest": "l612VaRgr+sfM1A+WvMoFuUWiwg8jCUtsmkVnaQtbCQ=",
+        "usagesDigest": "tuqCh0Q+rLVuSqaDCP/ipVOcm+ikPxzEW769Ap4x07U=",
         "recordedFileInputs": {},
         "recordedDirentsInputs": {},
         "envVariables": {},
@@ -1239,19 +1239,19 @@
               "downloaded_file_path": "server.txt"
             }
           },
-          "minecraft_26_1-snapshot-2_client": {
+          "minecraft_26_1-snapshot-4_client": {
             "repoRuleId": "@@bazel_tools//tools/build_defs/repo:http.bzl%http_file",
             "attributes": {
-              "url": "https://piston-data.mojang.com/v1/objects/2443ba7d3c92457e00e75a4363a601461ebd3ed4/client.jar",
-              "integrity": "sha1-JEO6fTySRX4A51pDY6YBRh69PtQ=",
+              "url": "https://piston-data.mojang.com/v1/objects/b21782e8a4d5ad265254824f7a7031a7017ee754/client.jar",
+              "integrity": "sha1-sheC6KTVrSZSVIJPenAxpwF+51Q=",
               "downloaded_file_path": "client.jar"
             }
           },
-          "minecraft_26_1-snapshot-2_server": {
+          "minecraft_26_1-snapshot-4_server": {
             "repoRuleId": "@@bazel_tools//tools/build_defs/repo:http.bzl%http_file",
             "attributes": {
-              "url": "https://piston-data.mojang.com/v1/objects/165c30e5076a13848404f41692ff1e0126d0a6f3/server.jar",
-              "integrity": "sha1-Flww5QdqE4SEBPQWkv8eASbQpvM=",
+              "url": "https://piston-data.mojang.com/v1/objects/5b42d78a1619f4e1e537bbcd1f38b1b58c01bc56/server.jar",
+              "integrity": "sha1-W0LXihYZ9OHlN7vNHzixtYwBvFY=",
               "downloaded_file_path": "server.jar"
             }
           },
@@ -5618,7 +5618,7 @@
                   "client_mappings#file",
                   "server_mappings#file"
                 ],
-                "26.1-snapshot-2": [
+                "26.1-snapshot-4": [
                   "client#file",
                   "server#file"
                 ]
@@ -7631,7 +7631,7 @@
                   "org.lwjgl:lwjgl:3.3.3:natives-windows-x86",
                   "org.slf4j:slf4j-api:2.0.17"
                 ],
-                "26.1-snapshot-2": [
+                "26.1-snapshot-4": [
                   "at.yawk.lz4:lz4-java:1.10.1",
                   "ca.weblite:java-objc-bridge:1.1",
                   "com.azure:azure-json:1.4.0",
@@ -10869,7 +10869,7 @@
                 "1.21.9": "27",
                 "1.21.10": "27",
                 "1.21.11": "29",
-                "26.1-snapshot-2": "30"
+                "26.1-snapshot-4": "30"
               }
             }
           }
@@ -11107,7 +11107,7 @@
     "//repo:neoforge.bzl%neoforge": {
       "general": {
         "bzlTransitiveDigest": "vBupoC9MKEsdZzAVFbXpOYippduhV+bxs8EHjMR8qMU=",
-        "usagesDigest": "Zy0QzfPGi44mbo5unPjNOk9NKLwoaRCNXqXi5EVvKmk=",
+        "usagesDigest": "d1YuCXhi5OKiwla83OkjJrRowh13Xl2j2ELFLgNg23Y=",
         "recordedFileInputs": {
           "@@//neoforge_pin.txt": "84c9d1c76cd4796b9a68ec93219caa83ea64bb8d8a6c7f9b79c87685dc298e0e"
         },
@@ -11354,16 +11354,16 @@
               "joined_patched_sources": "@@+neoform+neoform_1_21_11_20251209_172050//tasks/joined_patch:joined_patch"
             }
           },
-          "neoforge_26_1_0_0_alpha_5_snapshot_2": {
+          "neoforge_26_1_0_0_alpha_8_snapshot_4": {
             "repoRuleId": "@@//repo:neoforge.bzl%_neoforge_repo",
             "attributes": {
-              "version": "26.1.0.0-alpha.5+snapshot-2",
+              "version": "26.1.0.0-alpha.8+snapshot-4",
               "java_target": 25,
               "legacy": false,
-              "userdev_sha256": "ea43f43233bb06b21049fca4adb9ef8cb88447fe00ed1888f08634630e35d126",
-              "universal_sha256": "6580181386d8b5cf65528df4b9b2ce90fc60c4b0789684f61ecd7eac944916eb",
-              "sources_sha256": "6e584d0b2e8f066ba4d28be0be33eac4111f21a986365cd185f35daf0d80c391",
-              "joined_patched_sources": "@@+neoform+neoform_26_1_snapshot_2_1//tasks/joined_patch:joined_patch"
+              "userdev_sha256": "7d4de235e7438562ca111d6effdfbfaf2026e8285ed59312c97595cf9857ccd2",
+              "universal_sha256": "8b2d842b9b70a72a9cc8a00c3a761cd3ae567cf85ce53b604baee90935deb02f",
+              "sources_sha256": "a503ce5f429b2e66ca53f628f916d617c73def8511935fe538200a9965ab08f7",
+              "joined_patched_sources": "@@+neoform+neoform_26_1_snapshot_4_1//tasks/joined_patch:joined_patch"
             }
           },
           "forge_org_ow2_asm_asm_6_2": {
@@ -14233,7 +14233,7 @@
           [
             "",
             "neoform_26_1",
-            "+neoform+neoform_26_1_snapshot_2_1"
+            "+neoform+neoform_26_1_snapshot_4_1"
           ]
         ]
       }
@@ -14241,7 +14241,7 @@
     "//repo:neoform.bzl%neoform": {
       "general": {
         "bzlTransitiveDigest": "kijlrlK/OAkHWh89pDv9mIvRKoLhMcjyTW2u7o+VMpI=",
-        "usagesDigest": "XX0TPfq3K2A+83EK1C9CFINSEfZl9LCtqKMTQ4l/8a4=",
+        "usagesDigest": "4L6vic1V5w6BIYB3g45I1Q/y03lbL3L+zKDMb7IltqA=",
         "recordedFileInputs": {
           "@@//neoform_pin.txt": "f5f349c33255eb0173480b40bd5ae23a8309aac7342a8267bffb9294168be7c6"
         },
@@ -14528,17 +14528,17 @@
               "pin_file": "@@//:neoform_pin.txt"
             }
           },
-          "neoform_26_1_snapshot_2_1": {
+          "neoform_26_1_snapshot_4_1": {
             "repoRuleId": "@@//repo:neoform.bzl%_neoform_repo",
             "attributes": {
-              "version": "26.1-snapshot-2-1",
+              "version": "26.1-snapshot-4-1",
               "legacy": false,
-              "sha256": "e5a789b397235adad0a5cb9f1157543c71f010448ad322332fd275bdb628b91c",
-              "client_jar": "@@+minecraft+minecraft//26.1-snapshot-2:client",
-              "server_jar": "@@+minecraft+minecraft//26.1-snapshot-2:server",
-              "client_mapping": "@@+minecraft+minecraft//26.1-snapshot-2:client_mappings",
-              "server_mapping": "@@+minecraft+minecraft//26.1-snapshot-2:server_mappings",
-              "client_libraries": "@@+minecraft+minecraft//26.1-snapshot-2:client_libraries",
+              "sha256": "6cdd55128d5b63170aa11cc7ff5c89dc2b1a8a53490de7516329e803253e6c6b",
+              "client_jar": "@@+minecraft+minecraft//26.1-snapshot-4:client",
+              "server_jar": "@@+minecraft+minecraft//26.1-snapshot-4:server",
+              "client_mapping": "@@+minecraft+minecraft//26.1-snapshot-4:client_mappings",
+              "server_mapping": "@@+minecraft+minecraft//26.1-snapshot-4:server_mappings",
+              "client_libraries": "@@+minecraft+minecraft//26.1-snapshot-4:client_libraries",
               "pin_file": "@@//:neoform_pin.txt"
             }
           },

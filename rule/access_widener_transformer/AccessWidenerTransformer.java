@@ -1,8 +1,8 @@
 package top.fifthlight.fabazel.accesswidenertransformer;
 
-import net.fabricmc.accesswidener.AccessWidener;
-import net.fabricmc.accesswidener.AccessWidenerClassVisitor;
-import net.fabricmc.accesswidener.AccessWidenerReader;
+import net.fabricmc.classtweaker.api.ClassTweaker;
+import net.fabricmc.classtweaker.api.ClassTweakerReader;
+import net.fabricmc.classtweaker.classvisitor.AccessWidenerClassVisitor;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Opcodes;
@@ -43,12 +43,12 @@ public class AccessWidenerTransformer extends Worker {
             var inputFile = sandboxDir.resolve(Path.of(args[0]));
             var outputFile = sandboxDir.resolve(Path.of(args[1]));
 
-            var accessWidener = new AccessWidener();
-            var accessWidenerReader = new AccessWidenerReader(accessWidener);
+            var accessWidener = ClassTweaker.newInstance();
+            var accessWidenerReader = ClassTweakerReader.create(accessWidener);
             for (var i = 2; i < args.length; i++) {
                 var srcFile = sandboxDir.resolve(Path.of(args[i]));
                 try (var reader = Files.newBufferedReader(srcFile)) {
-                    accessWidenerReader.read(reader);
+                    accessWidenerReader.read(reader, null);
                 }
             }
 
@@ -62,7 +62,7 @@ public class AccessWidenerTransformer extends Worker {
                     if (entry.getName().endsWith(".class")) {
                         var classReader = new ClassReader(input);
                         var classWriter = new ClassWriter(0);
-                        var classVisitor = AccessWidenerClassVisitor.createClassVisitor(Opcodes.ASM9, classWriter, accessWidener);
+                        var classVisitor = new AccessWidenerClassVisitor(Opcodes.ASM9, classWriter, accessWidener);
                         classReader.accept(classVisitor, 0);
                         output.write(classWriter.toByteArray());
                     } else {

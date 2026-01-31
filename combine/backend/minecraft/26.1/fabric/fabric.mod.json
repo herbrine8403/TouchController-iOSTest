@@ -13,5 +13,5 @@
     "java": ">=25",
     "fabric-language-kotlin": "*"
   },
-  "accessWidener": "combine.accesswidener"
+  "accessWidener": "combine.classtweaker"
 }

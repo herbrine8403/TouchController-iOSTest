@@ -47,7 +47,7 @@ apply_access_widener = rule(
             doc = "Input JAR file",
         ),
         "srcs": attr.label_list(
-            allow_files = [".accesswidener"],
+            allow_files = [".accesswidener", ".classtweaker"],
             mandatory = True,
             doc = "List of access widener files",
         ),
