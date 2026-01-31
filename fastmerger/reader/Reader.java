@@ -68,6 +68,6 @@ public class Reader implements Callable<Integer> {
     }
 
     public static void main(String[] args) {
-        new CommandLine(new Reader()).execute(args);
+        System.exit(new CommandLine(new Reader()).execute(args));
     }
 }
