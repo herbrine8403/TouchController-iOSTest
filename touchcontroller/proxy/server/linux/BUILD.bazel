@@ -8,6 +8,7 @@ genrule(
     tools = ["@wayland//:wayland-scanner"],
 )
 
+# TODO: make it depends on system libwayland, but use Bazel one when compiling
 cc_library(
     name = "wayland",
     srcs = [
@@ -17,6 +18,7 @@ cc_library(
     ],
     includes = ["."],
     target_compatible_with = ["@platforms//os:linux"],
+    visibility = ["//touchcontroller:__subpackages__"],
     deps = [
         "//touchcontroller/proxy/server/common",
         "@rules_jni//jni",

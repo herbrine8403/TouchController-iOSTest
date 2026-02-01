@@ -1,3 +1,4 @@
+load("//rule:jni_library.bzl", "cc_jni_library", "rust_jni_library")
 load("//rule:merge_library.bzl", "kt_merge_library")
 
 kt_merge_library(
@@ -14,9 +15,79 @@ kt_merge_library(
         "//touchcontroller/common/platform/win32",
         "//touchcontroller/proxy/server/udp",
     ],
+    resource_jars = [
+        ":wayland",
+        ":windows",
+        ":windows_legacy",
+        ":android",
+    ],
     visibility = ["//touchcontroller:__subpackages__"],
     deps = [
         "@maven//:org_jetbrains_kotlinx_kotlinx_coroutines_core_jvm",
         "@maven//:org_slf4j_slf4j_api",
     ],
+)
+
+cc_jni_library(
+    name = "wayland",
+    platforms = select({
+        "//:config_release": [
+            "@//platforms:linux_x86_64",
+            # TODO: add arm64 after solving libffi issue
+        ],
+        "//conditions:default": [
+            "@//platforms:linux_x86_64",
+        ],
+    }),
+    deps = [
+        "//touchcontroller/proxy/server/linux:wayland",
+    ],
+)
+
+cc_jni_library(
+    name = "windows",
+    platforms = select({
+        "//:config_release": [
+            "@//platforms:windows_x86_64",
+            "@//platforms:windows_arm64",
+        ],
+        "//conditions:default": [
+            "@//platforms:windows_x86_64",
+        ],
+    }),
+    deps = [
+        "//touchcontroller/proxy/server/windows:lib",
+    ],
+)
+
+cc_jni_library(
+    name = "windows_legacy",
+    platforms = select({
+        "//:config_release": [
+            "@//platforms:windows_x86_64",
+            "@//platforms:windows_arm64",
+        ],
+        "//conditions:default": [
+            "@//platforms:windows_x86_64",
+        ],
+    }),
+    deps = [
+        "//touchcontroller/proxy/server/windows:lib-legacy",
+    ],
+)
+
+rust_jni_library(
+    name = "android",
+    lib = "//touchcontroller/proxy/server/android",
+    platforms = select({
+        "//:config_release": [
+            "@//platforms:android_arm32",
+            "@//platforms:android_arm64",
+            "@//platforms:android_x86_32",
+            "@//platforms:android_x86_64",
+        ],
+        "//conditions:default": [
+            "@//platforms:android_arm64",
+        ],
+    }),
 )
