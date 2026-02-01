@@ -6,11 +6,11 @@ import top.fifthlight.combine.layout.Alignment
 import top.fifthlight.combine.modifier.Modifier
 import top.fifthlight.combine.modifier.drawing.border
 import top.fifthlight.combine.modifier.placement.padding
-import top.fifthlight.combine.theme.blackstone.BlackstoneTextures
 import top.fifthlight.combine.ui.style.ColorTheme
 import top.fifthlight.combine.ui.style.LocalColorTheme
 import top.fifthlight.combine.widget.layout.Box
 import top.fifthlight.combine.widget.layout.BoxScope
+import top.fifthlight.touchcontroller.common.ui.theme.LocalTouchControllerTheme
 
 @Composable
 fun TitleBox(
@@ -20,7 +20,7 @@ fun TitleBox(
     Box(
         modifier = Modifier
             .padding(top = 2, bottom = 3)
-            .border(BlackstoneTextures.widget_background_background_lightgray_title)
+            .border(LocalTouchControllerTheme.current.titleBoxBackground)
             .then(modifier),
         alignment = Alignment.Center,
     ) {

@@ -15,19 +15,18 @@ import top.fifthlight.combine.modifier.placement.fillMaxWidth
 import top.fifthlight.combine.modifier.placement.padding
 import top.fifthlight.combine.modifier.scroll.verticalScroll
 import top.fifthlight.combine.node.LocalScreenSize
-import top.fifthlight.combine.theme.blackstone.BlackstoneTextures
 import top.fifthlight.combine.widget.layout.Column
 import top.fifthlight.combine.widget.layout.Row
 import top.fifthlight.combine.widget.ui.*
 import top.fifthlight.data.IntSize
 import top.fifthlight.touchcontroller.assets.Texts
 import top.fifthlight.touchcontroller.assets.TextureSet
-import top.fifthlight.touchcontroller.assets.Textures
 import top.fifthlight.touchcontroller.common.config.layout.ControllerLayout
 import top.fifthlight.touchcontroller.common.config.preset.builtin.BuiltinPresets
 import top.fifthlight.touchcontroller.common.config.preset.builtin.key.BuiltinPresetKey
 import top.fifthlight.touchcontroller.common.control.ControllerWidget
 import top.fifthlight.touchcontroller.common.layout.data.ContextInput
+import top.fifthlight.touchcontroller.common.ui.theme.LocalTouchControllerTheme
 import kotlin.math.min
 
 private data class ControllerWidgetModifierNode(
@@ -165,7 +164,7 @@ fun BuiltInPresetKeySelector(
 
     Row(
         modifier = Modifier
-            .background(Textures.background_brick_background)
+            .background(LocalTouchControllerTheme.current.background)
             .then(modifier)
     ) {
         Column(
@@ -183,7 +182,7 @@ fun BuiltInPresetKeySelector(
                 Row(
                     modifier = Modifier
                         .padding(4)
-                        .border(BlackstoneTextures.widget_background_background_dark)
+                        .border(LocalTouchControllerTheme.current.borderBackgroundDark)
                         .fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(4),
                 ) {
@@ -194,7 +193,7 @@ fun BuiltInPresetKeySelector(
                 OptionBox(
                     modifier = Modifier
                         .padding(4)
-                        .border(BlackstoneTextures.widget_background_background_dark)
+                        .border(LocalTouchControllerTheme.current.borderBackgroundDark)
                         .fillMaxWidth(),
                 )
             }

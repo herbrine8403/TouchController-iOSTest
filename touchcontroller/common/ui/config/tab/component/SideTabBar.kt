@@ -9,13 +9,13 @@ import top.fifthlight.combine.modifier.placement.fillMaxWidth
 import top.fifthlight.combine.modifier.placement.padding
 import top.fifthlight.combine.modifier.placement.width
 import top.fifthlight.combine.modifier.scroll.verticalScroll
-import top.fifthlight.combine.theme.blackstone.BlackstoneTextures
 import top.fifthlight.combine.widget.layout.Column
 import top.fifthlight.combine.widget.ui.Text
 import top.fifthlight.touchcontroller.assets.Textures
 import top.fifthlight.touchcontroller.common.ui.config.tab.Tab
 import top.fifthlight.touchcontroller.common.ui.config.tab.TabGroup
 import top.fifthlight.touchcontroller.common.ui.config.tab.TabOptions
+import top.fifthlight.touchcontroller.common.ui.theme.LocalTouchControllerTheme
 import top.fifthlight.touchcontroller.common.ui.widget.TabButton
 
 @Composable
@@ -30,7 +30,7 @@ fun SideTabBar(
             .width(130)
             .padding(2)
             .verticalScroll()
-            .border(BlackstoneTextures.widget_background_background_dark)
+            .border(LocalTouchControllerTheme.current.borderBackgroundDark)
             .then(modifier),
         verticalArrangement = Arrangement.spacedBy(12),
     ) {

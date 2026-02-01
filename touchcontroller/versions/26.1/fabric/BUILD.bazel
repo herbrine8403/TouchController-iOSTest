@@ -50,6 +50,7 @@ kt_merge_library(
         ":fabric_mod_json",
         "//touchcontroller/resources/texture:vanilla_pack",
         "//touchcontroller/resources/lang",
+        "//touchcontroller/resources/texture:icon_jar",
     ],
     resource_strip_prefix = "touchcontroller/versions/26.1/fabric/resources",
     resources = glob(

@@ -13,8 +13,8 @@ kt_merge_library(
         "//touchcontroller/common/layout/align",
         "//touchcontroller/common/layout/data",
         "//touchcontroller/common/ui/control",
+        "//touchcontroller/common/ui/theme",
         "//touchcontroller/resources/lang:text_binding",
-        "//touchcontroller/resources/texture:texture_lib",
         "//touchcontroller/resources/texture:texture_set_lib",
     ],
     visibility = ["//touchcontroller:__subpackages__"],
@@ -32,7 +32,6 @@ kt_merge_library(
         "//combine/core/paint",
         "//combine/core/widget/layout",
         "//combine/data",
-        "//combine/theme/blackstone:texture_lib",
         "//combine/widget",
     ],
 )

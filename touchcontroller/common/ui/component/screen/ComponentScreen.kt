@@ -12,7 +12,6 @@ import top.fifthlight.combine.modifier.Modifier
 import top.fifthlight.combine.modifier.drawing.border
 import top.fifthlight.combine.modifier.placement.*
 import top.fifthlight.combine.modifier.scroll.verticalScroll
-import top.fifthlight.combine.theme.blackstone.BlackstoneTextures
 import top.fifthlight.combine.widget.layout.Column
 import top.fifthlight.combine.widget.layout.Row
 import top.fifthlight.combine.widget.ui.EditText
@@ -27,6 +26,7 @@ import top.fifthlight.touchcontroller.common.ui.widget.*
 import top.fifthlight.touchcontroller.common.ui.component.model.ComponentScreenModel
 import top.fifthlight.touchcontroller.common.ui.widget.navigation.AppBar
 import top.fifthlight.touchcontroller.common.ui.widget.navigation.BackButton
+import top.fifthlight.touchcontroller.common.ui.theme.LocalTouchControllerTheme
 
 class ComponentScreen(
     private val initialValue: PersistentList<ItemDataComponentType>,
@@ -60,7 +60,7 @@ class ComponentScreen(
                     modifier = Modifier
                         .padding(2)
                         .verticalScroll()
-                        .border(BlackstoneTextures.widget_background_background_dark)
+                        .border(LocalTouchControllerTheme.current.borderBackgroundDark)
                         .fillMaxHeight()
                         .weight(1f),
                 ) {
@@ -99,7 +99,7 @@ class ComponentScreen(
                 Column(
                     modifier = Modifier
                         .padding(4)
-                        .border(BlackstoneTextures.widget_background_background_dark)
+                        .border(LocalTouchControllerTheme.current.borderBackgroundDark)
                         .fillMaxHeight()
                         .weight(1f),
                     verticalArrangement = Arrangement.spacedBy(4),

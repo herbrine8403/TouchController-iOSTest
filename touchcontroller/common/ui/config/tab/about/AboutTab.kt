@@ -29,6 +29,7 @@ import top.fifthlight.touchcontroller.buildinfo.BuildInfo
 import top.fifthlight.touchcontroller.common.about.License
 import top.fifthlight.touchcontroller.common.ui.widget.raw.RawTextureIcon
 import top.fifthlight.touchcontroller.common.ui.screen.LicenseScreen
+import top.fifthlight.touchcontroller.common.ui.theme.LocalTouchControllerTheme
 
 object AboutTab : Tab() {
     override val options = TabOptions(
@@ -45,7 +46,7 @@ object AboutTab : Tab() {
         Column(
             modifier = Modifier
                 .padding(8)
-                .verticalScroll(background = Textures.background_brick_background)
+                .verticalScroll(background = LocalTouchControllerTheme.current.background)
                 .fillMaxSize(),
             verticalArrangement = Arrangement.spacedBy(8),
         ) {

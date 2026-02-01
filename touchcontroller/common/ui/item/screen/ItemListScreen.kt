@@ -15,7 +15,6 @@ import top.fifthlight.combine.modifier.Modifier
 import top.fifthlight.combine.modifier.drawing.border
 import top.fifthlight.combine.modifier.placement.*
 import top.fifthlight.combine.modifier.scroll.verticalScroll
-import top.fifthlight.combine.theme.blackstone.BlackstoneTextures
 import top.fifthlight.combine.widget.layout.Box
 import top.fifthlight.combine.widget.layout.Column
 import top.fifthlight.combine.widget.layout.Row
@@ -28,6 +27,7 @@ import top.fifthlight.touchcontroller.common.ui.widget.*
 import top.fifthlight.touchcontroller.common.ui.widget.navigation.AppBar
 import top.fifthlight.touchcontroller.common.ui.widget.navigation.BackButton
 import top.fifthlight.touchcontroller.common.ui.model.ItemListScreenModel
+import top.fifthlight.touchcontroller.common.ui.theme.LocalTouchControllerTheme
 
 class ItemListScreen(
     private val initialValue: PersistentList<Item>,
@@ -53,7 +53,7 @@ class ItemListScreen(
                     modifier = Modifier
                         .padding(2)
                         .verticalScroll()
-                        .border(BlackstoneTextures.widget_background_background_dark)
+                        .border(LocalTouchControllerTheme.current.borderBackgroundDark)
                         .fillMaxHeight()
                         .weight(.4f),
                 ) {
@@ -91,7 +91,7 @@ class ItemListScreen(
                 }
                 Box(
                     modifier = Modifier
-                        .border(BlackstoneTextures.widget_background_background_dark)
+                        .border(LocalTouchControllerTheme.current.borderBackgroundDark)
                         .fillMaxHeight()
                         .weight(.6f),
                 ) {

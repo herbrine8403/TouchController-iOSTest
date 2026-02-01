@@ -34,6 +34,7 @@ import top.fifthlight.touchcontroller.common.control.property.TextureCoordinate
 import top.fifthlight.touchcontroller.common.gal.key.KeyBindingHandler
 import top.fifthlight.touchcontroller.common.gal.key.KeyBindingHandlerFactory
 import top.fifthlight.touchcontroller.common.layout.align.Align
+import top.fifthlight.touchcontroller.common.ui.theme.LocalTouchControllerTheme
 import top.fifthlight.touchcontroller.common.ui.widget.*
 import top.fifthlight.touchcontroller.common.ui.widget.navigation.AppBar
 import top.fifthlight.touchcontroller.common.ui.widget.navigation.BackButton
@@ -651,7 +652,7 @@ class TextureCoordinateProperty<Config : ControllerWidget>(
                         Column(
                             modifier = Modifier
                                 .padding(4)
-                                .background(Textures.background_brick_background)
+                                .background(LocalTouchControllerTheme.current.background)
                                 .then(modifier),
                             verticalArrangement = Arrangement.spacedBy(4),
                         ) {

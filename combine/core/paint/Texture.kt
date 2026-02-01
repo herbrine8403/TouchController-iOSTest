@@ -43,6 +43,7 @@ interface BackgroundTexture : Drawable {
     override val padding: IntPadding
         get() = IntPadding.ZERO
 
+    override fun Canvas.draw(dstRect: IntRect, tint: Color) = draw(dstRect, tint, 1f)
     fun Canvas.draw(dstRect: IntRect, tint: Color = Colors.WHITE, scale: Float) = draw(dstRect.toRect(), tint, scale)
     fun Canvas.draw(dstRect: Rect, tint: Color = Colors.WHITE, scale: Float)
 

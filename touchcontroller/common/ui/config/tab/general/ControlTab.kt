@@ -11,9 +11,9 @@ import top.fifthlight.combine.modifier.placement.padding
 import top.fifthlight.combine.modifier.scroll.verticalScroll
 import top.fifthlight.combine.widget.layout.Column
 import top.fifthlight.touchcontroller.assets.Texts
-import top.fifthlight.touchcontroller.assets.Textures
 import top.fifthlight.touchcontroller.common.config.ControlConfig
 import top.fifthlight.touchcontroller.common.ui.config.model.LocalConfigScreenModel
+import top.fifthlight.touchcontroller.common.ui.theme.LocalTouchControllerTheme
 import top.fifthlight.touchcontroller.common.ui.widget.IntSliderPreferenceItem
 import top.fifthlight.touchcontroller.common.ui.widget.SliderPreferenceItem
 import top.fifthlight.touchcontroller.common.ui.config.tab.Tab
@@ -34,7 +34,7 @@ object ControlTab : Tab() {
         Column(
             modifier = Modifier
                 .padding(8)
-                .verticalScroll(background = Textures.background_brick_background)
+                .verticalScroll(background = LocalTouchControllerTheme.current.background)
                 .fillMaxSize(),
             verticalArrangement = Arrangement.spacedBy(8),
         ) {

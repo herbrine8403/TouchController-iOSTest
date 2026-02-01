@@ -21,7 +21,6 @@ import top.fifthlight.combine.modifier.placement.padding
 import top.fifthlight.combine.modifier.placement.width
 import top.fifthlight.combine.modifier.scroll.verticalScroll
 import top.fifthlight.combine.theme.LocalTheme
-import top.fifthlight.combine.theme.blackstone.BlackstoneTextures
 import top.fifthlight.combine.widget.layout.Box
 import top.fifthlight.combine.widget.layout.Column
 import top.fifthlight.combine.widget.layout.FlowRow
@@ -34,6 +33,7 @@ import top.fifthlight.touchcontroller.assets.Texts
 import top.fifthlight.touchcontroller.common.gal.PlayerInventory
 import top.fifthlight.touchcontroller.common.gal.creativetab.CreativeTabsProvider
 import top.fifthlight.touchcontroller.common.ui.widget.ListButton
+import top.fifthlight.touchcontroller.common.ui.theme.LocalTouchControllerTheme
 
 class VanillaItemListScreen(
     private val onItemSelected: (Item) -> Unit,
@@ -167,7 +167,7 @@ class VanillaItemListScreen(
                     modifier = Modifier
                         .padding(4)
                         .weight(1f)
-                        .border(BlackstoneTextures.widget_background_background_dark)
+                        .border(LocalTouchControllerTheme.current.borderBackgroundDark)
                         .fillMaxHeight(),
                 ) {
                     Text(Text.translatable(Texts.SCREEN_ITEM_LIST_NO_TAB_SELECTED))
@@ -178,7 +178,7 @@ class VanillaItemListScreen(
                 modifier = Modifier
                     .padding(4)
                     .verticalScroll()
-                    .border(BlackstoneTextures.widget_background_background_dark)
+                    .border(LocalTouchControllerTheme.current.borderBackgroundDark)
                     .fillMaxHeight(),
                 maxColumns = 2,
             ) {

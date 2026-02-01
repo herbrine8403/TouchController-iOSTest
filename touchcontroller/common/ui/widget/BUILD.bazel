@@ -4,6 +4,7 @@ kt_merge_library(
     name = "widget",
     srcs = glob(["*.kt"]),
     merge_deps = [
+        "//touchcontroller/common/ui/theme",
         "//touchcontroller/resources/lang:text_binding",
     ],
     visibility = ["//touchcontroller:__subpackages__"],
@@ -20,7 +21,6 @@ kt_merge_library(
         "//combine/item/data",
         "//combine/item/widget",
         "//combine/style",
-        "//combine/theme/blackstone:texture_lib",
         "//combine/widget",
         "@maven//:org_jetbrains_kotlinx_kotlinx_collections_immutable_jvm",
         "@maven//:org_jetbrains_kotlinx_kotlinx_coroutines_core_jvm",

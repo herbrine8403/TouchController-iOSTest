@@ -1,3 +1,4 @@
+load("//rule:jar.bzl", "jar")
 load("//rule/combine:library.bzl", "kt_texture_lib")
 load("//rule/combine:minecraft.bzl", "atlas_pack", "kt_vanilla_lib", "vanilla_pack")
 load("//rule/combine:texture.bzl", "texture", "texture_group", "texture_lib")
@@ -88,4 +89,17 @@ atlas_pack(
     namespace = "touchcontroller",
     visibility = ["//touchcontroller:__subpackages__"],
     width = 512,
+)
+
+alias(
+    name = "icon",
+    actual = "icon.png",
+    visibility = ["//touchcontroller:__subpackages__"],
+)
+
+jar(
+    name = "icon_jar",
+    resource_prefix = "assets/touchcontroller/textures",
+    resources = [":icon"],
+    visibility = ["//touchcontroller:__subpackages__"],
 )

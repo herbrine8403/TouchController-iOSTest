@@ -34,13 +34,15 @@ fun Modifier.verticalScroll(
     scrollState: ScrollState = rememberScrollState(),
     reverse: Boolean = false,
     background: BackgroundTexture? = null,
-    backgroundScale: Float = 1f
-) = then(VerticalScrollNode(
-    scrollState = scrollState,
-    reverse = reverse,
-    background = background,
-    backgroundScale = backgroundScale
-))
+    backgroundScale: Float = 1f,
+) = then(
+    VerticalScrollNode(
+        scrollState = scrollState,
+        reverse = reverse,
+        background = background,
+        backgroundScale = backgroundScale
+    )
+)
 
 private data class VerticalScrollNode(
     val scrollState: ScrollState,
@@ -52,12 +54,15 @@ private data class VerticalScrollNode(
         event: PointerEvent,
         node: Placeable,
         layoutNode: LayoutNode,
-        children: (PointerEvent) -> Boolean
+        children: (PointerEvent) -> Boolean,
     ): Boolean {
         return when (event.type) {
             PointerEventType.Scroll -> {
                 val scrollDelta = if (reverse) -event.scrollDelta.y else event.scrollDelta.y
-                scrollState.updateProgress((scrollState.progress.value - scrollDelta * 12).toInt(), animateOverscroll = true)
+                scrollState.updateProgress(
+                    (scrollState.progress.value - scrollDelta * 12).toInt(),
+                    animateOverscroll = true
+                )
                 true
             }
 
@@ -190,7 +195,8 @@ private data class VerticalScrollNode(
         if (scrollState.viewportHeight < scrollState.contentHeight) {
             val progress =
                 scrollState.progress.value.toFloat() / (scrollState.contentHeight - scrollState.viewportHeight).toFloat()
-            val barHeight = (wrapperNode.height * scrollState.viewportHeight / scrollState.contentHeight).coerceAtLeast(12)
+            val barHeight =
+                (wrapperNode.height * scrollState.viewportHeight / scrollState.contentHeight).coerceAtLeast(12)
             val barY = ((wrapperNode.height - barHeight) * if (reverse) {
                 1f - progress
             } else {
@@ -206,7 +212,8 @@ private data class VerticalScrollNode(
     }
 
     companion object {
-        private val wrapperFactory = LayoutModifierNode.wrapperFactory + DrawModifierNode.wrapperFactory + PointerInputModifierNode.wrapperFactory
+        private val wrapperFactory =
+            LayoutModifierNode.wrapperFactory + DrawModifierNode.wrapperFactory + PointerInputModifierNode.wrapperFactory
     }
 
     override val wrapperFactory

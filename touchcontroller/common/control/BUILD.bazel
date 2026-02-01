@@ -11,6 +11,7 @@ kt_merge_library(
         "//touchcontroller/common/gal/key",
         "//touchcontroller/common/layout",
         "//touchcontroller/common/layout/align",
+        "//touchcontroller/common/ui/theme",
         "//touchcontroller/common/ui/widget",
         "//touchcontroller/common/ui/widget/navigation",
         "//touchcontroller/common/util/uuid",

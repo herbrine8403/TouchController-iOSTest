@@ -90,21 +90,8 @@ fun main(vararg args: String) {
                         pngFile.inputStream().use { it.transferTo(out) }
                         out.closeEntry()
                     } else {
-                        out.putNextEntry(entry("assets/$namespace/textures/gui/sprites/$prefix/$identifier.png"))
+                        out.putNextEntry(entry("assets/$namespace/textures/gui/$prefix/$identifier.png"))
                         pngFile.inputStream().use { it.transferTo(out) }
-                        out.closeEntry()
-
-                        val image = ImageIO.read(pngFile.toFile())
-                        val meta = TextureMetadata(
-                            gui = TextureMetadata.Gui(
-                                scaling = TextureMetadata.Gui.Scaling.Tile(
-                                    width = image.width,
-                                    height = image.height,
-                                ),
-                            )
-                        )
-                        out.putNextEntry(entry("assets/$namespace/textures/gui/sprites/$prefix/$identifier.png.mcmeta"))
-                        out.write(Json.encodeToString(TextureMetadata.serializer(), meta).toByteArray())
                         out.closeEntry()
                     }
                     i += 4

@@ -8,10 +8,10 @@ import top.fifthlight.combine.modifier.drawing.border
 import top.fifthlight.combine.modifier.placement.fillMaxHeight
 import top.fifthlight.combine.modifier.placement.height
 import top.fifthlight.combine.modifier.placement.padding
-import top.fifthlight.combine.theme.blackstone.BlackstoneTextures
 import top.fifthlight.combine.widget.layout.Box
 import top.fifthlight.combine.widget.layout.Row
 import top.fifthlight.combine.widget.layout.RowScope
+import top.fifthlight.touchcontroller.common.ui.theme.LocalTouchControllerTheme
 
 @Composable
 fun AppBar(
@@ -23,7 +23,7 @@ fun AppBar(
     Box(
         modifier = Modifier
             .height(20)
-            .border(BlackstoneTextures.widget_background_background_gray_title)
+            .border(LocalTouchControllerTheme.current.appBarBackground)
             .then(modifier),
     ) {
         Row(

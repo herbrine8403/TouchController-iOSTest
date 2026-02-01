@@ -8,6 +8,7 @@ kt_merge_library(
         "//touchcontroller/common/gal/item",
         "//touchcontroller/common/ui/component/model",
         "//touchcontroller/common/ui/model",
+        "//touchcontroller/common/ui/theme",
         "//touchcontroller/common/ui/widget",
         "//touchcontroller/common/ui/widget/navigation",
         "//touchcontroller/resources/lang:text_binding",

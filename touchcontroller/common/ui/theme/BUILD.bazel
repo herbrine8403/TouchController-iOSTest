@@ -8,6 +8,7 @@ kt_merge_library(
     deps = [
         "//:compose",
         "//combine/core/paint",
+        "//combine/style",
         "//combine/theme/base",
         "//combine/theme/blackstone",
         "//combine/theme/blackstone:texture_lib",

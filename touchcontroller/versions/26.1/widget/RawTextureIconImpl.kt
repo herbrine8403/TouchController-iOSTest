@@ -29,6 +29,6 @@ object RawTextureIconImpl : RawTextureIcon {
         measurePolicy = MeasurePolicy.fixed(size),
     ) {
         val guiGraphics = (this as CanvasImpl).guiGraphics
-        guiGraphics.blit(identifier.toMinecraft(), 0, 0, it.width, it.height, 0f, 0f, 1f, 1f)
+        guiGraphics.blit(identifier.toMinecraft(), 0, 0, it.width, it.height, 0f, 1f, 0f, 1f)
     }
 }
