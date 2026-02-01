@@ -3,11 +3,14 @@ load("//rule:merge_library.bzl", "kt_merge_library")
 kt_merge_library(
     name = "screen",
     srcs = glob(["*.kt"]),
+    actual = True,
     merge_deps = [
+        "//touchcontroller/common/control/action/provider",
         "//touchcontroller/common/gal/chat",
         "//touchcontroller/common/ui/chat/model",
         "//touchcontroller/common/ui/chat/state",
         "//touchcontroller/common/ui/model",
+        "//touchcontroller/common/ui/theme",
         "//touchcontroller/common/ui/widget",
         "//touchcontroller/common/ui/widget/navigation",
         "//touchcontroller/resources/lang:text_binding",

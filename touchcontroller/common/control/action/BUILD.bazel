@@ -5,6 +5,7 @@ kt_merge_library(
     srcs = glob(["*.kt"]),
     kotlinc_opts = "//touchcontroller/common:kotlinc_opts",
     merge_deps = [
+        "//touchcontroller/common/control/action/provider",
         "//touchcontroller/common/gal/action",
         "//touchcontroller/common/gal/key",
         "//touchcontroller/common/gal/player",

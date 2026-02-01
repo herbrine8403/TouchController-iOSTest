@@ -39,6 +39,10 @@ def _merge_library_group_impl(ctx):
         merge_jars = depset(),
         merge_source_jars = depset(),
         deps = [dep[MergeLibraryInfo] for dep in ctx.attr.deps],
+    ), _JavaInfo(
+        output_jar = ctx.file._empty_jar,
+        compile_jar = ctx.file._empty_jar,
+        runtime_deps = [dep[_JavaInfo] for dep in ctx.attr.deps],
     )]
 
 merge_library_group = rule(
@@ -47,6 +51,10 @@ merge_library_group = rule(
         "deps": attr.label_list(
             providers = [MergeLibraryInfo],
             mandatory = True,
+        ),
+        "_empty_jar": attr.label(
+            default = "//rule/merge_expect_actual_jar:empty_jar",
+            allow_single_file = True,
         ),
     },
 )

@@ -1,4 +1,5 @@
 load("@rules_java//java:defs.bzl", "java_binary", "java_library")
+load("//rule:jar.bzl", "jar")
 
 java_library(
     name = "merge_expect_actual_jar",
@@ -34,4 +35,9 @@ java_binary(
         "//rule/merge_expect_actual_jar/plugin/resource",
         "//rule/merge_expect_actual_jar/plugin/services",
     ],
+)
+
+jar(
+    name = "empty_jar",
+    visibility = ["//visibility:public"],
 )
