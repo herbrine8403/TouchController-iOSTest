@@ -1,8 +1,8 @@
-package top.fifthlight.touchcontroller.common.ui.state
+package top.fifthlight.touchcontroller.common.ui.layer.tab.custom.state
 
-import top.fifthlight.touchcontroller.common.config.preset.CustomCondition
+import top.fifthlight.touchcontroller.common.config.preset.info.CustomCondition
 
-data class LayoutEditorCustomTabState(
+data class CustomTabState(
     val editState: EditState? = null,
 ) {
     data class EditState(

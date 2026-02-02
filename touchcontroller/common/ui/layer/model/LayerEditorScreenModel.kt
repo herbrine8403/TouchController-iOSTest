@@ -1,11 +1,12 @@
-package top.fifthlight.touchcontroller.common.ui.model
+package top.fifthlight.touchcontroller.common.ui.layer.model
 
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.getAndUpdate
-import top.fifthlight.touchcontroller.common.config.LayoutLayer
 import top.fifthlight.touchcontroller.common.config.condition.LayerConditions
-import top.fifthlight.touchcontroller.common.ui.state.LayerEditorScreenState
+import top.fifthlight.touchcontroller.common.config.layout.LayoutLayer
+import top.fifthlight.touchcontroller.common.ui.layer.state.LayerEditorScreenState
+import top.fifthlight.touchcontroller.common.ui.model.TouchControllerScreenModel
 
 class LayerEditorScreenModel(
     private val initialValue: LayoutLayer,
@@ -22,7 +23,7 @@ class LayerEditorScreenModel(
 
     fun applyChanges() {
         onValueChanged(
-            uiState.value.edit(initialValue)
+            uiState.value.edit(initialValue),
         )
     }
 
@@ -30,8 +31,8 @@ class LayerEditorScreenModel(
         _uiState.getAndUpdate {
             it.copy(
                 conditions = LayerConditions(
-                    conditions = it.conditions.conditions.set(index, editor(it.conditions.conditions[index]))
-                )
+                    conditions = it.conditions.conditions.set(index, editor(it.conditions.conditions[index])),
+                ),
             )
         }
     }
@@ -40,8 +41,8 @@ class LayerEditorScreenModel(
         _uiState.getAndUpdate {
             it.copy(
                 conditions = LayerConditions(
-                    conditions = it.conditions.conditions.removeAt(index)
-                )
+                    conditions = it.conditions.conditions.removeAt(index),
+                ),
             )
         }
     }
@@ -50,8 +51,8 @@ class LayerEditorScreenModel(
         _uiState.getAndUpdate {
             it.copy(
                 conditions = LayerConditions(
-                    conditions = it.conditions.conditions.add(condition)
-                )
+                    conditions = it.conditions.conditions.add(condition),
+                ),
             )
         }
     }

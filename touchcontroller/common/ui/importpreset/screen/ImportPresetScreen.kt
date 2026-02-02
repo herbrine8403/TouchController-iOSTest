@@ -1,29 +1,28 @@
-package top.fifthlight.touchcontroller.common.ui.config.tab.layout.custom
+package top.fifthlight.touchcontroller.common.ui.importpreset.screen
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import cafe.adriel.voyager.core.model.rememberScreenModel
 import cafe.adriel.voyager.core.screen.Screen
-import cafe.adriel.voyager.koin.koinScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
-import org.koin.core.parameter.parametersOf
 import top.fifthlight.combine.data.Text
 import top.fifthlight.combine.modifier.Modifier
 import top.fifthlight.combine.modifier.placement.fillMaxWidth
 import top.fifthlight.combine.widget.ui.Button
 import top.fifthlight.combine.widget.ui.Text
 import top.fifthlight.touchcontroller.assets.Texts
-import top.fifthlight.touchcontroller.common.config.preset.builtin.BuiltInPresetKey
-import top.fifthlight.touchcontroller.common.ui.widget.AppBar
-import top.fifthlight.touchcontroller.common.ui.widget.BackButton
-import top.fifthlight.touchcontroller.common.ui.widget.BuiltInPresetKeySelector
+import top.fifthlight.touchcontroller.common.config.preset.builtin.key.BuiltinPresetKey
+import top.fifthlight.touchcontroller.common.ui.component.BuiltInPresetKeySelector
+import top.fifthlight.touchcontroller.common.ui.importpreset.model.ImportPresetScreenModel
 import top.fifthlight.touchcontroller.common.ui.widget.Scaffold
-import top.fifthlight.touchcontroller.common.ui.model.ImportPresetScreenModel
+import top.fifthlight.touchcontroller.common.ui.widget.navigation.AppBar
+import top.fifthlight.touchcontroller.common.ui.widget.navigation.BackButton
 
-class ImportPresetScreen(private val onPresetKeySelected: (BuiltInPresetKey) -> Unit) : Screen {
+class ImportPresetScreen(private val onPresetKeySelected: (BuiltinPresetKey) -> Unit) : Screen {
     @Composable
     override fun Content() {
-        val screenModel: ImportPresetScreenModel = koinScreenModel { parametersOf(onPresetKeySelected) }
+        val screenModel = rememberScreenModel { ImportPresetScreenModel(onPresetKeySelected) }
         val navigator = LocalNavigator.current
         Scaffold(
             topBar = {

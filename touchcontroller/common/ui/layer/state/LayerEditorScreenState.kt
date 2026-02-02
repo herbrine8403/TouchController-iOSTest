@@ -1,7 +1,7 @@
-package top.fifthlight.touchcontroller.common.ui.state
+package top.fifthlight.touchcontroller.common.ui.layer.state
 
-import top.fifthlight.touchcontroller.common.config.LayoutLayer
 import top.fifthlight.touchcontroller.common.config.condition.LayerConditions
+import top.fifthlight.touchcontroller.common.config.layout.LayoutLayer
 
 data class LayerEditorScreenState(
     val name: String,

@@ -1,13 +1,12 @@
-package top.fifthlight.touchcontroller.common.ui.config.tab.layercondition
+package top.fifthlight.touchcontroller.common.ui.layer.tab
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.compositionLocalOf
 import cafe.adriel.voyager.core.screen.Screen
-import kotlinx.collections.immutable.persistentListOf
 import top.fifthlight.combine.data.Identifier
 import top.fifthlight.touchcontroller.common.config.condition.LayerConditions
-import top.fifthlight.touchcontroller.common.config.preset.LayerCustomConditions
 import top.fifthlight.touchcontroller.common.config.preset.LayoutPreset
+import top.fifthlight.touchcontroller.common.config.preset.info.LayerCustomConditions
 
 data class LayerConditionTabContext(
     val preset: LayoutPreset,
@@ -25,8 +24,3 @@ abstract class LayerConditionTab : Screen {
     abstract val name: Identifier
 }
 
-val allLayerConditionTabs = persistentListOf(
-    BuiltInTab,
-    HoldingItemTab,
-    CustomTab,
-)
