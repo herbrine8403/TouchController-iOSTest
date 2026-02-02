@@ -122,7 +122,7 @@ val BlackstoneTheme = run {
             selectIconUp = BlackstoneTextures.icon_up,
             selectIconDown = BlackstoneTextures.icon_down,
 
-            radioBoxBorder = BlackstoneTextures.widget_handle_handle,
+            radioBoxBorder = BlackstoneTextures.widget_background_float_window,
 
             iconButton = DrawableSet(
                 normal = BlackstoneTextures.widget_icon_button_icon_button,

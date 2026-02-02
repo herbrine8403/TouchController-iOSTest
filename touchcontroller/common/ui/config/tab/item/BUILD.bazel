@@ -18,9 +18,6 @@ kt_merge_library(
         "//touchcontroller/common/ui/widget",
         "//touchcontroller/resources/lang:text_binding",
     ],
-    merge_runtime_deps = [
-        "//touchcontroller/common/about/resources",
-    ],
     visibility = ["//touchcontroller:__subpackages__"],
     deps = [
         "//:compose",

@@ -1,4 +1,4 @@
-package top.fifthlight.touchcontroller.common.ui.config.tab
+package top.fifthlight.touchcontroller.common.ui.config.tab.about
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -24,9 +24,11 @@ import top.fifthlight.combine.widget.ui.Link
 import top.fifthlight.combine.widget.ui.Text
 import top.fifthlight.data.IntSize
 import top.fifthlight.touchcontroller.assets.Texts
-import top.fifthlight.touchcontroller.assets.Textures
 import top.fifthlight.touchcontroller.buildinfo.BuildInfo
 import top.fifthlight.touchcontroller.common.about.License
+import top.fifthlight.touchcontroller.common.ui.config.tab.Tab
+import top.fifthlight.touchcontroller.common.ui.config.tab.TabOptions
+import top.fifthlight.touchcontroller.common.ui.config.tab.about.model.AboutScreenModel
 import top.fifthlight.touchcontroller.common.ui.widget.raw.RawTextureIcon
 import top.fifthlight.touchcontroller.common.ui.screen.LicenseScreen
 import top.fifthlight.touchcontroller.common.ui.theme.LocalTouchControllerTheme

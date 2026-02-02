@@ -1,11 +1,10 @@
-package top.fifthlight.touchcontroller.common.ui.config.tab.layout
+package top.fifthlight.touchcontroller.common.ui.config.tab.layout.preset
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import cafe.adriel.voyager.koin.koinScreenModel
+import cafe.adriel.voyager.core.model.rememberScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
-import org.koin.core.parameter.parametersOf
 import top.fifthlight.combine.data.Text
 import top.fifthlight.combine.layout.Alignment
 import top.fifthlight.combine.layout.Arrangement
@@ -14,25 +13,24 @@ import top.fifthlight.combine.modifier.drawing.background
 import top.fifthlight.combine.modifier.drawing.border
 import top.fifthlight.combine.modifier.placement.fillMaxWidth
 import top.fifthlight.combine.modifier.placement.padding
-import top.fifthlight.combine.widget.base.layout.Box
-import top.fifthlight.combine.widget.base.layout.Column
-import top.fifthlight.combine.widget.base.layout.Row
+import top.fifthlight.combine.widget.layout.Box
+import top.fifthlight.combine.widget.layout.Column
+import top.fifthlight.combine.widget.layout.Row
 import top.fifthlight.combine.widget.ui.GuideButton
 import top.fifthlight.combine.widget.ui.Text
 import top.fifthlight.combine.widget.ui.WarningButton
-import top.fifthlight.touchcontroller.assets.BackgroundTextures
 import top.fifthlight.touchcontroller.assets.Texts
-import top.fifthlight.touchcontroller.assets.Textures
-import top.fifthlight.touchcontroller.common.config.preset.PresetConfig
-import top.fifthlight.touchcontroller.common.ui.widget.AppBar
-import top.fifthlight.touchcontroller.common.ui.widget.BackButton
-import top.fifthlight.touchcontroller.common.ui.widget.BuiltInPresetKeySelector
-import top.fifthlight.touchcontroller.common.ui.widget.Scaffold
-import top.fifthlight.touchcontroller.common.ui.model.LocalConfigScreenModel
-import top.fifthlight.touchcontroller.common.ui.model.ManageControlPresetsTabModel
+import top.fifthlight.touchcontroller.common.config.PresetConfig
+import top.fifthlight.touchcontroller.common.ui.component.BuiltInPresetKeySelector
+import top.fifthlight.touchcontroller.common.ui.config.model.LocalConfigScreenModel
 import top.fifthlight.touchcontroller.common.ui.config.tab.Tab
 import top.fifthlight.touchcontroller.common.ui.config.tab.TabGroup
 import top.fifthlight.touchcontroller.common.ui.config.tab.TabOptions
+import top.fifthlight.touchcontroller.common.ui.config.tab.layout.preset.model.ManageControlPresetsTabModel
+import top.fifthlight.touchcontroller.common.ui.theme.LocalTouchControllerTheme
+import top.fifthlight.touchcontroller.common.ui.widget.Scaffold
+import top.fifthlight.touchcontroller.common.ui.widget.navigation.AppBar
+import top.fifthlight.touchcontroller.common.ui.widget.navigation.BackButton
 
 object ManageControlPresetsTab : Tab() {
     override val options = TabOptions(
@@ -58,7 +56,7 @@ object ManageControlPresetsTab : Tab() {
             },
         ) { modifier ->
             val configScreenModel = LocalConfigScreenModel.current
-            val screenModel = koinScreenModel<ManageControlPresetsTabModel> { parametersOf(configScreenModel) }
+            val screenModel = rememberScreenModel { ManageControlPresetsTabModel(configScreenModel) }
             val presetConfig by screenModel.presetConfig.collectAsState()
             val currentPresetConfig = presetConfig
             if (currentPresetConfig != null) {
@@ -70,14 +68,14 @@ object ManageControlPresetsTab : Tab() {
             } else {
                 Box(
                     modifier = Modifier
-                        .background(BackgroundTextures.BRICK_BACKGROUND)
+                        .background(LocalTouchControllerTheme.current.background)
                         .then(modifier),
                     alignment = Alignment.Center,
                 ) {
                     Column(
                         modifier = Modifier
                             .padding(12)
-                            .border(Textures.WIDGET_BACKGROUND_BACKGROUND_DARK),
+                            .border(LocalTouchControllerTheme.current.borderBackgroundDark),
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.spacedBy(12),
                     ) {
@@ -95,7 +93,7 @@ object ManageControlPresetsTab : Tab() {
                             }
                             GuideButton(
                                 onClick = {
-                                    navigator?.replace(CustomControlLayoutTab)
+                                    // navigator?.replace(CustomControlLayoutTab)
                                 }
                             ) {
                                 Text(Text.translatable(Texts.SCREEN_MANAGE_CONTROL_PRESET_SWITCH_GOTO_CUSTOM))

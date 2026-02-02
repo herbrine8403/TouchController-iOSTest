@@ -44,7 +44,7 @@ fun Context.Texture(
                 canvas.draw(
                     dstRect = calcDstRect(
                         srcRect = srcRect,
-                        dstSize = size,
+                        dstSize = this@Texture.size,
                         padding = padding,
                     ),
                     srcRect = (srcRect + padding).toRect(),
@@ -58,7 +58,7 @@ fun Context.Texture(
                 canvas.draw(
                     dstRect = calcDstRect(
                         srcRect = srcRect,
-                        dstSize = size,
+                        dstSize = this@Texture.size,
                         padding = padding,
                     ),
                     srcRect = (srcRect + padding).toRect(),
@@ -81,7 +81,7 @@ fun Context.Texture(
                 canvas.draw(
                     dstRect = calcDstRect(
                         srcRect = srcRect,
-                        dstSize = size,
+                        dstSize = this@Texture.size,
                         padding = padding,
                     ),
                     srcRect = (srcRect + padding).toRect(),
@@ -97,7 +97,7 @@ fun Context.Texture(
                 canvas.draw(
                     dstRect = calcDstRect(
                         srcRect = srcRect,
-                        dstSize = size,
+                        dstSize = this@Texture.size,
                         padding = padding,
                     ),
                     srcRect = (srcRect + padding).toRect(),

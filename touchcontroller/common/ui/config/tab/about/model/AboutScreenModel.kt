@@ -1,4 +1,4 @@
-package top.fifthlight.touchcontroller.common.ui.config.tab
+package top.fifthlight.touchcontroller.common.ui.config.tab.about.model
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,7 +19,7 @@ class AboutScreenModel : TouchControllerScreenModel() {
         coroutineScope.launch {
             withContext(Dispatchers.IO) {
                 try {
-                    AboutInfoProvider.aboutInfo
+                    AboutInfoProvider.Companion.aboutInfo
                 } catch (ex: Exception) {
                     logger.warn("Failed to read about information", ex)
                     null
