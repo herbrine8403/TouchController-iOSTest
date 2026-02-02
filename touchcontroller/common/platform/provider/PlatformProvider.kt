@@ -109,20 +109,23 @@ object PlatformProvider {
                 return null
             }
 
-            val targetArch = when (systemArch) {
-                "x86_32", "x86", "i386", "i486", "i586", "i686" -> "i686-linux-android"
-                "amd64", "x86_64" -> "x86_64-linux-android"
-                "armeabi", "armeabi-v7a", "armhf", "arm", "armel" -> "armv7-linux-androideabi"
-                "arm64", "aarch64" -> "aarch64-linux-android"
+            val target = when (systemArch) {
+                "x86_32", "x86", "i386", "i486", "i586", "i686" -> "android_x86_32"
+                "amd64", "x86_64" -> "android_x86_64"
+                "armeabi", "armeabi-v7a", "armhf", "arm", "armel" -> "android_armv7"
+                "arm64", "aarch64" -> "android_aarch64"
                 else -> null
             } ?: run {
                 logger.warn("Unsupported Android arch")
                 return null
             }
+            logger.info("Target: $target")
+
+            val libraryName = "proxy_server_android"
 
             return NativeLibraryInfo(
-                modContainerPath = "$targetArch/libproxy_server_android.so",
-                extractPrefix = "libproxy_server_android",
+                modContainerPath = "${libraryName}_${target}/lib${libraryName}.so",
+                extractPrefix = "lib$libraryName",
                 extractSuffix = ".so",
                 readOnlySetter = ::posixReadOnlySetter,
                 removeAfterLoaded = true,
@@ -133,10 +136,10 @@ object PlatformProvider {
         val platform = windowProvider.platform
         when (platform) {
             is GlfwPlatform.Win32 -> {
-                val (targetTriple, target) = when (systemArch) {
-                    "x86_32", "x86", "i386", "i486", "i586", "i686" -> Pair("i686-w64-mingw32", "i686")
-                    "amd64", "x86_64" -> Pair("x86_64-w64-mingw32", "x86_64")
-                    "arm64", "aarch64" -> Pair("aarch64-w64-mingw32", "aarch64")
+                val target = when (systemArch) {
+                    "x86_32", "x86", "i386", "i486", "i586", "i686" -> "windows_x86_32"
+                    "amd64", "x86_64" -> "windows_x86_64"
+                    "arm64", "aarch64" -> "windows_aarch64"
                     else -> null
                 } ?: run {
                     logger.warn("Unsupported Windows arch: $systemArch")
@@ -145,16 +148,16 @@ object PlatformProvider {
                 val systemVersion = System.getProperty("os.version")
                 val majorVersion = systemVersion.substringBefore(".").toIntOrNull()
                 val isLegacy = majorVersion == null || majorVersion < 10
-                logger.info("Target arch: $targetTriple, legacy: $isLegacy")
+                logger.info("Target: $target, legacy: $isLegacy")
                 val libraryName = if (isLegacy) {
-                    "libproxy_windows_legacy"
+                    "proxy_server_windows_legacy"
                 } else {
-                    "libproxy_windows"
+                    "proxy_server_windows"
                 }
 
                 return NativeLibraryInfo(
-                    modContainerPath = "$targetTriple/$libraryName.dll",
-                    extractPrefix = libraryName,
+                    modContainerPath = "${libraryName}_${target}/lib${libraryName}.dll",
+                    extractPrefix = "lib$libraryName",
                     extractSuffix = ".dll",
                     readOnlySetter = ::windowsReadOnlySetter,
                     removeAfterLoaded = false,
@@ -163,18 +166,16 @@ object PlatformProvider {
             }
 
             is GlfwPlatform.Wayland, GlfwPlatform.X11 -> {
-                val (archPrefix, archSuffix) = when (systemArch) {
-                    "x86_32", "x86", "i386", "i486", "i586", "i686" -> Pair("i386", "")
-                    "amd64", "x86_64" -> Pair("x86_64", "")
-                    "armv8", "arm64", "aarch64" -> Pair("aarch64", "")
-                    "arm", "armhf", "armel", "armv7" -> Pair("arm", "eabihf")
+                val target = when (systemArch) {
+                    "amd64", "x86_64" -> "linux_x86_64"
+                    "armv8", "arm64", "aarch64" -> "linux_aarch64"
                     else -> null
                 } ?: run {
                     logger.warn("Unsupported Linux arch: $systemArch")
                     return null
                 }
-                val platformName = when (platform) {
-                    is GlfwPlatform.Wayland -> "wayland"
+                val libraryName = when (platform) {
+                    is GlfwPlatform.Wayland -> "proxy_server_wayland"
                     is GlfwPlatform.X11 -> {
                         logger.warn("X11 is not supported for now")
                         return null
@@ -183,12 +184,11 @@ object PlatformProvider {
                     else -> throw AssertionError()
                 }
                 // TODO: detect musl, and use musl libraries
-                val targetTriple = "$archPrefix-linux-gnu$archSuffix"
-                logger.info("Target triple: $targetTriple")
+                logger.info("Target: $target")
 
                 return NativeLibraryInfo(
-                    modContainerPath = "$targetTriple/libproxy_linux_$platformName.so",
-                    extractPrefix = "libproxy_linux_$platformName",
+                    modContainerPath = "${libraryName}_${target}/lib${libraryName}.so",
+                    extractPrefix = "lib$libraryName",
                     extractSuffix = ".so",
                     readOnlySetter = ::posixReadOnlySetter,
                     removeAfterLoaded = false,

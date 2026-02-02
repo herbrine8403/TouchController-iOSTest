@@ -16,10 +16,10 @@ kt_merge_library(
         "//touchcontroller/proxy/server/udp",
     ],
     resource_jars = [
-        ":wayland",
-        ":windows",
-        ":windows_legacy",
-        ":android",
+        ":proxy_server_wayland",
+        ":proxy_server_windows",
+        ":proxy_server_windows_legacy",
+        ":proxy_server_android",
     ],
     visibility = ["//touchcontroller:__subpackages__"],
     deps = [
@@ -29,7 +29,7 @@ kt_merge_library(
 )
 
 cc_jni_library(
-    name = "wayland",
+    name = "proxy_server_wayland",
     dynamic_deps = [
         "//touchcontroller/proxy/server/linux:libwayland-client",
     ],
@@ -48,7 +48,7 @@ cc_jni_library(
 )
 
 cc_jni_library(
-    name = "windows",
+    name = "proxy_server_windows",
     platforms = select({
         "//:config_release": [
             "@//platforms:windows_x86_64",
@@ -64,7 +64,7 @@ cc_jni_library(
 )
 
 cc_jni_library(
-    name = "windows_legacy",
+    name = "proxy_server_windows_legacy",
     platforms = select({
         "//:config_release": [
             "@//platforms:windows_x86_64",
@@ -80,7 +80,7 @@ cc_jni_library(
 )
 
 rust_jni_library(
-    name = "android",
+    name = "proxy_server_android",
     lib = "//touchcontroller/proxy/server/android",
     platforms = select({
         "//:config_release": [
