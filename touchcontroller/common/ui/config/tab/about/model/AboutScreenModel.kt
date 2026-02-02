@@ -19,7 +19,7 @@ class AboutScreenModel : TouchControllerScreenModel() {
         coroutineScope.launch {
             withContext(Dispatchers.IO) {
                 try {
-                    AboutInfoProvider.Companion.aboutInfo
+                    AboutInfoProvider.aboutInfo
                 } catch (ex: Exception) {
                     logger.warn("Failed to read about information", ex)
                     null

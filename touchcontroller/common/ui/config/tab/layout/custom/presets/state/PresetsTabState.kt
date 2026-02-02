@@ -1,7 +1,7 @@
-package top.fifthlight.touchcontroller.common.ui.state
+package top.fifthlight.touchcontroller.common.ui.config.tab.layout.custom.presets.state
 
 import top.fifthlight.touchcontroller.common.config.preset.LayoutPreset
-import top.fifthlight.touchcontroller.common.config.preset.PresetControlInfo
+import top.fifthlight.touchcontroller.common.config.preset.info.PresetControlInfo
 import kotlin.uuid.Uuid
 
 sealed class PresetsTabState {

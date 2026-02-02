@@ -11,6 +11,8 @@ merge_library_group(
     name = "common_runtime_deps",
     visibility = ["//touchcontroller:__subpackages__"],
     deps = [
+        "//touchcontroller/common/control/serializer",
         "//touchcontroller/common/ui/chat/screen",
+        "//touchcontroller/common/ui/config/tab/layout/provider:provider_impl",
     ],
 )

@@ -31,7 +31,7 @@ fun Icon(
     Canvas(
         modifier = modifier,
         measurePolicy = MeasurePolicy.fixed(size),
-    ) { node ->
+    ) { canvas, node ->
         val nodeWidth = node.width
         val nodeHeight = node.height
         val nodeAspect = nodeWidth.toFloat() / nodeHeight.toFloat()
@@ -86,6 +86,6 @@ fun Icon(
             }
         }
 
-        drawable.run { draw(renderRect) }
+        drawable.draw(canvas, renderRect)
     }
 }

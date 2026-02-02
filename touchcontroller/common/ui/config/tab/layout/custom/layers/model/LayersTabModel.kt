@@ -1,10 +1,12 @@
-package top.fifthlight.touchcontroller.common.ui.model
+package top.fifthlight.touchcontroller.common.ui.config.tab.layout.custom.layers.model
 
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import top.fifthlight.touchcontroller.common.config.ControllerLayout
-import top.fifthlight.touchcontroller.common.config.LayoutLayer
-import top.fifthlight.touchcontroller.common.ui.state.LayersTabState
+import top.fifthlight.touchcontroller.common.config.layout.ControllerLayout
+import top.fifthlight.touchcontroller.common.config.layout.LayoutLayer
+import top.fifthlight.touchcontroller.common.ui.config.tab.layout.custom.layers.state.LayersTabState
+import top.fifthlight.touchcontroller.common.ui.config.tab.layout.custom.model.CustomControlLayoutTabModel
+import top.fifthlight.touchcontroller.common.ui.model.TouchControllerScreenModel
 
 class LayersTabModel(
     private val screenModel: CustomControlLayoutTabModel,

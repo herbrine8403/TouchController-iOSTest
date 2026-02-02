@@ -1,19 +1,18 @@
-package top.fifthlight.touchcontroller.common.ui.config.tab.layout.custom
+package top.fifthlight.touchcontroller.common.ui.config.tab.layout.custom.tab
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.compositionLocalOf
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.Navigator
-import kotlinx.collections.immutable.persistentListOf
 import top.fifthlight.combine.layout.Arrangement
 import top.fifthlight.combine.modifier.Modifier
 import top.fifthlight.combine.modifier.drawing.border
 import top.fifthlight.combine.modifier.placement.*
-import top.fifthlight.combine.widget.base.layout.*
-import top.fifthlight.touchcontroller.assets.Textures
+import top.fifthlight.combine.widget.layout.*
+import top.fifthlight.touchcontroller.common.ui.config.tab.layout.custom.model.CustomControlLayoutTabModel
+import top.fifthlight.touchcontroller.common.ui.config.tab.layout.custom.state.CustomControlLayoutTabState
+import top.fifthlight.touchcontroller.common.ui.theme.LocalTouchControllerTheme
 import top.fifthlight.touchcontroller.common.ui.widget.TitleBox
-import top.fifthlight.touchcontroller.common.ui.model.CustomControlLayoutTabModel
-import top.fifthlight.touchcontroller.common.ui.state.CustomControlLayoutTabState
 
 data class CustomTabContext(
     val screenModel: CustomControlLayoutTabModel,
@@ -32,13 +31,13 @@ abstract class CustomTab : Screen {
     @Composable
     fun SideBar(
         tabsButton: @Composable () -> Unit,
-        actions: @Composable ColumnScope.() -> Unit
+        actions: @Composable ColumnScope.() -> Unit,
     ) {
         Column {
             tabsButton()
             Spacer(
                 modifier = Modifier
-                    .border(Textures.WIDGET_BACKGROUND_BACKGROUND_LIGHTGRAY_TITLE)
+                    .border(LocalTouchControllerTheme.current.titleBoxBackground)
                     .weight(1f)
                     .width(22),
             )
@@ -79,7 +78,7 @@ abstract class CustomTab : Screen {
             }
             Box(
                 modifier = Modifier
-                    .border(Textures.WIDGET_BACKGROUND_BACKGROUND_DARK_TITLE)
+                    .border(LocalTouchControllerTheme.current.borderBackgroundDark)
                     .weight(1f)
                     .fillMaxWidth(),
             ) {
@@ -89,7 +88,7 @@ abstract class CustomTab : Screen {
                 Row(
                     modifier = Modifier
                         .padding(2)
-                        .border(Textures.WIDGET_BACKGROUND_BACKGROUND_DARK_TITLE)
+                        .border(LocalTouchControllerTheme.current.borderBackgroundDark)
                         .height(IntrinsicSize.Min),
                     horizontalArrangement = Arrangement.spacedBy(2),
                 ) {
@@ -99,10 +98,3 @@ abstract class CustomTab : Screen {
         }
     }
 }
-
-val allCustomTabs = persistentListOf<CustomTab>(
-    PropertiesTab,
-    WidgetsTab,
-    LayersTab,
-    PresetsTab,
-)

@@ -1,32 +1,33 @@
-package top.fifthlight.touchcontroller.common.ui.config.tab.layout.custom
+package top.fifthlight.touchcontroller.common.ui.config.tab.layout.custom.layers
 
 import androidx.compose.runtime.*
-import cafe.adriel.voyager.koin.koinScreenModel
+import cafe.adriel.voyager.core.model.rememberScreenModel
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
-import org.koin.core.parameter.parametersOf
 import top.fifthlight.combine.data.Text
 import top.fifthlight.combine.layout.Alignment
 import top.fifthlight.combine.layout.Arrangement
 import top.fifthlight.combine.modifier.Modifier
 import top.fifthlight.combine.modifier.placement.*
 import top.fifthlight.combine.modifier.scroll.verticalScroll
-import top.fifthlight.combine.widget.base.layout.Box
-import top.fifthlight.combine.widget.base.layout.Column
-import top.fifthlight.combine.widget.base.layout.Row
+import top.fifthlight.combine.widget.layout.Box
+import top.fifthlight.combine.widget.layout.Column
+import top.fifthlight.combine.widget.layout.Row
 import top.fifthlight.combine.widget.ui.*
 import top.fifthlight.data.IntRect
 import top.fifthlight.touchcontroller.assets.Texts
 import top.fifthlight.touchcontroller.assets.Textures
-import top.fifthlight.touchcontroller.common.config.ControllerLayout
-import top.fifthlight.touchcontroller.common.config.LayoutLayer
+import top.fifthlight.touchcontroller.common.config.layout.ControllerLayout
+import top.fifthlight.touchcontroller.common.config.layout.LayoutLayer
 import top.fifthlight.touchcontroller.common.ext.mapState
+import top.fifthlight.touchcontroller.common.ui.config.tab.layout.custom.layers.model.LayersTabModel
+import top.fifthlight.touchcontroller.common.ui.config.tab.layout.custom.layers.state.LayersTabState
+import top.fifthlight.touchcontroller.common.ui.config.tab.layout.custom.state.CustomControlLayoutTabState
+import top.fifthlight.touchcontroller.common.ui.config.tab.layout.custom.tab.CustomTab
+import top.fifthlight.touchcontroller.common.ui.config.tab.layout.custom.tab.LocalCustomTabContext
+import top.fifthlight.touchcontroller.common.ui.layer.screen.LayerEditorScreen
+import top.fifthlight.touchcontroller.common.ui.theme.LocalTouchControllerTheme
 import top.fifthlight.touchcontroller.common.ui.widget.ListButton
-import top.fifthlight.touchcontroller.common.ui.widget.LocalListButtonDrawable
-import top.fifthlight.touchcontroller.common.ui.model.LayersTabModel
-import top.fifthlight.touchcontroller.common.ui.screen.LayerEditorScreen
-import top.fifthlight.touchcontroller.common.ui.state.CustomControlLayoutTabState
-import top.fifthlight.touchcontroller.common.ui.state.LayersTabState
 
 @Composable
 private fun LayersList(
@@ -64,12 +65,12 @@ private fun LayersList(
                         .minHeight(24)
                         .fillMaxHeight()
                         .anchor { anchor = it },
-                    drawableSet = LocalListButtonDrawable.current.unchecked,
+                    drawableSet = LocalTouchControllerTheme.current.listButtonDrawablesUnchecked,
                     onClick = {
                         expanded = true
                     },
                 ) {
-                    Icon(Textures.ICON_MENU)
+                    Icon(Textures.icon_menu)
                 }
 
                 DropDownMenu(
@@ -103,13 +104,13 @@ private fun LayersList(
 object LayersTab : CustomTab() {
     @Composable
     override fun Icon() {
-        Icon(Textures.ICON_LAYER)
+        Icon(Textures.icon_layer)
     }
 
     @Composable
     override fun Content() {
         val (screenModel, uiState, tabsButton, sideBarAtRight, parentNavigator) = LocalCustomTabContext.current
-        val tabModel: LayersTabModel = koinScreenModel { parametersOf(screenModel) }
+        val tabModel = rememberScreenModel { LayersTabModel(screenModel) }
         val tabState by tabModel.uiState.collectAsState()
 
         AlertDialog(
@@ -170,18 +171,18 @@ object LayersTab : CustomTab() {
                     },
                     enabled = uiState.selectedPreset != null,
                 ) {
-                    Icon(Textures.ICON_ADD)
+                    Icon(Textures.icon_add)
                 }
             }
         ) { modifier ->
+            val selectedPreset = uiState.selectedPreset
             SideBarScaffold(
                 modifier = modifier,
                 title = {
                     Text(Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_LAYERS))
                 },
-                actions = if (uiState.selectedPreset != null) {
-                    {
-                        val selectedPreset = uiState.selectedPreset
+                actions = {
+                    if (selectedPreset != null) {
                         val layerIndices = selectedPreset.layout.indices
                         val selectedLayerIndex = uiState.pageState.selectedLayerIndex.takeIf { it in layerIndices }
                         Button(
@@ -213,11 +214,9 @@ object LayersTab : CustomTab() {
                             Text(Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_LAYERS_MOVE_DOWN))
                         }
                     }
-                } else {
-                    null
                 }
             ) {
-                if (uiState.selectedPreset != null) {
+                if (selectedPreset != null) {
                     Column(
                         modifier = Modifier
                             .verticalScroll()
@@ -227,7 +226,7 @@ object LayersTab : CustomTab() {
                             modifier = Modifier
                                 .padding(4)
                                 .fillMaxWidth(),
-                            listContent = uiState.selectedPreset.layout,
+                            listContent = selectedPreset.layout,
                             currentSelectedLayoutIndex = uiState.pageState.selectedLayerIndex,
                             onLayerSelected = { index, layer ->
                                 screenModel.selectLayer(index)
@@ -240,7 +239,7 @@ object LayersTab : CustomTab() {
                                         onCustomConditionsChanged = {
                                             screenModel.editPreset {
                                                 copy(
-                                                    controlInfo = uiState.selectedPreset.controlInfo.copy(
+                                                    controlInfo = selectedPreset.controlInfo.copy(
                                                         customConditions = it
                                                     )
                                                 )

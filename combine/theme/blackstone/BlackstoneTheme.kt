@@ -131,9 +131,9 @@ val BlackstoneTheme = run {
                 disabled = BlackstoneTextures.widget_icon_button_icon_button_disabled,
             ),
             selectedIconButton = DrawableSet(
-                normal = BlackstoneTextures.widget_icon_button_icon_button_active,
-                hover = BlackstoneTextures.widget_icon_button_icon_button_active,
-                active = BlackstoneTextures.widget_icon_button_icon_button_active,
+                normal = BlackstoneTextures.widget_icon_button_icon_button_presslock,
+                hover = BlackstoneTextures.widget_icon_button_icon_button_presslock_hover,
+                active = BlackstoneTextures.widget_icon_button_icon_button_presslock_active,
                 disabled = BlackstoneTextures.widget_icon_button_icon_button_disabled,
             ),
 

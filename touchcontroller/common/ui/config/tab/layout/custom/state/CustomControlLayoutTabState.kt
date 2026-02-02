@@ -1,13 +1,14 @@
-package top.fifthlight.touchcontroller.common.ui.state
+package top.fifthlight.touchcontroller.common.ui.config.tab.layout.custom.state
 
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.plus
 import kotlinx.collections.immutable.toPersistentList
-import top.fifthlight.touchcontroller.common.config.LayoutLayer
+import top.fifthlight.touchcontroller.common.config.layout.LayoutLayer
 import top.fifthlight.touchcontroller.common.config.preset.LayoutPreset
 import top.fifthlight.touchcontroller.common.config.preset.PresetsContainer
 import top.fifthlight.touchcontroller.common.control.ControllerWidget
+import kotlin.collections.isNotEmpty
 import kotlin.uuid.Uuid
 
 sealed class CustomControlLayoutTabState {

@@ -40,9 +40,9 @@ fun ControllerWidget(
         modifier = Modifier
             .size(renderSize)
             .then(modifier)
-    ) {
-        withScale(scale) {
-            drawQueue.execute(this)
+    ) { canvas, _ ->
+        canvas.withScale(scale) { canvas ->
+            drawQueue.execute(canvas)
         }
     }
 }
@@ -84,10 +84,10 @@ fun AutoScaleControllerWidget(
         modifier = Modifier
             .onPlaced { entrySize = it.size }
             .then(modifier),
-    ) {
-        withTranslate(offset) {
-            withScale(componentScaleFactor) {
-                drawQueue.execute(this)
+    ) { canvas, _ ->
+        canvas.withTranslate(offset) { canvas ->
+            canvas.withScale(componentScaleFactor) { canvas ->
+                drawQueue.execute(canvas)
             }
         }
     }

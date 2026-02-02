@@ -22,7 +22,7 @@ import top.fifthlight.data.IntSize
 import top.fifthlight.touchcontroller.assets.Texts
 import top.fifthlight.touchcontroller.assets.TextureSet
 import top.fifthlight.touchcontroller.common.config.layout.ControllerLayout
-import top.fifthlight.touchcontroller.common.config.preset.builtin.BuiltinPresets
+import top.fifthlight.touchcontroller.common.config.preset.builtin.BuiltinPresetsProviderImpl
 import top.fifthlight.touchcontroller.common.config.preset.builtin.key.BuiltinPresetKey
 import top.fifthlight.touchcontroller.common.control.ControllerWidget
 import top.fifthlight.touchcontroller.common.layout.data.ContextInput
@@ -176,7 +176,7 @@ fun BuiltInPresetKeySelector(
                 modifier = Modifier
                     .fillMaxSize()
                     .weight(1f),
-                preset = BuiltinPresets.generate(value).layout,
+                preset = value.preset.layout,
             )
             if (LocalScreenSize.current.width > 600) {
                 Row(

@@ -1,9 +1,12 @@
 package top.fifthlight.touchcontroller.common.config.preset.builtin
 
+import top.fifthlight.mergetools.api.ActualConstructor
+import top.fifthlight.mergetools.api.ActualImpl
 import top.fifthlight.touchcontroller.assets.TextureSet
 import top.fifthlight.touchcontroller.common.config.layout.controllerLayoutOf
 import top.fifthlight.touchcontroller.common.config.preset.LayoutPreset
 import top.fifthlight.touchcontroller.common.config.preset.builtin.key.BuiltinPresetKey
+import top.fifthlight.touchcontroller.common.config.preset.builtin.key.BuiltinPresetsProvider
 import top.fifthlight.touchcontroller.common.config.preset.info.PresetControlInfo
 import top.fifthlight.touchcontroller.common.control.widget.boat.BoatButton
 import top.fifthlight.touchcontroller.common.control.widget.custom.ButtonActiveTexture
@@ -12,8 +15,13 @@ import top.fifthlight.touchcontroller.common.control.widget.custom.CustomWidget
 import top.fifthlight.touchcontroller.common.control.widget.dpad.DPad
 import top.fifthlight.touchcontroller.common.control.widget.joystick.Joystick
 
-object BuiltinPresets {
-    fun generate(key: BuiltinPresetKey): LayoutPreset {
+@ActualImpl(BuiltinPresetsProvider::class)
+object BuiltinPresetsProviderImpl : BuiltinPresetsProvider {
+    @JvmStatic
+    @ActualConstructor
+    fun of(): BuiltinPresetsProvider = BuiltinPresetsProviderImpl
+
+    override fun generate(key: BuiltinPresetKey): LayoutPreset {
         val textureSet = key.textureSet
         val layers = BuiltinLayers[textureSet]
         val sprintButton = when (key.sprintButtonLocation) {

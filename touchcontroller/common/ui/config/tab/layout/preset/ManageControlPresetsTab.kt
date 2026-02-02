@@ -27,6 +27,7 @@ import top.fifthlight.touchcontroller.common.ui.config.tab.Tab
 import top.fifthlight.touchcontroller.common.ui.config.tab.TabGroup
 import top.fifthlight.touchcontroller.common.ui.config.tab.TabOptions
 import top.fifthlight.touchcontroller.common.ui.config.tab.layout.preset.model.ManageControlPresetsTabModel
+import top.fifthlight.touchcontroller.common.ui.config.tab.layout.provider.CustomTabProvider
 import top.fifthlight.touchcontroller.common.ui.theme.LocalTouchControllerTheme
 import top.fifthlight.touchcontroller.common.ui.widget.Scaffold
 import top.fifthlight.touchcontroller.common.ui.widget.navigation.AppBar
@@ -93,7 +94,7 @@ object ManageControlPresetsTab : Tab() {
                             }
                             GuideButton(
                                 onClick = {
-                                    // navigator?.replace(CustomControlLayoutTab)
+                                    navigator?.replace(CustomTabProvider.customTab)
                                 }
                             ) {
                                 Text(Text.translatable(Texts.SCREEN_MANAGE_CONTROL_PRESET_SWITCH_GOTO_CUSTOM))

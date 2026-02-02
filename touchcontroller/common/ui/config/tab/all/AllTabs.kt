@@ -11,6 +11,7 @@ import top.fifthlight.touchcontroller.common.ui.config.tab.general.ControlTab
 import top.fifthlight.touchcontroller.common.ui.config.tab.general.DebugTab
 import top.fifthlight.touchcontroller.common.ui.config.tab.general.RegularTab
 import top.fifthlight.touchcontroller.common.ui.config.tab.general.TouchRingTab
+import top.fifthlight.touchcontroller.common.ui.config.tab.layout.custom.CustomControlLayoutTab
 import top.fifthlight.touchcontroller.common.ui.config.tab.layout.preset.ManageControlPresetsTab
 
 fun getAllTabs(configScreenModel: ConfigScreenModel): PersistentList<Tab> {
@@ -18,7 +19,7 @@ fun getAllTabs(configScreenModel: ConfigScreenModel): PersistentList<Tab> {
     return persistentListOf(
         AboutTab,
         ManageControlPresetsTab,
-        // CustomControlLayoutTab,
+        CustomControlLayoutTab,
         RegularTab,
         ControlTab,
         TouchRingTab,

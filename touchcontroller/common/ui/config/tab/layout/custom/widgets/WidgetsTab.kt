@@ -1,10 +1,8 @@
-package top.fifthlight.touchcontroller.common.ui.config.tab.layout.custom
+package top.fifthlight.touchcontroller.common.ui.config.tab.layout.custom.widgets
 
 import androidx.compose.runtime.*
-import cafe.adriel.voyager.koin.koinScreenModel
+import cafe.adriel.voyager.core.model.rememberScreenModel
 import kotlinx.collections.immutable.persistentListOf
-import org.koin.core.parameter.parametersOf
-import top.fifthlight.combine.data.LocalTextFactory
 import top.fifthlight.combine.data.Text
 import top.fifthlight.combine.layout.Alignment
 import top.fifthlight.combine.layout.Arrangement
@@ -13,9 +11,9 @@ import top.fifthlight.combine.modifier.Modifier
 import top.fifthlight.combine.modifier.ParentDataModifierNode
 import top.fifthlight.combine.modifier.placement.*
 import top.fifthlight.combine.modifier.scroll.verticalScroll
-import top.fifthlight.combine.widget.base.layout.Box
-import top.fifthlight.combine.widget.base.layout.Column
-import top.fifthlight.combine.widget.base.layout.Row
+import top.fifthlight.combine.widget.layout.Box
+import top.fifthlight.combine.widget.layout.Column
+import top.fifthlight.combine.widget.layout.Row
 import top.fifthlight.combine.widget.ui.*
 import top.fifthlight.data.IntOffset
 import top.fifthlight.data.IntPadding
@@ -25,12 +23,14 @@ import top.fifthlight.touchcontroller.assets.Texts
 import top.fifthlight.touchcontroller.assets.TextureSet
 import top.fifthlight.touchcontroller.assets.Textures
 import top.fifthlight.touchcontroller.common.control.ControllerWidget
-import top.fifthlight.touchcontroller.common.ui.widget.AutoScaleControllerWidget
+import top.fifthlight.touchcontroller.common.ui.component.AutoScaleControllerWidget
+import top.fifthlight.touchcontroller.common.ui.config.tab.layout.custom.tab.CustomTab
+import top.fifthlight.touchcontroller.common.ui.config.tab.layout.custom.tab.LocalCustomTabContext
+import top.fifthlight.touchcontroller.common.ui.config.tab.layout.custom.widgets.model.WidgetsTabModel
+import top.fifthlight.touchcontroller.common.ui.config.tab.layout.custom.widgets.state.WidgetsTabState
+import top.fifthlight.touchcontroller.common.ui.theme.LocalTouchControllerTheme
 import top.fifthlight.touchcontroller.common.ui.widget.CheckButton
 import top.fifthlight.touchcontroller.common.ui.widget.ListButton
-import top.fifthlight.touchcontroller.common.ui.widget.LocalListButtonDrawable
-import top.fifthlight.touchcontroller.common.ui.model.WidgetsTabModel
-import top.fifthlight.touchcontroller.common.ui.state.WidgetsTabState
 import kotlin.math.max
 
 private enum class ControllerWidgetType {
@@ -202,12 +202,12 @@ private fun CustomWidgetList(
                         .minHeight(24)
                         .fillMaxHeight()
                         .anchor { anchor = it },
-                    drawableSet = LocalListButtonDrawable.current.unchecked,
+                    drawableSet = LocalTouchControllerTheme.current.listButtonDrawablesUnchecked,
                     onClick = {
                         expanded = true
                     },
                 ) {
-                    Icon(Textures.ICON_MENU)
+                    Icon(Textures.icon_menu)
                 }
 
                 DropDownMenu(
@@ -238,13 +238,13 @@ private fun CustomWidgetList(
 object WidgetsTab : CustomTab() {
     @Composable
     override fun Icon() {
-        Icon(Textures.ICON_WIDGET)
+        Icon(Textures.icon_widget)
     }
 
     @Composable
     override fun Content() {
         val (screenModel, uiState, tabsButton, sideBarAtRight) = LocalCustomTabContext.current
-        val tabModel: WidgetsTabModel = koinScreenModel { parametersOf(screenModel) }
+        val tabModel = rememberScreenModel { WidgetsTabModel(screenModel) }
         val tabState by tabModel.uiState.collectAsState()
 
         AlertDialog(
@@ -299,11 +299,10 @@ object WidgetsTab : CustomTab() {
                         expanded = expanded,
                         onExpandedChanged = { expanded = it },
                         dropDownContent = {
-                            val textFactory = LocalTextFactory.current
                             DropdownItemList(
                                 modifier = Modifier.verticalScroll(),
                                 items = TextureSet.TextureSetKey.entries,
-                                textProvider = { textFactory.of(it.nameText) },
+                                textProvider = { Text.translatable(it.nameText) },
                                 selectedIndex = TextureSet.TextureSetKey.entries.indexOf(dialogState.textureSet),
                                 onItemSelected = { index ->
                                     tabModel.updateNewWidgetParamsDialog { copy(textureSet = TextureSet.TextureSetKey.entries[index]) }
@@ -360,7 +359,7 @@ object WidgetsTab : CustomTab() {
                         uiState.selectedWidget?.let(screenModel::addWidgetPreset)
                     },
                 ) {
-                    Icon(Textures.ICON_SAVE)
+                    Icon(Textures.icon_save)
                 }
 
                 IconButton(
@@ -368,7 +367,7 @@ object WidgetsTab : CustomTab() {
                         tabModel.openNewWidgetParamsDialog()
                     }
                 ) {
-                    Icon(Textures.ICON_CONFIG)
+                    Icon(Textures.icon_config)
                 }
             }
         ) { modifier ->

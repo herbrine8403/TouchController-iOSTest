@@ -1,23 +1,23 @@
-package top.fifthlight.touchcontroller.common.ui.model
+package top.fifthlight.touchcontroller.common.ui.config.tab.layout.custom.presets.model
 
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.getAndUpdate
-import org.koin.core.component.inject
 import org.slf4j.LoggerFactory
 import top.fifthlight.touchcontroller.common.config.preset.LayoutPreset
 import top.fifthlight.touchcontroller.common.config.preset.PresetManager
-import top.fifthlight.touchcontroller.common.ui.state.PresetsTabState
+import top.fifthlight.touchcontroller.common.ui.config.tab.layout.custom.model.CustomControlLayoutTabModel
+import top.fifthlight.touchcontroller.common.ui.config.tab.layout.custom.presets.state.PresetsTabState
+import top.fifthlight.touchcontroller.common.ui.model.TouchControllerScreenModel
 import kotlin.uuid.Uuid
 
 class PresetsTabModel(
-    private val screenModel: CustomControlLayoutTabModel
-): TouchControllerScreenModel() {
+    private val screenModel: CustomControlLayoutTabModel,
+) : TouchControllerScreenModel() {
     private companion object {
         private val logger = LoggerFactory.getLogger(PresetsTabModel::class.java)
     }
 
-    private val presetManager: PresetManager by inject()
     private val _uiState = MutableStateFlow<PresetsTabState>(PresetsTabState.Empty)
     val uiState = _uiState.asStateFlow()
 
@@ -69,8 +69,8 @@ class PresetsTabModel(
     }
 
     fun editPreset(state: PresetsTabState.Edit) {
-        val preset = presetManager.presets.value[state.uuid] ?: return
-        presetManager.savePreset(state.uuid, state.edit(preset), false)
+        val preset = PresetManager.presets.value[state.uuid] ?: return
+        PresetManager.savePreset(state.uuid, state.edit(preset), false)
         clearState()
     }
 
@@ -79,12 +79,12 @@ class PresetsTabModel(
     }
 
     fun movePreset(uuid: Uuid, offset: Int) {
-        presetManager.movePreset(uuid, offset)
+        PresetManager.movePreset(uuid, offset)
     }
 
     fun openPresetPathDialog(uuid: Uuid) {
         val path = try {
-            presetManager.presetDir.resolve("$uuid.json").toAbsolutePath()
+            PresetManager.presetDir.resolve("$uuid.json").toAbsolutePath()
         } catch (ex: Exception) {
             logger.error("Failed to get preset path", ex)
             null

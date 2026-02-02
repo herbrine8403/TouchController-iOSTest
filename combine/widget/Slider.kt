@@ -82,7 +82,7 @@ fun Slider(
                 ),
             ) { }
         }
-    ) { node ->
+    ) { canvas, node ->
         val trackRect = IntRect(
             offset = IntOffset(
                 x = handleLeftHalfWidth,
@@ -91,38 +91,36 @@ fun Slider(
             size = IntSize(
                 width = node.width - handleDrawable.size.width,
                 height = node.height,
-            )
+            ),
         )
         val progressWidth = (trackRect.size.width * progress).toInt()
 
-        activeTrackDrawable.run { draw(trackRect) }
+        activeTrackDrawable.draw(canvas, trackRect)
 
-        inactiveTrackDrawable?.run {
-            draw(
-                IntRect(
-                    offset = trackRect.offset + IntOffset(
-                        x = progressWidth,
-                        y = 0,
-                    ),
-                    size = IntSize(
-                        width = trackRect.size.width - progressWidth,
-                        height = trackRect.size.height,
-                    )
-                )
-            )
-        }
+        inactiveTrackDrawable?.draw(
+            canvas = canvas,
+            dstRect = IntRect(
+                offset = trackRect.offset + IntOffset(
+                    x = progressWidth,
+                    y = 0,
+                ),
+                size = IntSize(
+                    width = trackRect.size.width - progressWidth,
+                    height = trackRect.size.height,
+                ),
+            ),
+        )
 
-        handleDrawable.run {
-            draw(
-                IntRect(
-                    offset = IntOffset(
-                        x = progressWidth,
-                        y = 0,
-                    ),
-                    size = handleDrawable.size,
-                )
-            )
-        }
+        handleDrawable.draw(
+            canvas = canvas,
+            dstRect = IntRect(
+                offset = IntOffset(
+                    x = progressWidth,
+                    y = 0,
+                ),
+                size = handleDrawable.size,
+            ),
+        )
     }
 }
 

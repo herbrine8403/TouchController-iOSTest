@@ -1,13 +1,11 @@
-package top.fifthlight.touchcontroller.common.ui.config.tab.layout
+package top.fifthlight.touchcontroller.common.ui.config.tab.layout.custom
 
 import androidx.compose.runtime.*
-import cafe.adriel.voyager.koin.koinScreenModel
+import cafe.adriel.voyager.core.model.rememberScreenModel
 import cafe.adriel.voyager.navigator.CurrentScreen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.Navigator
 import kotlinx.collections.immutable.PersistentList
-import org.koin.core.component.KoinComponent
-import org.koin.core.parameter.parametersOf
 import top.fifthlight.combine.animation.animateFloatAsState
 import top.fifthlight.combine.data.Text
 import top.fifthlight.combine.layout.Alignment
@@ -22,28 +20,37 @@ import top.fifthlight.combine.modifier.placement.*
 import top.fifthlight.combine.modifier.pointer.consumePress
 import top.fifthlight.combine.modifier.pointer.draggable
 import top.fifthlight.combine.paint.Colors
-import top.fifthlight.combine.widget.base.layout.Box
-import top.fifthlight.combine.widget.base.layout.Column
-import top.fifthlight.combine.widget.base.layout.Row
+import top.fifthlight.combine.widget.layout.Box
+import top.fifthlight.combine.widget.layout.Column
+import top.fifthlight.combine.widget.layout.Row
 import top.fifthlight.combine.widget.ui.*
 import top.fifthlight.data.IntOffset
 import top.fifthlight.data.IntRect
 import top.fifthlight.data.IntSize
 import top.fifthlight.data.Offset
-import top.fifthlight.touchcontroller.assets.BackgroundTextures
 import top.fifthlight.touchcontroller.assets.Texts
 import top.fifthlight.touchcontroller.assets.Textures
-import top.fifthlight.touchcontroller.common.config.LayoutLayer
+import top.fifthlight.touchcontroller.common.config.layout.LayoutLayer
 import top.fifthlight.touchcontroller.common.control.ControllerWidget
-import top.fifthlight.touchcontroller.common.layout.Align
-import top.fifthlight.touchcontroller.common.ui.widget.*
-import top.fifthlight.touchcontroller.common.ui.model.CustomControlLayoutTabModel
-import top.fifthlight.touchcontroller.common.ui.model.LocalConfigScreenModel
-import top.fifthlight.touchcontroller.common.ui.state.CustomControlLayoutTabState
+import top.fifthlight.touchcontroller.common.layout.align.Align
+import top.fifthlight.touchcontroller.common.ui.component.ControllerWidget
+import top.fifthlight.touchcontroller.common.ui.config.model.LocalConfigScreenModel
 import top.fifthlight.touchcontroller.common.ui.config.tab.Tab
 import top.fifthlight.touchcontroller.common.ui.config.tab.TabGroup
 import top.fifthlight.touchcontroller.common.ui.config.tab.TabOptions
-import top.fifthlight.touchcontroller.common.ui.config.tab.layout.custom.*
+import top.fifthlight.touchcontroller.common.ui.config.tab.layout.custom.all.allCustomTabs
+import top.fifthlight.touchcontroller.common.ui.config.tab.layout.custom.model.CustomControlLayoutTabModel
+import top.fifthlight.touchcontroller.common.ui.config.tab.layout.custom.presets.PresetsTab
+import top.fifthlight.touchcontroller.common.ui.config.tab.layout.custom.state.CustomControlLayoutTabState
+import top.fifthlight.touchcontroller.common.ui.config.tab.layout.custom.tab.CustomTab
+import top.fifthlight.touchcontroller.common.ui.config.tab.layout.custom.tab.CustomTabContext
+import top.fifthlight.touchcontroller.common.ui.config.tab.layout.custom.tab.LocalCustomTabContext
+import top.fifthlight.touchcontroller.common.ui.config.tab.layout.provider.CustomTabProvider
+import top.fifthlight.touchcontroller.common.ui.theme.LocalTouchControllerTheme
+import top.fifthlight.touchcontroller.common.ui.widget.Scaffold
+import top.fifthlight.touchcontroller.common.ui.widget.navigation.AppBar
+import top.fifthlight.touchcontroller.common.ui.widget.navigation.BackButton
+import top.fifthlight.touchcontroller.common.ui.widget.navigation.TouchControllerNavigator
 
 private data class ControllerWidgetParentData(
     val align: Align,
@@ -227,7 +234,7 @@ private fun SideBar(
     }
 }
 
-object CustomControlLayoutTab : Tab(), KoinComponent {
+object CustomControlLayoutTab : Tab() {
     override val options = TabOptions(
         titleId = Texts.SCREEN_CONFIG_LAYOUT_CUSTOM_CONTROL_LAYOUT,
         group = TabGroup.LayoutGroup,
@@ -239,7 +246,7 @@ object CustomControlLayoutTab : Tab(), KoinComponent {
     override fun Content() {
         val navigator = LocalNavigator.current
         val configScreenModel = LocalConfigScreenModel.current
-        val screenModel: CustomControlLayoutTabModel = koinScreenModel { parametersOf(configScreenModel) }
+        val screenModel = rememberScreenModel { CustomControlLayoutTabModel(configScreenModel) }
         val currentUiState by screenModel.uiState.collectAsState()
         val uiState = currentUiState
         if (uiState is CustomControlLayoutTabState.Enabled) {
@@ -287,13 +294,13 @@ object CustomControlLayoutTab : Tab(), KoinComponent {
                                 enabled = uiState.pageState.editState?.undoStack?.haveUndoItem == true,
                                 onClick = { screenModel.undo() },
                             ) {
-                                Icon(Textures.ICON_UNDO)
+                                Icon(Textures.icon_undo)
                             }
                             IconButton(
                                 enabled = uiState.pageState.editState?.undoStack?.haveRedoItem == true,
                                 onClick = { screenModel.redo() },
                             ) {
-                                Icon(Textures.ICON_REDO)
+                                Icon(Textures.icon_redo)
                             }
                         }
                     )
@@ -302,14 +309,16 @@ object CustomControlLayoutTab : Tab(), KoinComponent {
                 var anchor by remember { mutableStateOf(IntRect.ZERO) }
                 Box(
                     modifier = Modifier
-                        .background(BackgroundTextures.BRICK_BACKGROUND)
+                        .background(LocalTouchControllerTheme.current.background)
                         .anchor { anchor = it }
                         .then(modifier),
                     alignment = Alignment.Center,
                 ) {
                     var sideBarNavigator by mutableStateOf<Navigator?>(null)
 
-                    if (uiState.selectedLayer != null) {
+                    val selectedLayer = uiState.selectedLayer
+                    val selectedPreset = uiState.selectedPreset
+                    if (selectedLayer != null) {
                         LayoutEditorPanel(
                             modifier = Modifier.fillMaxSize(),
                             selectedWidgetIndex = uiState.pageState.selectedWidgetIndex,
@@ -322,7 +331,7 @@ object CustomControlLayoutTab : Tab(), KoinComponent {
                                     )
                                 }
                             },
-                            layer = uiState.selectedLayer,
+                            layer = selectedLayer,
                             layerIndex = uiState.pageState.selectedLayerIndex,
                             lockMoving = uiState.pageState.moveLocked,
                             highlight = uiState.pageState.highlight,
@@ -336,7 +345,7 @@ object CustomControlLayoutTab : Tab(), KoinComponent {
                                 }
                             },
                         )
-                    } else if (uiState.selectedPreset != null) {
+                    } else if (selectedPreset != null) {
                         Text(Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_NO_LAYER_SELECTED))
                         Button(
                             modifier = Modifier
@@ -344,7 +353,7 @@ object CustomControlLayoutTab : Tab(), KoinComponent {
                                 .alignment(Alignment.BottomCenter),
                             onClick = {
                                 screenModel.setShowSideBar(true)
-                                sideBarNavigator?.replace(LayersTab)
+                                sideBarNavigator?.replace(PresetsTab)
                             },
                         ) {
                             Text(Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_EDIT_LAYERS))
@@ -452,14 +461,14 @@ object CustomControlLayoutTab : Tab(), KoinComponent {
             ) { modifier ->
                 Box(
                     modifier = Modifier
-                        .background(BackgroundTextures.BRICK_BACKGROUND)
+                        .background(LocalTouchControllerTheme.current.background)
                         .then(modifier),
                     alignment = Alignment.Center,
                 ) {
                     Column(
                         modifier = Modifier
                             .padding(12)
-                            .border(Textures.WIDGET_BACKGROUND_BACKGROUND_DARK),
+                            .border(LocalTouchControllerTheme.current.borderBackgroundDark),
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.spacedBy(12),
                     ) {
@@ -477,7 +486,7 @@ object CustomControlLayoutTab : Tab(), KoinComponent {
                             }
                             GuideButton(
                                 onClick = {
-                                    navigator?.replace(ManageControlPresetsTab)
+                                    navigator?.replace(CustomTabProvider.presetTab)
                                 }
                             ) {
                                 Text(Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_SWITCH_GOTO_PRESET))

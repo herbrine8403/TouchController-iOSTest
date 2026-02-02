@@ -117,12 +117,13 @@ data class TextureImpl(
         )
     }
 
-    override fun Canvas.draw(
+    override fun draw(
+        canvas: Canvas,
         dstRect: Rect,
         tint: Color,
         srcRect: Rect,
     ) {
-        val guiGraphics = (this as CanvasImpl).guiGraphics
+        val guiGraphics = (canvas as CanvasImpl).guiGraphics
         val client = Minecraft.getInstance()
         val sprite = guiGraphics.getSprite(resourceLocation)
         val atlasLocation = sprite.atlasLocation()
@@ -147,11 +148,12 @@ data class TextureImpl(
         )
     }
 
-    override fun Canvas.draw(
+    override fun draw(
+        canvas: Canvas,
         dstRect: IntRect,
         tint: Color,
     ) {
-        val guiGraphics = (this as CanvasImpl).guiGraphics
+        val guiGraphics = (canvas as CanvasImpl).guiGraphics
         guiGraphics.blitSprite(
             RenderPipelines.GUI_TEXTURED,
             resourceLocation,
@@ -183,13 +185,14 @@ data class BackgroundTextureImpl(
         )
     }
 
-    override fun Canvas.draw(
+    override fun draw(
+        canvas: Canvas,
         dstRect: Rect,
         tint: Color,
         scale: Float,
     ) {
-        val guiGraphics = (this as CanvasImpl).guiGraphics
-        val gpuTextureView = client.textureManager.getTexture(resourceLocation).getTextureView()
+        val guiGraphics = (canvas as CanvasImpl).guiGraphics
+        val gpuTextureView = canvas.client.textureManager.getTexture(resourceLocation).getTextureView()
 
         guiGraphics.submitElement(
             BlitRenderState(

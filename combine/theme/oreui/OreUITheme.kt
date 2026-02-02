@@ -21,14 +21,17 @@ private data class OutlineDrawable(
     override val padding: IntPadding
         get() = inner.padding
 
-    override fun Canvas.draw(
+    override fun draw(
+        canvas: Canvas,
         dstRect: IntRect,
         tint: Color,
     ) {
-        with(inner) {
-            draw(dstRect = dstRect, tint = tint)
-        }
-        drawRect(
+        inner.draw(
+            canvas = canvas,
+            dstRect = dstRect,
+            tint = tint
+        )
+        canvas.drawRect(
             offset = dstRect.offset + IntOffset(-1),
             size = dstRect.size + 2,
             color = color,

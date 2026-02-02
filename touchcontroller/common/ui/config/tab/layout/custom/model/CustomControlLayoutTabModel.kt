@@ -1,31 +1,30 @@
-package top.fifthlight.touchcontroller.common.ui.model
+package top.fifthlight.touchcontroller.common.ui.config.tab.layout.custom.model
 
 import kotlinx.collections.immutable.plus
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import org.koin.core.component.inject
-import top.fifthlight.touchcontroller.common.config.ControllerLayout
-import top.fifthlight.touchcontroller.common.config.LayoutLayer
+import top.fifthlight.touchcontroller.common.config.PresetConfig
+import top.fifthlight.touchcontroller.common.config.layout.ControllerLayout
+import top.fifthlight.touchcontroller.common.config.layout.LayoutLayer
 import top.fifthlight.touchcontroller.common.config.preset.LayoutPreset
-import top.fifthlight.touchcontroller.common.config.preset.PresetConfig
 import top.fifthlight.touchcontroller.common.config.preset.PresetManager
-import top.fifthlight.touchcontroller.common.config.preset.builtin.BuiltInPresetKey
+import top.fifthlight.touchcontroller.common.config.preset.builtin.key.BuiltinPresetKey
 import top.fifthlight.touchcontroller.common.config.widget.WidgetPresetManager
 import top.fifthlight.touchcontroller.common.control.ControllerWidget
 import top.fifthlight.touchcontroller.common.ext.combineStates
+import top.fifthlight.touchcontroller.common.ui.config.model.ConfigScreenModel
+import top.fifthlight.touchcontroller.common.ui.config.tab.layout.custom.state.CustomControlLayoutTabState
+import top.fifthlight.touchcontroller.common.ui.model.TouchControllerScreenModel
 import top.fifthlight.touchcontroller.common.util.uuid.fastRandomUuid
-import top.fifthlight.touchcontroller.common.ui.state.CustomControlLayoutTabState
 import kotlin.uuid.Uuid
 
 class CustomControlLayoutTabModel(
     private val configScreenModel: ConfigScreenModel,
 ) : TouchControllerScreenModel() {
-    private val presetManager: PresetManager by inject()
-    private val widgetPresetManager: WidgetPresetManager by inject()
     private val pageState = MutableStateFlow(CustomControlLayoutTabState.Enabled.PageState())
     val uiState =
-        combineStates(configScreenModel.uiState, presetManager.presets, pageState) { uiState, presets, selectState ->
+        combineStates(configScreenModel.uiState, PresetManager.presets, pageState) { uiState, presets, selectState ->
             val config = uiState.config
             when (val preset = config.preset) {
                 is PresetConfig.BuiltIn -> CustomControlLayoutTabState.Disabled
@@ -46,7 +45,7 @@ class CustomControlLayoutTabModel(
         }
 
     private fun CustomControlLayoutTabState.Enabled.EditState.save() {
-        presetManager.savePreset(presetUuid, undoStack.currentItem, create = false)
+        PresetManager.savePreset(presetUuid, undoStack.currentItem, create = false)
     }
 
     init {
@@ -64,7 +63,7 @@ class CustomControlLayoutTabModel(
                         if (editState.presetUuid != selectedPresetUuid) {
                             editState.save()
                             val selectedPreset =
-                                presetManager.presets.map { it[selectedPresetUuid] }.first { it != null }!!
+                                PresetManager.presets.map { it[selectedPresetUuid] }.first { it != null }!!
                             pageState.copy(
                                 editState = CustomControlLayoutTabState.Enabled.EditState(
                                     presetUuid = selectedPresetUuid,
@@ -75,7 +74,7 @@ class CustomControlLayoutTabModel(
                             pageState
                         }
                     } else {
-                        val selectedPreset = presetManager.presets.map { it[selectedPresetUuid] }.first { it != null }!!
+                        val selectedPreset = PresetManager.presets.map { it[selectedPresetUuid] }.first { it != null }!!
                         pageState.copy(
                             editState = CustomControlLayoutTabState.Enabled.EditState(
                                 presetUuid = selectedPresetUuid,
@@ -91,7 +90,7 @@ class CustomControlLayoutTabModel(
                 awaitCancellation()
             } finally {
                 pageState.value.editState?.let { editState ->
-                    presetManager.savePreset(
+                    PresetManager.savePreset(
                         uuid = editState.presetUuid,
                         editState.undoStack.currentItem,
                     )
@@ -105,11 +104,11 @@ class CustomControlLayoutTabModel(
             is PresetConfig.BuiltIn -> config.key
             is PresetConfig.Custom -> return
         }
-        val firstPreset = presetManager.presets.value.orderedEntries.firstOrNull()
+        val firstPreset = PresetManager.presets.value.orderedEntries.firstOrNull()
         if (firstPreset == null) {
             val newPreset = prevPresetKey.preset
             val newPresetUuid = Uuid.random()
-            presetManager.savePreset(newPresetUuid, newPreset)
+            PresetManager.savePreset(newPresetUuid, newPreset)
             configScreenModel.updateConfig {
                 copy(preset = PresetConfig.Custom(uuid = newPresetUuid))
             }
@@ -139,29 +138,25 @@ class CustomControlLayoutTabModel(
 
     fun undo() {
         pageState.getAndUpdate { pageState ->
-            if (pageState.editState != null) {
+            pageState.editState?.let { editState ->
                 pageState.copy(
-                    editState = pageState.editState.copy(
-                        undoStack = pageState.editState.undoStack.undo(),
+                    editState = editState.copy(
+                        undoStack = editState.undoStack.undo(),
                     )
                 )
-            } else {
-                pageState
-            }
+            } ?: pageState
         }
     }
 
     fun redo() {
         pageState.getAndUpdate { pageState ->
-            if (pageState.editState != null) {
+            pageState.editState?.let { editState ->
                 pageState.copy(
-                    editState = pageState.editState.copy(
-                        undoStack = pageState.editState.undoStack.redo(),
+                    editState = editState.copy(
+                        undoStack = editState.undoStack.redo(),
                     )
                 )
-            } else {
-                pageState
-            }
+            } ?: pageState
         }
     }
 
@@ -170,23 +165,21 @@ class CustomControlLayoutTabModel(
         val preset = uiState.selectedPreset ?: return
         val newPreset = editor(preset)
         pageState.getAndUpdate { pageState ->
-            if (pageState.editState != null) {
+            pageState.editState?.let { editState ->
                 if (saveUndoStack) {
                     pageState.copy(
-                        editState = pageState.editState.copy(
-                            undoStack = pageState.editState.undoStack + newPreset,
+                        editState = editState.copy(
+                            undoStack = editState.undoStack + newPreset,
                         )
                     )
                 } else {
                     pageState.copy(
-                        editState = pageState.editState.copy(
+                        editState = editState.copy(
                             undoStack = CustomControlLayoutTabState.Enabled.UndoStack(newPreset),
                         )
                     )
                 }
-            } else {
-                pageState
-            }
+            } ?: pageState
         }
     }
 
@@ -210,10 +203,10 @@ class CustomControlLayoutTabModel(
             )
         }
         val uuid = fastRandomUuid()
-        val preset = preset ?: BuiltInPresetKey.DEFAULT.preset.copy(
+        val preset = preset ?: BuiltinPresetKey.DEFAULT.preset.copy(
             name = "New preset"
         )
-        presetManager.savePreset(uuid, preset)
+        PresetManager.savePreset(uuid, preset)
         configScreenModel.updateConfig {
             copy(preset = PresetConfig.Custom(uuid = uuid))
         }
@@ -225,7 +218,7 @@ class CustomControlLayoutTabModel(
     }
 
     fun deletePreset(uuid: Uuid) {
-        presetManager.removePreset(uuid)
+        PresetManager.removePreset(uuid)
         pageState.getAndUpdate {
             it.copy(
                 selectedLayerIndex = 0,
@@ -233,6 +226,7 @@ class CustomControlLayoutTabModel(
             )
         }
         configScreenModel.updateConfig {
+            val preset = preset
             if (preset is PresetConfig.Custom && preset.uuid == uuid) {
                 copy(preset = PresetConfig.Custom())
             } else {
@@ -305,6 +299,6 @@ class CustomControlLayoutTabModel(
     }
 
     fun addWidgetPreset(widget: ControllerWidget) {
-        widgetPresetManager.save(widgetPresetManager.presets.value + widget)
+        WidgetPresetManager.save(WidgetPresetManager.presets.value + widget)
     }
 }

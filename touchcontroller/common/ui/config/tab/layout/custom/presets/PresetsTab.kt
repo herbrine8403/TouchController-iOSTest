@@ -1,28 +1,30 @@
-package top.fifthlight.touchcontroller.common.ui.config.tab.layout.custom
+package top.fifthlight.touchcontroller.common.ui.config.tab.layout.custom.presets
 
 import androidx.compose.runtime.*
-import cafe.adriel.voyager.koin.koinScreenModel
+import cafe.adriel.voyager.core.model.rememberScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
-import org.koin.core.parameter.parametersOf
 import top.fifthlight.combine.data.Text
 import top.fifthlight.combine.layout.Alignment
 import top.fifthlight.combine.layout.Arrangement
 import top.fifthlight.combine.modifier.Modifier
 import top.fifthlight.combine.modifier.placement.*
 import top.fifthlight.combine.modifier.scroll.verticalScroll
-import top.fifthlight.combine.widget.base.layout.Column
-import top.fifthlight.combine.widget.base.layout.Row
+import top.fifthlight.combine.widget.layout.Column
+import top.fifthlight.combine.widget.layout.Row
 import top.fifthlight.combine.widget.ui.*
 import top.fifthlight.data.IntRect
 import top.fifthlight.touchcontroller.assets.Texts
 import top.fifthlight.touchcontroller.assets.Textures
 import top.fifthlight.touchcontroller.common.config.preset.LayoutPreset
+import top.fifthlight.touchcontroller.common.ui.config.tab.layout.custom.presets.model.PresetsTabModel
+import top.fifthlight.touchcontroller.common.ui.config.tab.layout.custom.presets.state.PresetsTabState
+import top.fifthlight.touchcontroller.common.ui.config.tab.layout.custom.tab.CustomTab
+import top.fifthlight.touchcontroller.common.ui.config.tab.layout.custom.tab.LocalCustomTabContext
+import top.fifthlight.touchcontroller.common.ui.importpreset.screen.ImportPresetScreen
+import top.fifthlight.touchcontroller.common.ui.theme.LocalTouchControllerTheme
 import top.fifthlight.touchcontroller.common.ui.widget.ListButton
-import top.fifthlight.touchcontroller.common.ui.widget.LocalListButtonDrawable
-import top.fifthlight.touchcontroller.common.ui.model.PresetsTabModel
-import top.fifthlight.touchcontroller.common.ui.state.PresetsTabState
 import kotlin.uuid.Uuid
 
 @Composable
@@ -62,12 +64,12 @@ private fun PresetsList(
                         .minHeight(24)
                         .fillMaxHeight()
                         .anchor { anchor = it },
-                    drawableSet = LocalListButtonDrawable.current.unchecked,
+                    drawableSet = LocalTouchControllerTheme.current.tabButtonDrawablesUnchecked,
                     onClick = {
                         expanded = true
                     },
                 ) {
-                    Icon(Textures.ICON_MENU)
+                    Icon(Textures.icon_menu)
                 }
 
                 DropDownMenu(
@@ -104,13 +106,13 @@ private fun PresetsList(
 object PresetsTab : CustomTab() {
     @Composable
     override fun Icon() {
-        Icon(Textures.ICON_PRESET)
+        Icon(Textures.icon_preset)
     }
 
     @Composable
     override fun Content() {
         val (screenModel, uiState, tabsButton, sideBarAtRight) = LocalCustomTabContext.current
-        val tabModel: PresetsTabModel = koinScreenModel { parametersOf(screenModel) }
+        val tabModel = rememberScreenModel { PresetsTabModel(screenModel) }
         val tabState by tabModel.uiState.collectAsState()
         val navigator = LocalNavigator.current
         AlertDialog(
@@ -383,11 +385,8 @@ object PresetsTab : CustomTab() {
                 }
             }
         ) { state ->
-            if (state.path != null) {
-                Text(Text.literal(state.path))
-            } else {
-                Text(Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_PRESETS_PATH_GET_FAILED))
-            }
+            Text(state.path?.let { Text.literal(it) }
+                ?: Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_PRESETS_PATH_GET_FAILED))
         }
 
         SideBarContainer(
@@ -399,7 +398,7 @@ object PresetsTab : CustomTab() {
                         tabModel.openCreatePresetChooseDialog()
                     }
                 ) {
-                    Icon(Textures.ICON_ADD)
+                    Icon(Textures.icon_add)
                 }
             }
         ) { modifier ->

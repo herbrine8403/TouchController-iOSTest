@@ -20,7 +20,7 @@ import top.fifthlight.touchcontroller.common.ui.widget.ListButton
 object BuiltInTab : LayerConditionTab() {
     @Composable
     override fun Icon() {
-        top.fifthlight.combine.widget.ui.Icon(Textures.Companion.icon_motion)
+        top.fifthlight.combine.widget.ui.Icon(Textures.icon_motion)
     }
 
     override val name: Identifier
@@ -45,7 +45,7 @@ object BuiltInTab : LayerConditionTab() {
                         )
                     }
                 ) {
-                    Text(Text.Companion.translatable(key.text))
+                    Text(Text.translatable(key.text))
                 }
             }
         }

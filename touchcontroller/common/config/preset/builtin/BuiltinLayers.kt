@@ -12,7 +12,7 @@ import top.fifthlight.touchcontroller.common.config.condition.layerConditionsOf
 import top.fifthlight.touchcontroller.common.config.layout.LayoutLayer
 import top.fifthlight.touchcontroller.common.config.preset.builtin.key.BuiltinPresetKey
 import top.fifthlight.touchcontroller.common.control.*
-import top.fifthlight.touchcontroller.common.control.builtin.BuiltInWidgets
+import top.fifthlight.touchcontroller.common.control.builtin.BuiltinWidgets
 import top.fifthlight.touchcontroller.common.control.widget.boat.BoatButton
 import top.fifthlight.touchcontroller.common.control.widget.boat.BoatButtonSide
 import top.fifthlight.touchcontroller.common.control.widget.dpad.DPad
@@ -65,7 +65,7 @@ data class BuiltinLayers private constructor(
         )
     }
 
-    private val widgets = BuiltInWidgets[textureSet]
+    private val widgets = BuiltinWidgets[textureSet]
 
     val controlLayer = LayoutLayer(
         name = "Control",

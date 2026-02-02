@@ -1,25 +1,24 @@
-package top.fifthlight.touchcontroller.common.ui.model
+package top.fifthlight.touchcontroller.common.ui.config.tab.layout.custom.widgets.model
 
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.getAndUpdate
-import org.koin.core.component.inject
 import top.fifthlight.touchcontroller.common.config.widget.WidgetPresetManager
-import top.fifthlight.touchcontroller.common.control.BuiltInWidgets
 import top.fifthlight.touchcontroller.common.control.ControllerWidget
+import top.fifthlight.touchcontroller.common.control.builtin.BuiltinWidgets
 import top.fifthlight.touchcontroller.common.ext.combineStates
-import top.fifthlight.touchcontroller.common.ui.state.WidgetsTabState
-import top.fifthlight.touchcontroller.common.ui.state.WidgetsTabState.ListContent
+import top.fifthlight.touchcontroller.common.ui.config.tab.layout.custom.model.CustomControlLayoutTabModel
+import top.fifthlight.touchcontroller.common.ui.config.tab.layout.custom.widgets.state.WidgetsTabState
+import top.fifthlight.touchcontroller.common.ui.model.TouchControllerScreenModel
 
 class WidgetsTabModel(
     private val screenModel: CustomControlLayoutTabModel
 ) : TouchControllerScreenModel() {
-    private val widgetPresetManager: WidgetPresetManager by inject()
     private val tabState = MutableStateFlow(WidgetsTabState.TabState())
-    val uiState = combineStates(tabState, widgetPresetManager.presets) { tabState, presets ->
+    val uiState = combineStates(tabState, WidgetPresetManager.presets) { tabState, presets ->
         WidgetsTabState(
             listContent = when (tabState.listState) {
-                WidgetsTabState.ListState.BUILTIN -> ListContent.BuiltIn(builtIn = BuiltInWidgets[tabState.newWidgetParams.textureSet])
-                WidgetsTabState.ListState.CUSTOM -> ListContent.Custom(widgets = presets)
+                WidgetsTabState.ListState.BUILTIN -> WidgetsTabState.ListContent.BuiltIn(builtIn = BuiltinWidgets[tabState.newWidgetParams.textureSet])
+                WidgetsTabState.ListState.CUSTOM -> WidgetsTabState.ListContent.Custom(widgets = presets)
             },
             tabState = tabState,
         )
@@ -87,13 +86,13 @@ class WidgetsTabModel(
     }
 
     fun renameWidgetPresetItem(index: Int, newName: ControllerWidget.Name) {
-        val presets = widgetPresetManager.presets.value
+        val presets = WidgetPresetManager.presets.value
         val widget = presets[index].cloneBase(name = newName)
-        widgetPresetManager.save(presets.set(index, widget))
+        WidgetPresetManager.save(presets.set(index, widget))
     }
 
     fun deleteWidgetPresetItem(index: Int) {
-        val presets = widgetPresetManager.presets.value
-        widgetPresetManager.save(presets.removeAt(index))
+        val presets = WidgetPresetManager.presets.value
+        WidgetPresetManager.save(presets.removeAt(index))
     }
 }

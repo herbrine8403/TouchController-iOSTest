@@ -1,4 +1,4 @@
-package top.fifthlight.touchcontroller.common.ui.config.tab.layout.custom
+package top.fifthlight.touchcontroller.common.ui.config.tab.layout.custom.properties
 
 import androidx.compose.runtime.Composable
 import top.fifthlight.combine.data.Text
@@ -10,19 +10,22 @@ import top.fifthlight.combine.modifier.placement.fillMaxSize
 import top.fifthlight.combine.modifier.placement.fillMaxWidth
 import top.fifthlight.combine.modifier.placement.padding
 import top.fifthlight.combine.modifier.scroll.verticalScroll
-import top.fifthlight.combine.widget.base.layout.Box
-import top.fifthlight.combine.widget.base.layout.Column
+import top.fifthlight.combine.widget.layout.Box
+import top.fifthlight.combine.widget.layout.Column
 import top.fifthlight.combine.widget.ui.Button
 import top.fifthlight.combine.widget.ui.Icon
 import top.fifthlight.combine.widget.ui.IconButton
 import top.fifthlight.combine.widget.ui.Text
 import top.fifthlight.touchcontroller.assets.Texts
 import top.fifthlight.touchcontroller.assets.Textures
+import top.fifthlight.touchcontroller.common.control.ControllerWidget
+import top.fifthlight.touchcontroller.common.ui.config.tab.layout.custom.tab.CustomTab
+import top.fifthlight.touchcontroller.common.ui.config.tab.layout.custom.tab.LocalCustomTabContext
 
 object PropertiesTab : CustomTab() {
     @Composable
     override fun Icon() {
-        Icon(Textures.ICON_PROPERTIES)
+        Icon(Textures.icon_properties)
     }
 
     @Composable
@@ -40,7 +43,7 @@ object PropertiesTab : CustomTab() {
                     selected = moveLocked,
                     enabled = uiState.selectedPreset != null,
                 ) {
-                    Icon(Textures.ICON_LOCK)
+                    Icon(Textures.icon_lock)
                 }
 
                 val highlight = uiState.pageState.highlight
@@ -51,7 +54,7 @@ object PropertiesTab : CustomTab() {
                     selected = highlight,
                     enabled = uiState.selectedPreset != null,
                 ) {
-                    Icon(Textures.ICON_LIGHT)
+                    Icon(Textures.icon_light)
                 }
 
                 IconButton(
@@ -60,30 +63,24 @@ object PropertiesTab : CustomTab() {
                         uiState.selectedWidget?.let(screenModel::addWidgetPreset)
                     },
                 ) {
-                    Icon(Textures.ICON_SAVE)
-                }
-
-                IconButton(
-                    enabled = uiState.selectedWidget != null,
-                    onClick = {},
-                ) {
-                    Icon(Textures.ICON_FORMAT_PAINTER)
+                    Icon(Textures.icon_save)
                 }
             }
         ) { modifier ->
+            val selectedWidget = uiState.selectedWidget
             SideBarScaffold(
                 modifier = modifier,
                 title = {
                     Text(Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_PROPERTIES))
                 },
-                actions = if (uiState.selectedWidget != null) {
+                actions = if (selectedWidget != null) {
                     {
                         Button(
                             modifier = Modifier
                                 .weight(1f)
                                 .fillMaxHeight(),
                             onClick = {
-                                screenModel.copyWidget(uiState.selectedWidget)
+                                screenModel.copyWidget(selectedWidget)
                             }
                         ) {
                             Text(Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_COPY))
@@ -93,7 +90,7 @@ object PropertiesTab : CustomTab() {
                                 .weight(1f)
                                 .fillMaxHeight(),
                             onClick = {
-                                screenModel.copyWidget(uiState.selectedWidget)
+                                screenModel.copyWidget(selectedWidget)
                                 screenModel.deleteWidget(uiState.pageState.selectedWidgetIndex)
                             }
                         ) {
@@ -104,7 +101,7 @@ object PropertiesTab : CustomTab() {
                     null
                 }
             ) {
-                if (uiState.selectedWidget != null) {
+                if (selectedWidget != null) {
                     Column(
                         modifier = Modifier
                             .padding(4)
@@ -112,11 +109,13 @@ object PropertiesTab : CustomTab() {
                             .fillMaxWidth(),
                         verticalArrangement = Arrangement.spacedBy(4),
                     ) {
-                        for (property in uiState.selectedWidget.properties) {
+                        for (property in selectedWidget.properties) {
                             property.controller(
                                 modifier = Modifier.fillMaxWidth(),
-                                config = uiState.selectedWidget,
-                                currentPreset = uiState.selectedPreset,
+                                config = selectedWidget,
+                                context = ControllerWidget.Property.ConfigContext(
+                                    presetControlInfo = uiState.selectedPreset?.controlInfo,
+                                ),
                                 onConfigChanged = { screenModel.editWidget(uiState.pageState.selectedWidgetIndex, it) }
                             )
                         }

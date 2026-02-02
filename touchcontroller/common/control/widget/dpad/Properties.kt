@@ -7,7 +7,6 @@ import top.fifthlight.combine.modifier.Modifier
 import top.fifthlight.combine.modifier.placement.fillMaxWidth
 import top.fifthlight.combine.modifier.scroll.verticalScroll
 import top.fifthlight.combine.widget.layout.Column
-import top.fifthlight.combine.widget.layout.ColumnScope.Companion.weight
 import top.fifthlight.combine.widget.layout.Spacer
 import top.fifthlight.combine.widget.ui.DropdownItemList
 import top.fifthlight.combine.widget.ui.Select

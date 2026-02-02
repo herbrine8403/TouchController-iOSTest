@@ -155,8 +155,13 @@ private data class VerticalScrollNode(
         }
     }
 
-    override fun Canvas.renderBefore(wrapperNode: Placeable, node: LayoutNode, cursorPos: Offset) {
-        pushClip(
+    override fun renderBefore(
+        canvas: Canvas,
+        wrapperNode: Placeable,
+        node: LayoutNode,
+        cursorPos: Offset,
+    ) {
+        canvas.pushClip(
             IntRect(
                 offset = IntOffset(wrapperNode.absoluteX, wrapperNode.absoluteY),
                 size = IntSize(wrapperNode.width, wrapperNode.height)
@@ -173,25 +178,29 @@ private data class VerticalScrollNode(
             }
             val tileHeight = height * backgroundScale
             val tileOffset = scrollState.progress.value.toFloat() % tileHeight
-            with(background) {
-                draw(
-                    scale = backgroundScale,
-                    dstRect = Rect(
-                        offset = Offset(
-                            x = 0f,
-                            y = -tileHeight - tileOffset,
-                        ),
-                        size = Size(
-                            width = wrapperNode.width.toFloat(),
-                            height = wrapperNode.height.toFloat() + tileHeight * 2,
-                        ),
-                    )
+            background.draw(
+                canvas = canvas,
+                scale = backgroundScale,
+                dstRect = Rect(
+                    offset = Offset(
+                        x = 0f,
+                        y = -tileHeight - tileOffset,
+                    ),
+                    size = Size(
+                        width = wrapperNode.width.toFloat(),
+                        height = wrapperNode.height.toFloat() + tileHeight * 2,
+                    ),
                 )
-            }
+            )
         }
     }
 
-    override fun Canvas.renderAfter(wrapperNode: Placeable, node: LayoutNode, cursorPos: Offset) {
+    override fun renderAfter(
+        canvas: Canvas,
+        wrapperNode: Placeable,
+        node: LayoutNode,
+        cursorPos: Offset,
+    ) {
         if (scrollState.viewportHeight < scrollState.contentHeight) {
             val progress =
                 scrollState.progress.value.toFloat() / (scrollState.contentHeight - scrollState.viewportHeight).toFloat()
@@ -202,13 +211,13 @@ private data class VerticalScrollNode(
             } else {
                 progress
             }).roundToInt()
-            fillRect(
+            canvas.fillRect(
                 offset = IntOffset(wrapperNode.width - 3, barY),
                 size = IntSize(3, barHeight),
                 color = Color(0x66FFFFFFu),
             )
         }
-        popClip()
+        canvas.popClip()
     }
 
     companion object {

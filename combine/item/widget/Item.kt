@@ -27,10 +27,10 @@ fun Item(
         modifier = Modifier
             .size(size)
             .then(modifier),
-    ) {
-        item {
+    ) { canvas, _ ->
+        canvas.item { canvas ->
             if (itemStack != null) {
-                drawItemStack(IntOffset.ZERO, IntSize(size), itemStack)
+                canvas.drawItemStack(IntOffset.ZERO, IntSize(size), itemStack)
             }
         }
     }

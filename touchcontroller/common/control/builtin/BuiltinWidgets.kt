@@ -22,15 +22,15 @@ import top.fifthlight.touchcontroller.common.layout.align.Align
 import java.util.concurrent.ConcurrentHashMap
 
 @ConsistentCopyVisibility
-data class BuiltInWidgets private constructor(
+data class BuiltinWidgets private constructor(
     private val textureSet: TextureSet.TextureSetKey,
 ) {
     companion object {
         private val keyBindingHandler: KeyBindingHandler = KeyBindingHandlerFactory.of()
 
-        private val cache = ConcurrentHashMap<TextureSet.TextureSetKey, BuiltInWidgets>()
-        operator fun get(textureSet: TextureSet.TextureSetKey): BuiltInWidgets =
-            cache.computeIfAbsent(textureSet, ::BuiltInWidgets)
+        private val cache = ConcurrentHashMap<TextureSet.TextureSetKey, BuiltinWidgets>()
+        operator fun get(textureSet: TextureSet.TextureSetKey): BuiltinWidgets =
+            cache.computeIfAbsent(textureSet, ::BuiltinWidgets)
     }
 
     private fun coordinate(key: TextureSet.TextureKey) = TextureCoordinate(
