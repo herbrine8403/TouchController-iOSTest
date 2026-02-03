@@ -97,7 +97,7 @@ object PlatformProvider {
         )
     }
 
-    private fun probeNativeLibraryInfo(windowProvider: PlatformWindowProvider): NativeLibraryInfo? {
+    private fun probeNativeLibraryInfo(): NativeLibraryInfo? {
         if ((systemName.startsWith("Linux", ignoreCase = true) && isAndroid) ||
             systemName.contains("Android", ignoreCase = true)
         ) {
@@ -133,8 +133,7 @@ object PlatformProvider {
             )
         }
 
-        val platform = windowProvider.platform
-        when (platform) {
+        when (val platform = PlatformWindowProvider.platform) {
             is GlfwPlatform.Win32 -> {
                 val target = when (systemArch) {
                     "x86_32", "x86", "i386", "i486", "i586", "i686" -> "windows_x86_32"
@@ -213,7 +212,7 @@ object PlatformProvider {
         }
     }
 
-    private fun loadPlatform(windowProvider: PlatformWindowProvider): Platform? {
+    private fun loadPlatform(): Platform? {
         val socketPort = System.getenv("TOUCH_CONTROLLER_PROXY")?.toIntOrNull()
         if (socketPort != null) {
             logger.warn("TOUCH_CONTROLLER_PROXY set, use legacy UDP transport")
@@ -234,11 +233,11 @@ object PlatformProvider {
             }
 
             val platform = IosPlatform(socketPath)
-            platform.resize(windowProvider.windowWidth, windowProvider.windowHeight)
+            platform.resize(PlatformWindowProvider.windowWidth, PlatformWindowProvider.windowHeight)
             return platform
         }
 
-        val info = probeNativeLibraryInfo(windowProvider) ?: return null
+        val info = probeNativeLibraryInfo() ?: return null
 
         logger.info("Native library info:")
         logger.info("path: ${info.modContainerPath}")
@@ -274,7 +273,7 @@ object PlatformProvider {
         }
 
         val platform = info.platformFactory.invoke()
-        platform.resize(windowProvider.windowWidth, windowProvider.windowHeight)
+        platform.resize(PlatformWindowProvider.windowWidth, PlatformWindowProvider.windowHeight)
         return platform
     }
 
@@ -282,11 +281,11 @@ object PlatformProvider {
     var platform: Platform? = null
         private set
 
-    fun load(windowProvider: PlatformWindowProvider) {
+    fun load() {
         if (platformLoaded) {
             return
         }
-        this@PlatformProvider.platform = loadPlatform(windowProvider)
+        this@PlatformProvider.platform = loadPlatform()
         platformLoaded = true
     }
 }

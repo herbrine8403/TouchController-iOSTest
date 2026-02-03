@@ -78,7 +78,7 @@ class TouchController : ClientModInitializer {
         ClientLifecycleEvents.CLIENT_STARTED.register {
             val client = Minecraft.getInstance()
             GlobalConfigHolder.load()
-            WindowEvents.onWindowCreated(PlatformWindowProviderImpl(client.window))
+            WindowEvents.onWindowCreated()
             GameConfigEditorImpl.executePendingCallback()
         }
         ClientPlayerBlockBreakEvents.AFTER.register { _, _, _, _ ->

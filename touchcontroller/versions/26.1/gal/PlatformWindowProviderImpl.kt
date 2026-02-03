@@ -6,17 +6,19 @@ import org.lwjgl.glfw.GLFW
 import org.lwjgl.glfw.GLFWNativeWayland
 import org.lwjgl.glfw.GLFWNativeWin32
 import top.fifthlight.mergetools.api.ActualConstructor
+import top.fifthlight.mergetools.api.ActualImpl
 import top.fifthlight.touchcontroller.common.gal.window.GlfwPlatform
 import top.fifthlight.touchcontroller.common.gal.window.NativeWindow
 import top.fifthlight.touchcontroller.common.gal.window.PlatformWindowProvider
 
+@ActualImpl(PlatformWindowProvider::class)
 class PlatformWindowProviderImpl(private val inner: Window) : PlatformWindowProvider {
     companion object {
         private val instance by lazy { PlatformWindowProviderImpl(Minecraft.getInstance().window) }
 
         @JvmStatic
         @ActualConstructor("of")
-        fun of(window: Window): PlatformWindowProvider = instance
+        fun of(): PlatformWindowProvider = instance
     }
 
     override val windowWidth: Int

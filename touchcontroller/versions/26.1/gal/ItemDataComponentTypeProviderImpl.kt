@@ -5,6 +5,7 @@ import kotlinx.collections.immutable.toPersistentList
 import net.minecraft.core.component.DataComponentType
 import net.minecraft.core.registries.BuiltInRegistries
 import top.fifthlight.combine.backend.minecraft_26_1.toCombine
+import top.fifthlight.combine.backend.minecraft_26_1.toMinecraft
 import top.fifthlight.combine.backend.minecraft_26_1.toVanilla
 import top.fifthlight.combine.data.Identifier
 import top.fifthlight.combine.item.data.Item
@@ -14,6 +15,7 @@ import top.fifthlight.touchcontroller.common.gal.item.ItemDataComponentType
 import top.fifthlight.touchcontroller.common.gal.item.ItemDataComponentTypeProvider
 import kotlin.jvm.optionals.getOrNull
 
+@ActualImpl(ItemDataComponentType::class)
 data class ItemDataComponentTypeImpl(val component: DataComponentType<*>) : ItemDataComponentType {
     override val id: Identifier?
         get() = BuiltInRegistries.DATA_COMPONENT_TYPE.getResourceKey(component).getOrNull()?.identifier()?.toCombine()
@@ -26,6 +28,15 @@ data class ItemDataComponentTypeImpl(val component: DataComponentType<*>) : Item
     }
 
     override fun contains(item: Item): Boolean = item.toVanilla().components().has(component)
+
+    companion object {
+        @JvmStatic
+        @ActualConstructor
+        fun of(id: Identifier): ItemDataComponentType? = BuiltInRegistries.DATA_COMPONENT_TYPE
+            .getOptional(id.toMinecraft())
+            .getOrNull()
+            ?.let(::ItemDataComponentTypeImpl)
+    }
 }
 
 @ActualImpl(ItemDataComponentTypeProvider::class)
