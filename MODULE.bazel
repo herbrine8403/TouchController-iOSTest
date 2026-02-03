@@ -20,6 +20,7 @@ bazel_dep(name = "rules_shell", version = "0.6.1")
 bazel_dep(name = "hermetic_cc_toolchain", version = "4.0.1")
 bazel_dep(name = "bazel_worker_api", version = "0.0.9")
 bazel_dep(name = "bazel_worker_java", version = "0.0.9")
+bazel_dep(name = "with_cfg.bzl", version = "0.14.1")
 
 # Patch rule_android to enable maven pinning
 bazel_dep(name = "rules_android", version = "0.7.1")
@@ -71,10 +72,10 @@ bazel_dep(name = "glm", version = "1.0.2")
 bazel_dep(name = "libexpat", version = "2.7.1")
 archive_override(
     module_name = "libexpat",
+    build_file = "//third_party/expat:BUILD.expat.bazel",
     integrity = "sha256-hTcnl/8Gc6j8SmvhZGa7WgyijA3PPG96wWhrSjuiqrs=",
     patch_strip = 1,
     patches = ["//third_party/expat/patches:add-module-file.patch"],
-    build_file = "//third_party/expat:BUILD.expat.bazel",
     strip_prefix = "libexpat-R_2_7_1",
     url = "https://github.com/libexpat/libexpat/archive/refs/tags/R_2_7_1.tar.gz",
 )

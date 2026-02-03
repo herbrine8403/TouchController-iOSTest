@@ -150,7 +150,7 @@ def _extract_function_classpaths(rctx, function_name, function_jar):
         break
     return main_class
 
-def _generate_function_build_file(rctx, version_info, function_name, function, classpath, main_class):
+def _generate_function_build_file(rctx, version_info, java_target, function_name, function, classpath, main_class):
     """Generate BUILD.bazel file for function"""
     jvm_flags = []
     if "jvmargs" in function:
@@ -158,9 +158,9 @@ def _generate_function_build_file(rctx, version_info, function_name, function, c
             jvm_flags.append('"%s"' % flag)
 
     function_build = [
-        'load("@rules_java//java:defs.bzl", "java_binary")',
+        'load("@//repo/neoform:java_version_binary.bzl", "java_%s_binary")' % java_target,
         "",
-        "java_binary(",
+        "java_%s_binary(" % java_target,
         '    name = "%s",' % function_name,
         '    visibility = ["//visibility:public"],',
         '    main_class = "DecompilerWrapper",',
@@ -171,9 +171,9 @@ def _generate_function_build_file(rctx, version_info, function_name, function, c
         "    jvm_flags = [%s]," % ", ".join(jvm_flags),
         ")",
     ] if function_name == "decompile" else [
-        'load("@rules_java//java:defs.bzl", "java_binary")',
+        'load("@//repo/neoform:java_version_binary.bzl", "java_%s_binary")' % java_target,
         "",
-        "java_binary(",
+        "java_%s_binary(" % java_target,
         '    name = "%s",' % function_name,
         '    visibility = ["//visibility:public"],',
         '    main_class = "%s",' % main_class,
@@ -422,7 +422,7 @@ def _generate_function_definition(data_paths, function_name, rule_impl_name, jar
 
     return "\n".join(rule_def)
 
-def _generate_function(rctx, version_info, data_paths, function_name, function, function_jar):
+def _generate_function(rctx, version_info, java_target, data_paths, function_name, function, function_jar):
     classpath = function["classpath"] if "classpath" in function else []
     if "version" in function:
         classpath.append(function["version"])
@@ -430,7 +430,7 @@ def _generate_function(rctx, version_info, data_paths, function_name, function, 
         fail("Neoform function %s has no classpath" % function_name)
 
     main_class = _extract_function_classpaths(rctx, function_name, function_jar)
-    _generate_function_build_file(rctx, version_info, function_name, function, classpath, main_class)
+    _generate_function_build_file(rctx, version_info, java_target, function_name, function, classpath, main_class)
 
     arg_entries, placeholder_types, output_entries = _parse_function_arguments(function.get("args", []))
     rule_impl_name = "_%s_impl" % function_name
@@ -554,9 +554,11 @@ def _neoform_repo_impl(rctx):
     function_jars = _download_function_jars(rctx, version_info, config_data, pin_content)
     data_paths = _generate_root_build_file(rctx, config_data, output_prefix, neoform_zip)
 
+    java_target = config_data.get("java_target", "8")
+
     rctx.file("functions/BUILD.bazel", "")
     for function_name, function in config_data["functions"].items():
-        _generate_function(rctx, version_info, data_paths, function_name, function, function_jars[function_name])
+        _generate_function(rctx, version_info, java_target, data_paths, function_name, function, function_jars[function_name])
 
     _generate_steps(rctx, version_info, config_data)
 
