@@ -56,7 +56,13 @@ class IdentifierSerializer : KSerializer<Identifier> {
         val split = string.split(":")
         return when (split.size) {
             1 -> Identifier.ofVanilla(string)
-            2 -> Identifier.of(split[0], split[1])
+
+            2 -> if (split[0] == "minecraft") {
+                Identifier.ofVanilla(split[1])
+            } else {
+                Identifier.of(split[0], split[1])
+            }
+
             else -> error("Bad identifier: $split")
         }
     }
