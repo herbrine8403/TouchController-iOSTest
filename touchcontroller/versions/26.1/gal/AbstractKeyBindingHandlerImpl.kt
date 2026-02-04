@@ -35,6 +35,7 @@ class KeyBindingStateImpl(
         get() = TextImpl(keyBinding.category.label())
 
     override fun click() {
+        super.click()
         keyBinding.click()
     }
 
