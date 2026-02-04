@@ -28,6 +28,8 @@ import top.fifthlight.touchcontroller.common.config.condition.BuiltinLayerCondit
 import top.fifthlight.touchcontroller.common.config.condition.CustomLayerConditionKey
 import top.fifthlight.touchcontroller.common.config.condition.HoldingItemLayerConditionKey
 import top.fifthlight.touchcontroller.common.config.condition.LayerConditions
+import top.fifthlight.touchcontroller.common.config.condition.RidingEntityLayerConditionKey
+import top.fifthlight.touchcontroller.common.config.condition.SelectEntityLayerConditionKey
 import top.fifthlight.touchcontroller.common.config.layout.LayoutLayer
 import top.fifthlight.touchcontroller.common.config.preset.LayoutPreset
 import top.fifthlight.touchcontroller.common.config.preset.info.LayerCustomConditions
@@ -78,6 +80,24 @@ private fun LayerConditionItem(
                     val stack = remember(key.item) { ItemStackFactory.create(key.item, 1) }
                     Item(item = key.item)
                     Text(stack.name)
+                }
+
+                is RidingEntityLayerConditionKey -> {
+                    Text(
+                        Text.format(
+                            Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_LAYERS_CONDITIONS_RIDING_ENTITY_ITEM,
+                            key.entityType.name
+                        )
+                    )
+                }
+
+                is SelectEntityLayerConditionKey -> {
+                    Text(
+                        Text.format(
+                            Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_LAYERS_CONDITIONS_SELECTING_ENTITY_ITEM,
+                            key.entityType.name
+                        )
+                    )
                 }
             }
         }

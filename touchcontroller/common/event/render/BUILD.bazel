@@ -14,6 +14,7 @@ kt_merge_library(
         "//touchcontroller/common/config/preset",
         "//touchcontroller/common/config/preset/info",
         "//touchcontroller/common/event/window",
+        "//touchcontroller/common/gal/entity",
         "//touchcontroller/common/gal/gamestate",
         "//touchcontroller/common/gal/key",
         "//touchcontroller/common/gal/player",

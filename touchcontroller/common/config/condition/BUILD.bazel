@@ -6,6 +6,8 @@ kt_merge_library(
     kotlinc_opts = "//touchcontroller/common:kotlinc_opts",
     merge_deps = [
         "//touchcontroller/common/config/condition/input",
+        "//touchcontroller/common/gal/entity",
+        "//touchcontroller/common/gal/view",
         "//touchcontroller/common/serializer",
         "//touchcontroller/resources/lang:text_binding",
     ],

@@ -48,7 +48,6 @@
   "touchcontroller.screen.config.about.loading": "載入中",
  
   "touchcontroller.screen.config.layout.title": "佈局",
- 
   "touchcontroller.screen.config.layout.manage_control_preset": "預設模式",
   "touchcontroller.screen.manage_control_preset.title": "管理預設",
   "touchcontroller.screen.manage_control_preset.switch.message": "是否要使用預設模式？自訂模式中的設定將被凍結！",
@@ -126,15 +125,11 @@
   "touchcontroller.screen.custom_control_layout.layers.conditions.on_ground": "在地上",
   "touchcontroller.screen.custom_control_layout.layers.conditions.not_on_ground": "不在地上",
   "touchcontroller.screen.custom_control_layout.layers.conditions.using_item": "使用物品中",
-  "touchcontroller.screen.custom_control_layout.layers.conditions.on_minecart": "在礦車上",
-  "touchcontroller.screen.custom_control_layout.layers.conditions.on_boat": "在船上",
-  "touchcontroller.screen.custom_control_layout.layers.conditions.on_pig": "在豬上",
-  "touchcontroller.screen.custom_control_layout.layers.conditions.on_horse": "在馬上",
-  "touchcontroller.screen.custom_control_layout.layers.conditions.on_camel": "在駱駝上",
-  "touchcontroller.screen.custom_control_layout.layers.conditions.on_llama": "在羊駝上",
-  "touchcontroller.screen.custom_control_layout.layers.conditions.on_strider": "在熾足獸上",
   "touchcontroller.screen.custom_control_layout.layers.conditions.riding": "乘坐在實體上",
+
   "touchcontroller.screen.custom_control_layout.layers.conditions.block_selected": "選取方塊",
+
+
   "touchcontroller.screen.custom_control_layout.layers.delete_layer.1": "你確定要刪除這個圖層嗎？",
   "touchcontroller.screen.custom_control_layout.layers.delete_layer.2": "「%s」將會永久消失！（真的很久！）",
   "touchcontroller.screen.custom_control_layout.layers.delete_layer.delete": "刪除",

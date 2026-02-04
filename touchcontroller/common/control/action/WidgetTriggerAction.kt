@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 import top.fifthlight.combine.data.Identifier
 import top.fifthlight.touchcontroller.assets.Texts
 import top.fifthlight.touchcontroller.common.control.action.provider.ChatScreenProvider
-import top.fifthlight.touchcontroller.common.gal.PlayerHandle
+import top.fifthlight.touchcontroller.common.gal.player.PlayerHandle
 import top.fifthlight.touchcontroller.common.gal.action.GameAction
 import top.fifthlight.touchcontroller.common.gal.action.GameActionFactory
 import top.fifthlight.touchcontroller.common.gal.key.KeyBindingHandler

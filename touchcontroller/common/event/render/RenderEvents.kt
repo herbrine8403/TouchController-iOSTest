@@ -7,11 +7,10 @@ import top.fifthlight.combine.input.text.TextRange
 import top.fifthlight.combine.paint.Canvas
 import top.fifthlight.data.IntOffset
 import top.fifthlight.data.Offset
-import top.fifthlight.touchcontroller.common.config.condition.BuiltinLayerCondition
+import top.fifthlight.touchcontroller.common.config.condition.input.BuiltinLayerCondition
 import top.fifthlight.touchcontroller.common.config.holder.GlobalConfigHolder
 import top.fifthlight.touchcontroller.common.event.window.WindowEvents
-import top.fifthlight.touchcontroller.common.gal.PlayerHandleFactory
-import top.fifthlight.touchcontroller.common.gal.RidingEntityType
+import top.fifthlight.touchcontroller.common.gal.player.PlayerHandleFactory
 import top.fifthlight.touchcontroller.common.gal.gamestate.GameStateProvider
 import top.fifthlight.touchcontroller.common.gal.gamestate.GameStateProviderFactory
 import top.fifthlight.touchcontroller.common.gal.key.DefaultKeyBindingType
@@ -166,6 +165,7 @@ object RenderEvents {
             ControllerHudModel.status.enabledCustomConditions.clear()
         }
         val ridingType = player.ridingEntityType
+        val crosshairTarget = viewActionProvider.getCrosshairTarget()
         val condition = buildSet {
             fun put(key: BuiltinLayerCondition, condition: Boolean) {
                 if (condition) {
@@ -182,17 +182,8 @@ object RenderEvents {
             put(BuiltinLayerCondition.NOT_ON_GROUND, !player.onGround)
             put(BuiltinLayerCondition.USING_ITEM, player.isUsingItem)
             put(BuiltinLayerCondition.RIDING, ridingType != null)
-            put(
-                BuiltinLayerCondition.BLOCK_SELECTED,
-                viewActionProvider.getCrosshairTarget() == CrosshairTarget.BLOCK
-            )
-            put(BuiltinLayerCondition.ON_MINECART, ridingType == RidingEntityType.MINECART)
-            put(BuiltinLayerCondition.ON_BOAT, ridingType == RidingEntityType.BOAT)
-            put(BuiltinLayerCondition.ON_PIG, ridingType == RidingEntityType.PIG)
-            put(BuiltinLayerCondition.ON_HORSE, ridingType == RidingEntityType.HORSE)
-            put(BuiltinLayerCondition.ON_CAMEL, ridingType == RidingEntityType.CAMEL)
-            put(BuiltinLayerCondition.ON_LLAMA, ridingType == RidingEntityType.LLAMA)
-            put(BuiltinLayerCondition.ON_STRIDER, ridingType == RidingEntityType.STRIDER)
+            put(BuiltinLayerCondition.ENTITY_SELECTED, crosshairTarget is CrosshairTarget.Entity)
+            put(BuiltinLayerCondition.BLOCK_SELECTED, crosshairTarget == CrosshairTarget.Block)
         }.toPersistentSet()
 
         val drawQueue = DrawQueue()
@@ -207,6 +198,8 @@ object RenderEvents {
                 inGui = gameState.inGui,
                 builtinCondition = condition,
                 customCondition = ControllerHudModel.status.enabledCustomConditions.toPersistentSet(),
+                crosshairTarget = crosshairTarget,
+                ridingEntity = ridingType,
                 perspective = gameState.perspective,
                 playerHandle = playerHandle,
             ),

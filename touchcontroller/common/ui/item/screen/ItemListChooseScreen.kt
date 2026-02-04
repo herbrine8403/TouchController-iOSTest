@@ -15,7 +15,7 @@ import top.fifthlight.combine.widget.layout.Column
 import top.fifthlight.combine.widget.ui.Button
 import top.fifthlight.combine.widget.ui.Text
 import top.fifthlight.touchcontroller.assets.Texts
-import top.fifthlight.touchcontroller.common.gal.PlayerHandleFactory
+import top.fifthlight.touchcontroller.common.gal.player.PlayerHandleFactory
 import top.fifthlight.touchcontroller.common.gal.creativetab.CreativeTabsProvider
 import top.fifthlight.touchcontroller.common.gal.creativetab.CreativeTabsProviderFactory
 

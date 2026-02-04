@@ -5,13 +5,7 @@ import net.minecraft.client.Minecraft
 import net.minecraft.client.player.LocalPlayer
 import net.minecraft.world.InteractionHand
 import net.minecraft.world.entity.EquipmentSlot
-import net.minecraft.world.entity.animal.camel.Camel
-import net.minecraft.world.entity.animal.equine.*
-import net.minecraft.world.entity.animal.pig.Pig
-import net.minecraft.world.entity.monster.Strider
 import net.minecraft.world.entity.player.Inventory
-import net.minecraft.world.entity.vehicle.boat.AbstractBoat
-import net.minecraft.world.entity.vehicle.minecart.AbstractMinecart
 import top.fifthlight.combine.backend.minecraft_26_1.ItemStackImpl
 import top.fifthlight.combine.backend.minecraft_26_1.toCombine
 import top.fifthlight.combine.item.data.Item
@@ -19,9 +13,9 @@ import top.fifthlight.combine.item.data.ItemStack
 import top.fifthlight.mergetools.api.ActualConstructor
 import top.fifthlight.mergetools.api.ActualImpl
 import top.fifthlight.touchcontroller.common.config.item.ItemList
-import top.fifthlight.touchcontroller.common.gal.PlayerHandle
-import top.fifthlight.touchcontroller.common.gal.PlayerInventory
-import top.fifthlight.touchcontroller.common.gal.RidingEntityType
+import top.fifthlight.touchcontroller.common.gal.entity.EntityType
+import top.fifthlight.touchcontroller.common.gal.player.PlayerHandle
+import top.fifthlight.touchcontroller.common.gal.player.PlayerInventory
 import top.fifthlight.touchcontroller.version_26_1.extensions.SyncableGameMode
 
 @ActualImpl(PlayerHandle::class)
@@ -115,16 +109,6 @@ class PlayerHandleImpl(val inner: LocalPlayer) : PlayerHandle {
 
     override fun getInventorySlot(index: Int): ItemStack = ItemStackImpl(inner.inventory.getItem(index))
 
-    override val ridingEntityType: RidingEntityType?
-        get() = when (inner.vehicle) {
-            null -> null
-            is AbstractMinecart -> RidingEntityType.MINECART
-            is AbstractBoat -> RidingEntityType.BOAT
-            is Pig -> RidingEntityType.PIG
-            is Camel -> RidingEntityType.CAMEL
-            is Horse, is Donkey, is Mule, is ZombieHorse, is SkeletonHorse -> RidingEntityType.HORSE
-            is Llama -> RidingEntityType.LLAMA
-            is Strider -> RidingEntityType.STRIDER
-            else -> RidingEntityType.OTHER
-        }
+    override val ridingEntityType: EntityType?
+        get() = inner.vehicle?.type?.let { EntityTypeImpl(it) }
 }

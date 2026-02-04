@@ -3,7 +3,7 @@ package top.fifthlight.touchcontroller.common.layout.config
 import top.fifthlight.touchcontroller.common.config.ControlConfig
 import top.fifthlight.touchcontroller.common.config.GlobalConfig
 import top.fifthlight.touchcontroller.common.config.TouchRingConfig
-import top.fifthlight.touchcontroller.common.gal.PlayerHandle
+import top.fifthlight.touchcontroller.common.gal.player.PlayerHandle
 import top.fifthlight.touchcontroller.common.layout.ContextConfig
 
 class GlobalContextConfig(val config: GlobalConfig) : ContextConfig {

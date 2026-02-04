@@ -10,6 +10,7 @@ kt_merge_library(
         "//touchcontroller/common/gal/action",
         "//touchcontroller/common/gal/chat",
         "//touchcontroller/common/gal/creativetab",
+        "//touchcontroller/common/gal/entity",
         "//touchcontroller/common/gal/feature",
         "//touchcontroller/common/gal/gameconfig",
         "//touchcontroller/common/gal/gamestate",

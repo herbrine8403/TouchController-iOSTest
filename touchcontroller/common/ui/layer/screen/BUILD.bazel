@@ -10,6 +10,7 @@ kt_merge_library(
         "//touchcontroller/common/config/layout",
         "//touchcontroller/common/config/preset",
         "//touchcontroller/common/config/preset/info",
+        "//touchcontroller/common/gal/entity",
         "//touchcontroller/common/ui/layer/model",
         "//touchcontroller/common/ui/layer/state",
         "//touchcontroller/common/ui/layer/tab",

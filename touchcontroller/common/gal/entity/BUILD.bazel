@@ -1,16 +1,13 @@
 load("//rule:merge_library.bzl", "kt_merge_library")
 
 kt_merge_library(
-    name = "player",
+    name = "entity",
     srcs = glob(["*.kt"]),
     expect = True,
-    merge_deps = [
-        "//touchcontroller/common/config/item",
-        "//touchcontroller/common/gal/entity",
-    ],
     visibility = ["//touchcontroller:__subpackages__"],
     deps = [
-        "//combine/item/data",
+        "//:kotlin_serialization",
+        "//combine/core/data",
         "@maven//:org_jetbrains_kotlinx_kotlinx_collections_immutable_jvm",
     ],
 )

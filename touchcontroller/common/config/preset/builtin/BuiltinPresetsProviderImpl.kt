@@ -49,8 +49,8 @@ object BuiltinPresetsProviderImpl : BuiltinPresetsProvider {
                 layers.normalLayer.getByKey(key) + sprintButton,
                 layers.swimmingLayer.getByKey(key),
                 layers.flyingLayer.getByKey(key),
-                layers.onBoatLayer.getByKey(key),
-                layers.onMinecartLayer.getByKey(key),
+                layers.onBoatLayer?.getByKey(key),
+                layers.onMinecartLayer?.getByKey(key),
                 layers.ridingOnEntityLayer.getByKey(key),
             )
         ).mapWidgets { widget ->

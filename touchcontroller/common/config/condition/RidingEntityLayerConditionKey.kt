@@ -3,12 +3,12 @@ package top.fifthlight.touchcontroller.common.config.condition
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import top.fifthlight.touchcontroller.common.config.condition.input.LayerConditionInput
-import kotlin.uuid.Uuid
+import top.fifthlight.touchcontroller.common.gal.entity.EntityType
 
 @Serializable
-@SerialName("custom")
-data class CustomLayerConditionKey(
-    val key: Uuid,
+@SerialName("riding_entity")
+data class RidingEntityLayerConditionKey(
+    val entityType: EntityType,
 ) : LayerConditions.Key {
-    override fun isFulfilled(input: LayerConditionInput) = key in input.customCondition
+    override fun isFulfilled(input: LayerConditionInput): Boolean = input.ridingEntity == entityType
 }

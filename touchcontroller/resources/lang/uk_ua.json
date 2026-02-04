@@ -48,7 +48,6 @@
   "touchcontroller.screen.config.about.loading": "Завантаження",
 
   "touchcontroller.screen.config.layout.title": "Макет",
-
   "touchcontroller.screen.config.layout.manage_control_preset": "Керувати пресетами керування",
   "touchcontroller.screen.manage_control_preset.title": "Керувати попередніми налаштуваннями",
   "touchcontroller.screen.manage_control_preset.switch.message": "Ви бажаєте використовувати попередньо встановлений режим? Налаштування в користувацькому макеті буде заморожено!",
@@ -126,15 +125,11 @@
   "touchcontroller.screen.custom_control_layout.layers.conditions.on_ground": "На землі",
   "touchcontroller.screen.custom_control_layout.layers.conditions.not_on_ground": "Не на землі",
   "touchcontroller.screen.custom_control_layout.layers.conditions.using_item": "Використання предмета",
-  "touchcontroller.screen.custom_control_layout.layers.conditions.on_minecart": "На вагонетці",
-  "touchcontroller.screen.custom_control_layout.layers.conditions.on_boat": "На човні",
-  "touchcontroller.screen.custom_control_layout.layers.conditions.on_pig": "На свині",
-  "touchcontroller.screen.custom_control_layout.layers.conditions.on_horse": "На коні",
-  "touchcontroller.screen.custom_control_layout.layers.conditions.on_camel": "На верблюді",
-  "touchcontroller.screen.custom_control_layout.layers.conditions.on_llama": "На ламі",
-  "touchcontroller.screen.custom_control_layout.layers.conditions.on_strider": "На блукачі",
   "touchcontroller.screen.custom_control_layout.layers.conditions.riding": "Верхи на сутності",
+
   "touchcontroller.screen.custom_control_layout.layers.conditions.block_selected": "Вибрано блок",
+
+
   "touchcontroller.screen.custom_control_layout.layers.delete_layer.1": "Ви впевнені, що хочете видалити цей шар?",
   "touchcontroller.screen.custom_control_layout.layers.delete_layer.2": " «%s» буде втрачено назавжди! (Надовго!)",
   "touchcontroller.screen.custom_control_layout.layers.delete_layer.delete": "Видалити",

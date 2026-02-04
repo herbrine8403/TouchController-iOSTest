@@ -30,7 +30,7 @@ import top.fifthlight.combine.widget.ui.Text
 import top.fifthlight.data.IntPadding
 import top.fifthlight.data.IntSize
 import top.fifthlight.touchcontroller.assets.Texts
-import top.fifthlight.touchcontroller.common.gal.PlayerInventory
+import top.fifthlight.touchcontroller.common.gal.player.PlayerInventory
 import top.fifthlight.touchcontroller.common.gal.creativetab.CreativeTabsProvider
 import top.fifthlight.touchcontroller.common.ui.widget.ListButton
 import top.fifthlight.touchcontroller.common.ui.theme.LocalTouchControllerTheme

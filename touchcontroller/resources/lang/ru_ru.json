@@ -48,7 +48,6 @@
   "touchcontroller.screen.config.about.loading": "Загрузка",
 
   "touchcontroller.screen.config.layout.title": "Наложение",
-
   "touchcontroller.screen.config.layout.manage_control_preset": "Редактирование встроенного пресета",
   "touchcontroller.screen.manage_control_preset.title": "Редактирование пресета",
   "touchcontroller.screen.manage_control_preset.switch.message": "Вы хотите перейти на встроенный пресет? Настройки в кастомном наложении будут заморожены!",
@@ -126,15 +125,11 @@
   "touchcontroller.screen.custom_control_layout.layers.conditions.on_ground": "На поверхности",
   "touchcontroller.screen.custom_control_layout.layers.conditions.not_on_ground": "В воздухе",
   "touchcontroller.screen.custom_control_layout.layers.conditions.using_item": "Используя предмет",
-  "touchcontroller.screen.custom_control_layout.layers.conditions.on_minecart": "В вагонетке",
-  "touchcontroller.screen.custom_control_layout.layers.conditions.on_boat": "В лодке",
-  "touchcontroller.screen.custom_control_layout.layers.conditions.on_pig": "На свинье",
-  "touchcontroller.screen.custom_control_layout.layers.conditions.on_horse": "На лошади",
-  "touchcontroller.screen.custom_control_layout.layers.conditions.on_camel": "На верблюде",
-  "touchcontroller.screen.custom_control_layout.layers.conditions.on_llama": "На ламе",
-  "touchcontroller.screen.custom_control_layout.layers.conditions.on_strider": "На страйдере",
   "touchcontroller.screen.custom_control_layout.layers.conditions.riding": "При езде на мобе",
+
   "touchcontroller.screen.custom_control_layout.layers.conditions.block_selected": "Блок выбран",
+
+
   "touchcontroller.screen.custom_control_layout.layers.delete_layer.1": "Вы точно хотите удалить этот слой?",
   "touchcontroller.screen.custom_control_layout.layers.delete_layer.2": "Слой '%s' будет удалён навсегда! (На очень долгое время!)",
   "touchcontroller.screen.custom_control_layout.layers.delete_layer.delete": "Удалить",

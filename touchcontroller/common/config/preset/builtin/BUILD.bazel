@@ -19,6 +19,7 @@ kt_merge_library(
         "//touchcontroller/common/control/widget/custom",
         "//touchcontroller/common/control/widget/dpad",
         "//touchcontroller/common/control/widget/joystick",
+        "//touchcontroller/common/gal/entity",
         "//touchcontroller/common/layout/align",
         "//touchcontroller/resources/texture:texture_set_lib",
     ],

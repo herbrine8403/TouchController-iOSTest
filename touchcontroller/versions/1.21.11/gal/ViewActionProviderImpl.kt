@@ -19,10 +19,13 @@ object ViewActionProviderImpl : ViewActionProvider {
     override fun getCrosshairTarget(): CrosshairTarget? {
         val target = client.hitResult ?: return null
         return when (target.type) {
-            HitResult.Type.ENTITY -> CrosshairTarget.ENTITY
-            HitResult.Type.BLOCK -> CrosshairTarget.BLOCK
-            HitResult.Type.MISS -> CrosshairTarget.MISS
-            else -> return null
+            HitResult.Type.ENTITY -> client.crosshairPickEntity?.let {
+                CrosshairTarget.Entity(EntityTypeImpl(it.type))
+            } ?: CrosshairTarget.Miss
+
+            HitResult.Type.BLOCK -> CrosshairTarget.Block
+            HitResult.Type.MISS -> CrosshairTarget.Miss
+            else -> null
         }
     }
 
