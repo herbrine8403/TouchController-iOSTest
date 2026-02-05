@@ -8,6 +8,7 @@ kt_merge_library(
     deps = [
         "//:kotlin_serialization",
         "//combine/core/data",
+        "//combine/item/data",
         "@maven//:org_jetbrains_kotlinx_kotlinx_collections_immutable_jvm",
     ],
 )
