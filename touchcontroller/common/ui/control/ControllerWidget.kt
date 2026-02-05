@@ -1,4 +1,4 @@
-package top.fifthlight.touchcontroller.common.ui.component
+package top.fifthlight.touchcontroller.common.ui.control
 
 import androidx.compose.runtime.*
 import top.fifthlight.combine.modifier.Modifier

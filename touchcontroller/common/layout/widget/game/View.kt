@@ -7,7 +7,7 @@ import top.fifthlight.touchcontroller.common.gal.key.DefaultKeyBindingType
 import top.fifthlight.touchcontroller.common.gal.view.CrosshairTarget
 import top.fifthlight.touchcontroller.common.gal.view.ViewActionProvider
 import top.fifthlight.touchcontroller.common.gal.view.ViewActionProviderFactory
-import top.fifthlight.touchcontroller.common.helper.fixAspectRadio
+import top.fifthlight.touchcontroller.common.offset.fixAspectRadio
 import top.fifthlight.touchcontroller.common.layout.Context
 import top.fifthlight.touchcontroller.common.layout.data.CrosshairStatus
 import top.fifthlight.touchcontroller.common.state.PointerState

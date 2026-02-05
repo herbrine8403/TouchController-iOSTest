@@ -11,7 +11,7 @@ import top.fifthlight.combine.modifier.placement.padding
 import top.fifthlight.combine.modifier.scroll.verticalScroll
 import top.fifthlight.combine.widget.layout.Column
 import top.fifthlight.touchcontroller.assets.Texts
-import top.fifthlight.touchcontroller.common.config.ControlConfig
+import top.fifthlight.touchcontroller.common.config.data.ControlConfig
 import top.fifthlight.touchcontroller.common.ui.config.model.LocalConfigScreenModel
 import top.fifthlight.touchcontroller.common.ui.theme.LocalTouchControllerTheme
 import top.fifthlight.touchcontroller.common.ui.widget.IntSliderPreferenceItem

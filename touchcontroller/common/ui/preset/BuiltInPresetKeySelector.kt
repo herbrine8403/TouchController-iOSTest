@@ -22,7 +22,6 @@ import top.fifthlight.data.IntSize
 import top.fifthlight.touchcontroller.assets.Texts
 import top.fifthlight.touchcontroller.assets.TextureSet
 import top.fifthlight.touchcontroller.common.config.layout.ControllerLayout
-import top.fifthlight.touchcontroller.common.config.preset.builtin.BuiltinPresetsProviderImpl
 import top.fifthlight.touchcontroller.common.config.preset.builtin.key.BuiltinPresetKey
 import top.fifthlight.touchcontroller.common.control.ControllerWidget
 import top.fifthlight.touchcontroller.common.layout.data.ContextInput
@@ -80,7 +79,7 @@ private fun PresetPreview(
                 continue
             }
             for (widget in layer.widgets) {
-                ControllerWidget(
+                top.fifthlight.touchcontroller.common.ui.control.ControllerWidget(
                     modifier = Modifier.then(ControllerWidgetModifierNode(widget)),
                     widget = widget,
                     scale = currentScale,

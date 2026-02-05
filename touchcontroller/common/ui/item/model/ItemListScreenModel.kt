@@ -1,4 +1,4 @@
-package top.fifthlight.touchcontroller.common.ui.model
+package top.fifthlight.touchcontroller.common.ui.item.model
 
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.plus
@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.updateAndGet
 import top.fifthlight.combine.item.data.Item
+import top.fifthlight.touchcontroller.common.ui.model.TouchControllerScreenModel
 
 class ItemListScreenModel(
     initialValue: PersistentList<Item>,

@@ -26,7 +26,7 @@ import top.fifthlight.touchcontroller.assets.Textures
 import top.fifthlight.touchcontroller.common.ui.widget.*
 import top.fifthlight.touchcontroller.common.ui.widget.navigation.AppBar
 import top.fifthlight.touchcontroller.common.ui.widget.navigation.BackButton
-import top.fifthlight.touchcontroller.common.ui.model.ItemListScreenModel
+import top.fifthlight.touchcontroller.common.ui.item.model.ItemListScreenModel
 import top.fifthlight.touchcontroller.common.ui.theme.LocalTouchControllerTheme
 
 class ItemListScreen(

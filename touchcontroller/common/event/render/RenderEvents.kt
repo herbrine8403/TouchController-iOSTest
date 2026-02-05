@@ -21,7 +21,7 @@ import top.fifthlight.touchcontroller.common.gal.view.ViewActionProvider
 import top.fifthlight.touchcontroller.common.gal.view.ViewActionProviderFactory
 import top.fifthlight.touchcontroller.common.gal.window.WindowHandle
 import top.fifthlight.touchcontroller.common.gal.window.WindowHandleFactory
-import top.fifthlight.touchcontroller.common.helper.fixAspectRadio
+import top.fifthlight.touchcontroller.common.offset.fixAspectRadio
 import top.fifthlight.touchcontroller.common.input.InputManager
 import top.fifthlight.touchcontroller.common.layout.Context
 import top.fifthlight.touchcontroller.common.layout.config.GlobalContextConfig

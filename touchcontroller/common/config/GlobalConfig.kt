@@ -1,6 +1,11 @@
 package top.fifthlight.touchcontroller.common.config
 
 import kotlinx.serialization.Serializable
+import top.fifthlight.touchcontroller.common.config.data.ChatConfig
+import top.fifthlight.touchcontroller.common.config.data.ControlConfig
+import top.fifthlight.touchcontroller.common.config.data.DebugConfig
+import top.fifthlight.touchcontroller.common.config.data.RegularConfig
+import top.fifthlight.touchcontroller.common.config.data.TouchRingConfig
 import top.fifthlight.touchcontroller.common.gal.itemlist.DefaultItemListProvider
 
 @Serializable

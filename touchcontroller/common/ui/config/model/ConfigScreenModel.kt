@@ -10,7 +10,7 @@ import kotlinx.coroutines.launch
 import top.fifthlight.touchcontroller.common.config.GlobalConfig
 import top.fifthlight.touchcontroller.common.config.holder.GlobalConfigHolder
 import top.fifthlight.touchcontroller.common.ui.model.TouchControllerScreenModel
-import top.fifthlight.touchcontroller.common.ui.state.ConfigScreenState
+import top.fifthlight.touchcontroller.common.ui.config.state.ConfigScreenState
 
 val LocalConfigScreenModel = compositionLocalOf<ConfigScreenModel> { error("No ConfigScreenModel") }
 

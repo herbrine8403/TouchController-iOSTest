@@ -23,7 +23,7 @@ import top.fifthlight.touchcontroller.assets.Texts
 import top.fifthlight.touchcontroller.assets.TextureSet
 import top.fifthlight.touchcontroller.assets.Textures
 import top.fifthlight.touchcontroller.common.control.ControllerWidget
-import top.fifthlight.touchcontroller.common.ui.component.AutoScaleControllerWidget
+import top.fifthlight.touchcontroller.common.ui.control.AutoScaleControllerWidget
 import top.fifthlight.touchcontroller.common.ui.config.tab.layout.custom.tab.CustomTab
 import top.fifthlight.touchcontroller.common.ui.config.tab.layout.custom.tab.LocalCustomTabContext
 import top.fifthlight.touchcontroller.common.ui.config.tab.layout.custom.widgets.model.WidgetsTabModel

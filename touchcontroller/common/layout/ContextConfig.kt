@@ -1,7 +1,7 @@
 package top.fifthlight.touchcontroller.common.layout
 
-import top.fifthlight.touchcontroller.common.config.ControlConfig
-import top.fifthlight.touchcontroller.common.config.TouchRingConfig
+import top.fifthlight.touchcontroller.common.config.data.ControlConfig
+import top.fifthlight.touchcontroller.common.config.data.TouchRingConfig
 import top.fifthlight.touchcontroller.common.gal.player.PlayerHandle
 
 interface ContextConfig {
