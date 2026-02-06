@@ -1,6 +1,7 @@
 package top.fifthlight.combine.item.widget
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import top.fifthlight.combine.item.data.Item
 import top.fifthlight.combine.item.data.ItemStack
 import top.fifthlight.combine.item.paint.item
@@ -15,7 +16,7 @@ fun Item(
     modifier: Modifier = Modifier,
     size: Int = 16,
     item: Item?,
-) = Item(modifier, size, item?.toStack())
+) = Item(modifier, size, remember(item) { item?.toStack() })
 
 @Composable
 fun Item(
