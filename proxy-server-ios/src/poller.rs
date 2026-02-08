@@ -1,4 +1,4 @@
-use std::io::{Error, ErrorKind, Result};
+use std::io::{ErrorKind, Result};
 use std::os::unix::net::UnixDatagram;
 use std::path::Path;
 
@@ -10,15 +10,16 @@ impl Poller {
     pub fn new(address: &str) -> Result<Self> {
         let path = Path::new(address);
         
+        // Create unbound socket
+        let socket = UnixDatagram::unbound()?;
+        
         // Try to connect to existing socket
-        match UnixDatagram::unbound()?.connect(path) {
-            Ok(socket) => Ok(Poller { socket }),
-            Err(_) => {
-                // If connection fails, create new socket
-                let socket = UnixDatagram::unbound()?;
-                Ok(Poller { socket })
-            }
+        if socket.connect(path).is_err() {
+            // Connection failed, but we still have an unbound socket
+            // This is expected when the socket doesn't exist yet
         }
+        
+        Ok(Poller { socket })
     }
 
     pub fn receive(&self) -> Result<Option<Vec<u8>>> {
