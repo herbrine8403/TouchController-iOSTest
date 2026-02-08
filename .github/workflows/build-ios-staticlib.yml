@@ -81,26 +81,38 @@ jobs:
       with:
         path: artifacts
     
-    - name: Create universal binary
+    - name: Create universal binaries
       run: |
-        mkdir -p output
+        mkdir -p output/device output/simulator
         
-        # Create universal library for both device and simulator
-        lipo -create \
-          artifacts/libproxy-server-ios-aarch64-apple-ios/libproxy_server_ios.a \
-          artifacts/libproxy-server-ios-aarch64-apple-ios-sim/libproxy_server_ios.a \
-          -output output/libproxy_server_ios_universal.a
+        # Device library (aarch64-apple-ios)
+        cp artifacts/libproxy-server-ios-aarch64-apple-ios/libproxy_server_ios.a \
+           output/device/libproxy_server_ios.a
         
-        # Create simulator-only universal binary
+        # Simulator universal library (arm64 + x86_64)
         lipo -create \
           artifacts/libproxy-server-ios-aarch64-apple-ios-sim/libproxy_server_ios.a \
           artifacts/libproxy-server-ios-x86_64-apple-ios/libproxy_server_ios.a \
-          -output output/libproxy_server_ios_simulator.a
+          -output output/simulator/libproxy_server_ios_simulator.a
+        
+        # Create XCFramework for easier integration
+        mkdir -p libproxy_server_ios.xcframework/ios-arm64
+        mkdir -p libproxy_server_ios.xcframework/ios-arm64_x86_64-simulator
+        
+        cp artifacts/libproxy-server-ios-aarch64-apple-ios/libproxy_server_ios.a \
+           libproxy_server_ios.xcframework/ios-arm64/libproxy_server_ios.a
+        
+        lipo -create \
+          artifacts/libproxy-server-ios-aarch64-apple-ios-sim/libproxy_server_ios.a \
+          artifacts/libproxy-server-ios-x86_64-apple-ios/libproxy_server_ios.a \
+          -output libproxy_server_ios.xcframework/ios-arm64_x86_64-simulator/libproxy_server_ios.a
     
     - name: Create release archive
       run: |
         cd output
         zip -r ../libproxy-server-ios.zip .
+        cd ..
+        zip -r libproxy-server-ios-xcframework.zip libproxy_server_ios.xcframework
     
     - name: Upload universal binary
       uses: actions/upload-artifact@v4
