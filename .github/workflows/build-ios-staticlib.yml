@@ -1,0 +1,110 @@
+name: Build iOS Static Library
+
+on:
+  push:
+    branches: [ main, master ]
+    paths:
+      - 'proxy-server-ios/**'
+      - '.github/workflows/build-ios-staticlib.yml'
+  pull_request:
+    branches: [ main, master ]
+    paths:
+      - 'proxy-server-ios/**'
+      - '.github/workflows/build-ios-staticlib.yml'
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build iOS Static Library
+    runs-on: macos-latest
+    
+    strategy:
+      matrix:
+        target:
+          - aarch64-apple-ios
+          - aarch64-apple-ios-sim
+          - x86_64-apple-ios
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Install Rust
+      uses: actions-rs/toolchain@v1
+      with:
+        profile: minimal
+        toolchain: stable
+        target: ${{ matrix.target }}
+        override: true
+    
+    - name: Cache Cargo registry
+      uses: actions/cache@v3
+      with:
+        path: ~/.cargo/registry
+        key: ${{ runner.os }}-cargo-registry-${{ hashFiles('proxy-server-ios/**/Cargo.lock') }}
+    
+    - name: Cache Cargo index
+      uses: actions/cache@v3
+      with:
+        path: ~/.cargo/git
+        key: ${{ runner.os }}-cargo-index-${{ hashFiles('proxy-server-ios/**/Cargo.lock') }}
+    
+    - name: Cache Cargo build
+      uses: actions/cache@v3
+      with:
+        path: proxy-server-ios/target
+        key: ${{ runner.os }}-cargo-build-target-${{ matrix.target }}-${{ hashFiles('proxy-server-ios/**/Cargo.lock') }}
+    
+    - name: Build static library
+      run: |
+        cd proxy-server-ios
+        cargo build --release --target ${{ matrix.target }}
+    
+    - name: Upload artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: libproxy-server-ios-${{ matrix.target }}
+        path: proxy-server-ios/target/${{ matrix.target }}/release/libproxy_server_ios.a
+        retention-days: 30
+    
+  create-universal:
+    name: Create Universal Binary
+    runs-on: macos-latest
+    needs: build
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Download artifacts
+      uses: actions/download-artifact@v3
+      with:
+        path: artifacts
+    
+    - name: Create universal binary
+      run: |
+        mkdir -p output
+        
+        # Create universal library for both device and simulator
+        lipo -create \
+          artifacts/libproxy-server-ios-aarch64-apple-ios/libproxy_server_ios.a \
+          artifacts/libproxy-server-ios-aarch64-apple-ios-sim/libproxy_server_ios.a \
+          -output output/libproxy_server_ios_universal.a
+        
+        # Create simulator-only universal binary
+        lipo -create \
+          artifacts/libproxy-server-ios-aarch64-apple-ios-sim/libproxy_server_ios.a \
+          artifacts/libproxy-server-ios-x86_64-apple-ios/libproxy_server_ios.a \
+          -output output/libproxy_server_ios_simulator.a
+    
+    - name: Create release archive
+      run: |
+        cd output
+        zip -r ../libproxy-server-ios.zip .
+    
+    - name: Upload universal binary
+      uses: actions/upload-artifact@v3
+      with:
+        name: libproxy-server-ios-universal
+        path: libproxy-server-ios.zip
+        retention-days: 90

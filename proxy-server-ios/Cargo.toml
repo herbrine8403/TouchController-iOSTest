@@ -1,0 +1,22 @@
+[package]
+name = "proxy-server-ios"
+version = "0.0.1"
+edition = "2021"
+
+[lib]
+crate-type = ["staticlib"]
+
+[dependencies]
+tokio = { version = "1.35", features = [
+    "macros",
+    "sync",
+    "rt-multi-thread",
+    "net",
+    "io-util",
+] }
+log = "0.4"
+jni = "0.21"
+bytemuck = "1.14"
+
+[target.'cfg(target_os = "ios")'.dependencies]
+oslog = "0.2"
