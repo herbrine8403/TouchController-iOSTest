@@ -16,18 +16,18 @@ jobs:
                     chmod +x bazelisk-linux-amd64
                     sudo mv bazelisk-linux-amd64 /usr/local/bin/bazel
 
-            -   name: Build TouchController Mod 1.16.5
+            -   name: Build TouchController Mod 1.21.11
                 run: |
-                    bazel build //touchcontroller/... --@rules_minecraft//mcversion:1.16.5
+                    bazel build //touchcontroller/versions/1.21.11/fabric:fabric_merged
 
             -   name: Capture Mod Artifacts
                 uses: actions/upload-artifact@v4
                 with:
-                    name: mod-artifacts-1.16.5
+                    name: mod-artifacts-1.21.11
                     compression-level: 9
                     if-no-files-found: error
                     path: |
-                        bazel-bin/touchcontroller/**/*.jar
+                        bazel-bin/touchcontroller/versions/1.21.11/fabric/fabric_merged.jar
 
     build-mod-release:
         runs-on: ubuntu-latest
@@ -44,14 +44,14 @@ jobs:
                     chmod +x bazelisk-linux-amd64
                     sudo mv bazelisk-linux-amd64 /usr/local/bin/bazel
 
-            -   name: Build TouchController Mod 1.16.5
+            -   name: Build TouchController Mod 1.21.11
                 run: |
-                    bazel build //touchcontroller/... --@rules_minecraft//mcversion:1.16.5
+                    bazel build //touchcontroller/versions/1.21.11/fabric:fabric_merged
 
             -   name: Create Release
                 uses: softprops/action-gh-release@v2
                 with:
-                    files: bazel-bin/touchcontroller/**/*.jar
+                    files: bazel-bin/touchcontroller/versions/1.21.11/fabric/fabric_merged.jar
                     generate_release_notes: true
                 env:
                     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
