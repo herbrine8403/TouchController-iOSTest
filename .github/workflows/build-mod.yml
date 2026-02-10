@@ -16,14 +16,14 @@ jobs:
                     chmod +x bazelisk-linux-amd64
                     sudo mv bazelisk-linux-amd64 /usr/local/bin/bazel
 
-            -   name: Build TouchController Mod
+            -   name: Build TouchController Mod 1.16.5
                 run: |
-                    bazel build //touchcontroller/...
+                    bazel build //touchcontroller/... --@rules_minecraft//mcversion:1.16.5
 
             -   name: Capture Mod Artifacts
                 uses: actions/upload-artifact@v4
                 with:
-                    name: mod-artifacts
+                    name: mod-artifacts-1.16.5
                     compression-level: 9
                     if-no-files-found: error
                     path: |
@@ -44,9 +44,9 @@ jobs:
                     chmod +x bazelisk-linux-amd64
                     sudo mv bazelisk-linux-amd64 /usr/local/bin/bazel
 
-            -   name: Build TouchController Mod
+            -   name: Build TouchController Mod 1.16.5
                 run: |
-                    bazel build //touchcontroller/...
+                    bazel build //touchcontroller/... --@rules_minecraft//mcversion:1.16.5
 
             -   name: Create Release
                 uses: softprops/action-gh-release@v2
