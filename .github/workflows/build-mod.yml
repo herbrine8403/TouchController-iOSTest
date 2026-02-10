@@ -1,9 +1,6 @@
 name: Build Mod
 on: [pull_request, push]
 
-env:
-    MAX_R8_TASKS: 1
-
 jobs:
     build-mod:
         runs-on: ubuntu-latest
@@ -13,18 +10,12 @@ jobs:
                 with:
                     submodules: 'true'
 
-            -   name: Setup JDK 21
-                uses: actions/setup-java@v4
-                with:
-                    java-version: 21
-                    distribution: 'temurin'
+            -   name: Setup Bazel
+                uses: bazel-contrib/setup-bazel@v6
 
-            -   name: Setup Gradle
-                uses: gradle/actions/setup-gradle@v4
-
-            -   name: Build Mod
+            -   name: Build TouchController Mod
                 run: |
-                    ./gradlew :mod:clean :mod:build --no-daemon
+                    bazel build //touchcontroller/...
 
             -   name: Capture Mod Artifacts
                 uses: actions/upload-artifact@v4
@@ -33,11 +24,7 @@ jobs:
                     compression-level: 9
                     if-no-files-found: error
                     path: |
-                        mod/*/build/libs/TouchController-*-*.jar
-                        mod/*/*/build/libs/TouchController-*-*.jar
-                        !**/*-noreobf-*.jar
-                        !**/*-slim-*.jar
-                        !**/*-fat-*.jar
+                        bazel-bin/touchcontroller/**/*.jar
 
     build-mod-release:
         runs-on: ubuntu-latest
@@ -48,28 +35,17 @@ jobs:
                 with:
                     submodules: 'true'
 
-            -   name: Setup JDK 21
-                uses: actions/setup-java@v4
-                with:
-                    java-version: 21
-                    distribution: 'temurin'
+            -   name: Setup Bazel
+                uses: bazel-contrib/setup-bazel@v6
 
-            -   name: Setup Gradle
-                uses: gradle/actions/setup-gradle@v4
-
-            -   name: Build Mod
+            -   name: Build TouchController Mod
                 run: |
-                    ./gradlew :mod:clean :mod:build --no-daemon
+                    bazel build //touchcontroller/...
 
             -   name: Create Release
                 uses: softprops/action-gh-release@v2
                 with:
-                    files: |
-                        mod/*/build/libs/TouchController-*-*.jar
-                        mod/*/*/build/libs/TouchController-*-*.jar
-                        !**/*-noreobf-*.jar
-                        !**/*-slim-*.jar
-                        !**/*-fat-*.jar
+                    files: bazel-bin/touchcontroller/**/*.jar
                     generate_release_notes: true
                 env:
                     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
